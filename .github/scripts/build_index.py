@@ -166,3 +166,52 @@ if injected:
     print(f"Injected back-to-home nav into: {', '.join(injected)}")
 else:
     print("No new pages needed nav injection.")
+
+# ── Inject giscus comment widget into every sub HTML (idempotent) ──
+GISCUS_MARKER = "<!-- giscus-injected -->"
+GISCUS_SNIPPET = GISCUS_MARKER + """
+<section class="giscus-section" style="max-width:860px;margin:48px auto 24px;padding:0 24px;">
+  <div class="giscus"></div>
+</section>
+<script src="https://giscus.app/client.js"
+        data-repo="Jason-Super-Agent/Jason-Super-Agent.github.io"
+        data-repo-id="R_kgDOUdAxLQ"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOUdAxLc4DFuw7"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async>
+</script>
+"""
+
+giscus_injected = []
+for name in sorted(os.listdir(ROOT)):
+    full = os.path.join(ROOT, name)
+    if not os.path.isfile(full): continue
+    if not name.lower().endswith(".html"): continue
+    if name == "index.html": continue
+    try:
+        with open(full, "r", encoding="utf-8", errors="ignore") as f:
+            content = f.read()
+        if GISCUS_MARKER in content:
+            continue
+        m = re.search(r"</body\s*>", content, re.I)
+        if not m:
+            continue
+        new_content = content[:m.start()] + GISCUS_SNIPPET + "\n" + content[m.start():]
+        with open(full, "w", encoding="utf-8") as f:
+            f.write(new_content)
+        giscus_injected.append(name)
+    except Exception as e:
+        print(f"  ! giscus inject skipped for {name}: {e}", file=sys.stderr)
+
+if giscus_injected:
+    print(f"Injected giscus comments into: {', '.join(giscus_injected)}")
+else:
+    print("No new pages needed giscus injection.")
