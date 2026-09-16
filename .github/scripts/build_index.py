@@ -128,3 +128,41 @@ out_path = os.path.join(ROOT, "index.html")
 with open(out_path, "w", encoding="utf-8") as f:
     f.write(out)
 print(f"Generated index.html with {len(posts)} posts at {out_path}")
+
+# ── Inject a "back to home" floating button into every sub HTML (idempotent) ──
+NAV_MARKER = "<!-- blog-nav-injected -->"
+NAV_SNIPPET = NAV_MARKER + """
+<style>
+.blog-nav-btn{position:fixed;top:14px;left:14px;z-index:9999;background:rgba(15,30,70,.88);color:#fff!important;padding:8px 14px;border-radius:10px;font-size:13px;line-height:1;text-decoration:none!important;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);box-shadow:0 2px 10px rgba(0,0,0,.25);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;display:inline-flex;align-items:center;gap:6px;transition:background .15s,transform .15s}
+.blog-nav-btn:hover{background:rgba(29,78,216,.95);transform:translateY(-1px)}
+@media(max-width:600px){.blog-nav-btn{top:10px;left:10px;padding:7px 12px;font-size:12.5px}}
+</style>
+<a href="/" class="blog-nav-btn">&#8592; 返回首页</a>
+"""
+
+injected = []
+for name in sorted(os.listdir(ROOT)):
+    full = os.path.join(ROOT, name)
+    if not os.path.isfile(full): continue
+    if not name.lower().endswith(".html"): continue
+    if name == "index.html": continue
+    try:
+        with open(full, "r", encoding="utf-8", errors="ignore") as f:
+            content = f.read()
+        if NAV_MARKER in content:
+            continue  # already injected, skip
+        # Insert right before </body> (case-insensitive)
+        m = re.search(r"</body\s*>", content, re.I)
+        if not m:
+            continue
+        new_content = content[:m.start()] + NAV_SNIPPET + "\n" + content[m.start():]
+        with open(full, "w", encoding="utf-8") as f:
+            f.write(new_content)
+        injected.append(name)
+    except Exception as e:
+        print(f"  ! inject skipped for {name}: {e}", file=sys.stderr)
+
+if injected:
+    print(f"Injected back-to-home nav into: {', '.join(injected)}")
+else:
+    print("No new pages needed nav injection.")
