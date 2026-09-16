@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<!-- saved from url=(0089)file:///Users/jiangjiajun/Doubao/chats/2026-09-15/new-chat-2/quant_trading_101.html#cheat -->
+<html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>量化交易 101：一份给外行人的系统性科普报告</title>
+<style>
+:root{
+  --bg:#f6f8fc; --card:#ffffff; --line:#e3e8f0; --line-2:#d4dcea;
+  --ink:#16233b; --muted:#5b6b84; --muted-2:#8a97ad;
+  --blue:#1d4ed8; --blue-2:#2563eb; --blue-bg:#eef4ff; --blue-deep:#0f2f86;
+  --green:#0e9f6e; --green-bg:#eafaf3;
+  --red:#dc2626; --red-bg:#fdf0f0;
+  --amber:#d97706; --amber-bg:#fff7e6;
+  --radius:14px; --shadow:0 1px 3px rgba(22,35,59,.06),0 8px 24px -12px rgba(22,35,59,.12);
+  --font:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Segoe UI",sans-serif;
+  --math:Georgia,"Times New Roman","Songti SC","SimSun",serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.75;font-size:16px;-webkit-font-smoothing:antialiased}
+::selection{background:#cfe0ff}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ===== Layout ===== */
+.layout{display:flex;max-width:1320px;margin:0 auto;gap:28px;padding:0 24px}
+main{flex:1;min-width:0;max-width:980px;padding:28px 8px 120px}
+aside.toc{width:272px;flex:none;position:sticky;top:0;height:100vh;overflow-y:auto;padding:28px 6px 40px 0}
+.toc-inner{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 14px;box-shadow:var(--shadow)}
+.toc-title{font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.08em;padding:0 10px 10px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.toc a{display:block;padding:6px 10px;font-size:13.5px;color:var(--muted);border-radius:8px;line-height:1.45}
+.toc a:hover{background:var(--blue-bg);color:var(--blue);text-decoration:none}
+.toc a.active{background:var(--blue);color:#fff;font-weight:600}
+.toc a small{display:block;color:var(--muted-2);font-size:11.5px}
+.toc a.active small{color:#dbe7ff}
+
+.topbar{display:none}
+@media(max-width:1100px){
+  .layout{display:block;padding:0 16px}
+  aside.toc{display:none;position:fixed;inset:0;z-index:90;width:100%;height:100%;background:rgba(15,28,60,.35);padding:64px 16px 16px}
+  aside.toc.open{display:block}
+  .toc-inner{max-height:calc(100vh - 84px);overflow-y:auto}
+  .topbar{display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:80;background:rgba(246,248,252,.92);backdrop-filter:blur(8px);padding:12px 16px;border-bottom:1px solid var(--line)}
+  .topbar button{background:var(--blue);color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:14px;cursor:pointer;font-family:inherit}
+  .topbar .tb-title{font-size:14px;font-weight:700;flex:1}
+}
+
+/* ===== Cover ===== */
+.cover{background:linear-gradient(135deg,#0d1f56 0%,#123a8f 45%,#1d4ed8 100%);color:#fff;border-radius:0 0 28px 28px;padding:72px 32px 56px;position:relative;overflow:hidden}
+.cover::after{content:"";position:absolute;right:-120px;top:-120px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.14),transparent 65%)}
+.cover::before{content:"";position:absolute;left:-80px;bottom:-160px;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.08),transparent 65%)}
+.cover .kicker{display:inline-block;font-size:13px;letter-spacing:.14em;color:#bcd0ff;border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:4px 14px;margin-bottom:20px}
+.cover h1{font-size:clamp(28px,4.6vw,46px);line-height:1.2;font-weight:800;letter-spacing:.01em;margin-bottom:14px}
+.cover p.lead{font-size:clamp(15px,1.6vw,18px);color:#d7e3ff;max-width:760px;margin-bottom:22px}
+.cover .meta{font-size:13px;color:#9db6f2;display:flex;flex-wrap:wrap;gap:8px 22px}
+.cover .meta b{color:#e8efff;font-weight:600}
+.cover .cta{margin-top:26px;display:inline-flex;gap:10px;flex-wrap:wrap}
+.cover .cta a{background:#fff;color:var(--blue);font-weight:700;padding:10px 22px;border-radius:10px;font-size:14.5px;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+.cover .cta a:hover{text-decoration:none;transform:translateY(-1px)}
+.cover .cta a.ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.4)}
+
+/* ===== Section ===== */
+.section{margin-top:54px}
+.section>h2{font-size:clamp(21px,2.6vw,27px);font-weight:800;letter-spacing:-.01em;display:flex;align-items:center;gap:12px;scroll-margin-top:24px}
+.section>h2 .num{flex:none;width:38px;height:38px;border-radius:11px;background:var(--blue);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:16px;font-weight:800}
+.section>h2 .sub{font-size:14px;color:var(--muted);font-weight:500;letter-spacing:0}
+.section>p.lede{color:var(--muted);font-size:15.5px;margin:10px 0 20px;max-width:820px}
+
+h3.block{font-size:17.5px;font-weight:700;margin:26px 0 10px;display:flex;align-items:center;gap:8px}
+h3.block::before{content:"";width:5px;height:18px;border-radius:3px;background:var(--blue-2)}
+
+/* ===== Cards & grids ===== */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow)}
+.card h4{font-size:15.5px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.card h4 .dot{width:8px;height:8px;border-radius:50%;background:var(--blue);flex:none}
+.card p{font-size:14.5px;color:#33415c}
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:900px){.grid3,.grid4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.grid2,.grid3,.grid4{grid-template-columns:1fr}}
+
+/* ===== Callouts ===== */
+.callout{border-radius:var(--radius);padding:16px 18px 16px 52px;position:relative;margin:18px 0;font-size:14.5px;border:1px solid}
+.callout::before{position:absolute;left:16px;top:14px;font-size:20px;line-height:1;font-weight:800}
+.callout b{font-weight:700}
+.callout.info{background:var(--blue-bg);border-color:#c7d8fb;color:#173a8f}
+.callout.info::before{content:"i";color:var(--blue)}
+.callout.warn{background:var(--amber-bg);border-color:#f4dcb2;color:#7c4a03}
+.callout.warn::before{content:"!";color:var(--amber)}
+.callout.risk{background:var(--red-bg);border-color:#f5cccc;color:#8c1616}
+.callout.risk::before{content:"!";color:var(--red)}
+.callout.ok{background:var(--green-bg);border-color:#c2ecd9;color:#0b6447}
+.callout.ok::before{content:"✓";color:var(--green)}
+
+/* ===== Formula ===== */
+.formula{background:#fafcff;border:1px solid var(--line);border-left:4px solid var(--blue);border-radius:10px;padding:14px 18px;margin:14px 0;font-family:var(--math);font-size:17px;text-align:center;overflow-x:auto}
+.formula .f-note{display:block;font-family:var(--font);font-size:13px;color:var(--muted);margin-top:6px;font-style:normal;text-align:left}
+.formula var{font-style:italic;font-family:var(--math)}
+.formula .frac{display:inline-block;vertical-align:middle;text-align:center;margin:0 4px}
+.formula .frac .top{display:block;border-bottom:1.4px solid var(--ink);padding:0 6px 2px}
+.formula .frac .bot{display:block;padding:2px 6px 0}
+sup,sub{font-size:11.5px}
+.math-sym{font-family:var(--math);font-style:italic}
+
+/* ===== Tables ===== */
+.tbl-wrap{overflow-x:auto;margin:16px 0;border-radius:12px;border:1px solid var(--line);box-shadow:var(--shadow)}
+table.tbl{width:100%;border-collapse:collapse;background:#fff;font-size:14px;min-width:560px}
+table.tbl th{background:#f1f5fd;color:var(--ink);font-weight:700;text-align:left;padding:11px 14px;border-bottom:1px solid var(--line-2);white-space:nowrap}
+table.tbl td{padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+table.tbl tr:last-child td{border-bottom:none}
+table.tbl tr:hover td{background:#f8faff}
+table.tbl td b{color:var(--ink)}
+table.tbl .pos{color:var(--green);font-weight:600}
+table.tbl .neg{color:var(--red);font-weight:600}
+table.tbl .mid{color:var(--amber);font-weight:600}
+.tbl-cap{font-size:12.5px;color:var(--muted);margin:-8px 0 18px}
+
+/* ===== Chips / tags ===== */
+.chip{display:inline-block;background:var(--blue-bg);color:var(--blue);border-radius:999px;padding:2px 12px;font-size:12.5px;font-weight:600;margin:2px 4px 2px 0}
+.chip.green{background:var(--green-bg);color:var(--green)}
+.chip.red{background:var(--red-bg);color:var(--red)}
+.chip.amber{background:var(--amber-bg);color:var(--amber)}
+.chip.gray{background:#eef1f6;color:var(--muted)}
+
+/* ===== Flow (panorama) ===== */
+.flow{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch;margin:20px 0}
+.flow .node{flex:1 1 150px;background:#fff;border:1px solid var(--line);border-top:4px solid var(--blue);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow);position:relative}
+.flow .node .n-title{font-weight:700;font-size:14.5px;margin-bottom:4px;color:var(--blue-deep)}
+.flow .node .n-desc{font-size:12.5px;color:var(--muted);line-height:1.55}
+.flow .node .n-q{font-size:12px;color:var(--muted-2);font-style:normal;margin-top:6px;display:block}
+.flow .arrow{align-self:center;color:var(--blue);font-size:20px;font-weight:800;flex:none}
+@media(max-width:900px){.flow .arrow{transform:rotate(90deg)}}
+
+.flow-v{display:flex;flex-direction:column;gap:0;margin:18px 0}
+.flow-v .node{border-left:4px solid var(--blue)}
+.flow-v .arrow{text-align:center;color:var(--blue);font-size:18px;padding:2px 0}
+
+/* ===== Strategy matrix ===== */
+.matrix{display:grid;grid-template-columns:104px repeat(2,1fr);gap:10px;margin:18px 0}
+.matrix .m-head{background:var(--blue);color:#fff;font-weight:700;border-radius:10px;display:flex;align-items:center;justify-content:center;padding:10px;font-size:13.5px;text-align:center}
+.matrix .m-rowlab{background:#eef2fb;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13.5px;color:var(--blue-deep);text-align:center;padding:8px}
+.matrix .m-cell{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 14px;box-shadow:var(--shadow)}
+.matrix .m-cell .s-name{font-weight:700;font-size:14px;color:var(--ink)}
+.matrix .m-cell .s-meta{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.5}
+@media(max-width:760px){.matrix{grid-template-columns:76px repeat(2,1fr)}}
+
+/* ===== Tooltip ===== */
+.tip{color:var(--blue);border-bottom:1px dashed var(--blue);cursor:help;position:relative;white-space:nowrap}
+.tip::after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);background:#13213f;color:#fff;font-size:12.5px;line-height:1.5;padding:9px 12px;border-radius:9px;width:max-content;max-width:280px;white-space:normal;opacity:0;pointer-events:none;transition:opacity .15s;z-index:30;font-family:var(--font)}
+.tip::before{content:"";position:absolute;left:50%;bottom:calc(100% + 2px);transform:translateX(-50%);border:6px solid transparent;border-top-color:#13213f;opacity:0;transition:opacity .15s;z-index:30}
+.tip:hover::after,.tip:hover::before{opacity:1}
+
+/* ===== Accordion (glossary) ===== */
+details.acc{background:#fff;border:1px solid var(--line);border-radius:12px;margin:10px 0;box-shadow:var(--shadow);overflow:hidden}
+details.acc summary{cursor:pointer;padding:14px 18px;font-weight:700;font-size:14.5px;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px}
+details.acc summary::-webkit-details-marker{display:none}
+details.acc summary::after{content:"＋";color:var(--blue);font-size:16px;transition:transform .15s}
+details.acc[open] summary::after{transform:rotate(45deg)}
+details.acc .acc-body{padding:0 18px 16px;font-size:14px;color:#33415c;border-top:1px dashed var(--line);padding-top:12px}
+details.acc .acc-body p{margin:6px 0}
+
+/* ===== Cheat sheet ===== */
+.cheat{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0}
+@media(max-width:1000px){.cheat{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.cheat{grid-template-columns:1fr}}
+.cheat .c{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;box-shadow:var(--shadow);position:relative}
+.cheat .c .c-n{position:absolute;top:-9px;left:12px;background:var(--blue);color:#fff;font-size:11px;font-weight:800;border-radius:999px;padding:1px 9px}
+.cheat .c .c-t{font-weight:700;font-size:13.5px;color:var(--blue-deep);margin-bottom:3px;padding-top:4px}
+.cheat .c .c-d{font-size:12px;color:var(--muted);line-height:1.55}
+
+/* ===== Charts ===== */
+.chart-box{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);margin:16px 0}
+.chart-box .cb-title{font-weight:700;font-size:14.5px;margin-bottom:2px}
+.chart-box .cb-note{font-size:12px;color:var(--muted);margin-bottom:10px}
+.chart-box svg{width:100%;height:auto;display:block}
+.chart-legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--muted);margin-top:8px}
+.chart-legend .lg{display:inline-flex;align-items:center;gap:6px}
+.chart-legend .sw{width:16px;height:4px;border-radius:2px;display:inline-block}
+.controls{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.controls button{background:#fff;border:1px solid var(--line-2);border-radius:9px;padding:7px 14px;font-size:13.5px;cursor:pointer;font-family:inherit;color:var(--ink);transition:all .12s}
+.controls button:hover{border-color:var(--blue);color:var(--blue)}
+.controls button.on{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:600}
+.controls label{font-size:13.5px;color:var(--muted);display:inline-flex;align-items:center;gap:8px}
+.controls input[type=range]{accent-color:var(--blue);width:180px}
+.stat-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.stat{background:#f4f8ff;border:1px solid #d5e3fb;border-radius:10px;padding:8px 14px;font-size:13px;color:#1e3f96}
+.stat b{font-size:15px;display:block;color:var(--blue-deep)}
+.stat.danger{background:var(--red-bg);border-color:#f2c9c9}
+.stat.danger b{color:var(--red)}
+
+/* ===== References / footer ===== */
+.ref-list{list-style:none;counter-reset:ref}
+.ref-list li{counter-increment:ref;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 14px 10px 46px;position:relative;margin:8px 0;font-size:13px;color:#33415c;word-break:break-all}
+.ref-list li::before{content:"[" counter(ref) "]";position:absolute;left:14px;top:10px;color:var(--blue);font-weight:700;font-size:12.5px}
+.ref-list li .t{font-weight:600;color:var(--ink)}
+.ref-list li .d{color:var(--muted-2);font-size:12px}
+.ref-sup{font-size:11px;color:var(--blue);vertical-align:super;cursor:help;border-bottom:1px dotted var(--blue)}
+
+.footer{border-top:1px solid var(--line);margin-top:70px;padding:26px 4px;color:var(--muted);font-size:13px;text-align:center;line-height:1.9}
+
+#toTop{position:fixed;right:22px;bottom:22px;width:44px;height:44px;border-radius:12px;background:var(--blue);color:#fff;border:none;font-size:19px;cursor:pointer;box-shadow:0 6px 18px rgba(29,78,216,.35);display:none;z-index:60}
+#toTop.show{display:block}
+/* ===== Print / PDF 优化 ===== */
+@page{size:A4;margin:14mm 12mm}
+@media print{
+  .topbar,#toTop{display:none!important}
+  aside.toc{display:none!important}
+  .layout{display:block;padding:0;max-width:none}
+  main{max-width:none!important;margin:0!important;padding:0 0 30px;min-width:0}
+  body{background:#fff;font-size:12.5px}
+  .cover{border-radius:0;padding:34px 26px 28px;margin:-0 -8px 0}
+  .cover::before,.cover::after{display:none}
+  .section{margin-top:26px}
+  h2.section{scroll-margin-top:0}
+  .card,.callout,.chart-box,.tbl-wrap,.formula,.flow,.matrix,.cheat .c,details.acc,.ref-list li,.stat-row{break-inside:avoid;page-break-inside:avoid}
+  h2.section,h3.block{break-after:avoid;page-break-after:avoid}
+  .chart-box svg{max-height:250px;width:auto;max-width:100%;margin:0 auto}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  a{color:inherit;text-decoration:none}
+  .toc{display:none}
+  .flow{gap:6px}
+  .flow .node{flex:1 1 40%}
+  .grid2,.grid3,.grid4{gap:8px}
+  .cheat{grid-template-columns:repeat(2,1fr);gap:6px}
+  .controls{display:none}
+  .controls + #payoff-note{margin-top:4px}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button id="menuBtn" type="button">目录</button>
+  <div class="tb-title">量化交易 101</div>
+</div>
+
+<div class="layout">
+<aside class="toc" id="toc">
+  <nav class="toc-inner">
+    <div class="toc-title">目 录</div>
+    <a href="file:///Users/jiangjiajun/Doubao/chats/2026-09-15/new-chat-2/quant_trading_101.html#tldr" class="">01 · 五分钟理解量化交易</a>
+    <a href="file:///Users/jiangjiajun/Doubao/chats/2026-09-15/new-chat-2/quant_trading_101.html#panorama" class="">02 · 量化交易全景图</a>
+    <a href="file:///Users/jiangjiajun/Doubao/chats/2026-09-15/new-chat-2/quant_trading_101.html#alpha-beta" class="">03 · Alpha / Beta / Sharpe<small>收益从哪来、风险调整后值多少</small></a>
+    <a href="file:///Users/jiangjiajun/Doubao/chats/2026-09-15/new-chat-2/quant_trading_101.html#options" class="">04 · 期权基础<small>方向、权利金、到期收益</small></a>
+    <a href="file:///Users/jiangjiajun/Doubao/chats/2026-09-15/new-chat-2/quant_trading_101.html#greeks" class="">05 · Greeks<small>Delta / Gamma / Theta / Vega</small></a>
+    <a href="file:///Users/jiangjiajun/Doubao/chats/2026-09-15/new-chat-2/quant_trading_101.html#volatility" class="">06 · 波动率（重点）<small>IV / RV / 做空波动率</small></a>
+    <a href="file:///Users/jiangjiajun/Doubao/chats/2026-09-15/new-chat-2/quant_trading_101.html#strategies" class="">07 · 期权策略统一框架<small>方向 × 波动率 × 收益来源</small></a>
+    <a href="file:///Users/jiangjiajun/Doubao/chats/2026-09-15/new-chat-2/quant_trading_101.html#tqqq" class="">08 · TQQQ vs QQQ<small>杠杆的代价</small></a>
+    <a href="file:///Users/jiangjiajun/Doubao/chats/2026-09-15/new-chat-2/quant_trading_101.html#vix" class="">09 · VIX 恐慌指数<small>市场对未来波动的定价</small></a>
+    <a href="file:///Users/jiangjiajun/Doubao/chats/2026-09-15/new-chat-2/quant_trading_101.html#liquidity" class="">10 · 流动性<small>股票与期权不一样</small></a>
+    <a href="file:///Users/jiangjiajun/Doubao/chats/2026-09-15/new-chat-2/quant_trading_101.html#capacity" class="">11 · 策略容量 Capacity<small>钱太多也是问题</small></a>
+    <a href="file:///Users/jiangjiajun/Doubao/chats/2026-09-15/new-chat-2/quant_trading_101.html#frequency" class="">12 · 频率 vs Beta<small>交易频率 ≠ 市场暴露</small></a>
+    <a href="file:///Users/jiangjiajun/Doubao/chats/2026-09-15/new-chat-2/quant_trading_101.html#arbitrage" class="">13 · 无风险套利<small>为什么现实中几乎不存在</small></a>
+    <a href="file:///Users/jiangjiajun/Doubao/chats/2026-09-15/new-chat-2/quant_trading_101.html#ml" class="">14 · 机器学习<small>在量化里到底有没有用</small></a>
+    <a href="file:///Users/jiangjiajun/Doubao/chats/2026-09-15/new-chat-2/quant_trading_101.html#costs" class="">15 · 交易成本<small>期权 vs 股票</small></a>
+    <a href="file:///Users/jiangjiajun/Doubao/chats/2026-09-15/new-chat-2/quant_trading_101.html#map" class="">16 · 最终知识地图<small>朋友每天在做什么</small></a>
+    <a href="file:///Users/jiangjiajun/Doubao/chats/2026-09-15/new-chat-2/quant_trading_101.html#glossary" class="">17 · 术语表 Glossary</a>
+    <a href="file:///Users/jiangjiajun/Doubao/chats/2026-09-15/new-chat-2/quant_trading_101.html#cheat" class="active">18 · 只记 20 个概念<small>Cheat Sheet</small></a>
+    <a href="file:///Users/jiangjiajun/Doubao/chats/2026-09-15/new-chat-2/quant_trading_101.html#references">19 · 数据来源与说明</a>
+  </nav>
+</aside>
+
+<main>
+
+<!-- ============ COVER ============ -->
+<header class="cover">
+  <span class="kicker">QUANT TRADING · 101 · 科普报告</span>
+  <h1>量化交易到底在做什么？<br>一份给外行人的系统性地图</h1>
+  <p class="lead">你的朋友在讨论 Alpha、Beta、Sharpe、期权、Greeks、波动率、VIX、容量、套利和机器学习——本报告用 4 个贯穿全程的案例，把这些概念串成一张地图，让你 30–45 分钟读完，能听懂、能追问。</p>
+  <div class="meta">
+    <span>读者对象：<b>非金融专业背景</b></span>
+    <span>阅读时间：<b>约 30–45 分钟</b></span>
+    <span>数据时点：<b>2026-09-15</b></span>
+    <span>性质：<b>科普教育，非投资建议</b></span>
+  </div>
+  <div class="cta">
+    <a href="file:///Users/jiangjiajun/Doubao/chats/2026-09-15/new-chat-2/quant_trading_101.html#tldr">开始阅读 ↓</a>
+    <a class="ghost" href="file:///Users/jiangjiajun/Doubao/chats/2026-09-15/new-chat-2/quant_trading_101.html#cheat">先看 Cheat Sheet</a>
+  </div>
+</header>
+
+<!-- ============ TL;DR ============ -->
+<section class="section" id="tldr">
+  <h2><span class="num">01</span>五分钟理解量化交易 <span class="sub">TL;DR</span></h2>
+  <p class="lede">如果你只想带走 6 句话，请记住这些。每一句都会在后面的章节里展开。</p>
+
+  <div class="grid2">
+    <div class="card"><h4><span class="dot"></span>① 量化交易 = 系统性地找“可重复的收益来源”</h4><p>不是“用程序预测股价”。它更像一条流水线：从大量数据中寻找稳定的统计规律（Alpha），然后严格地控制风险、成本、流动性和执行，把规律变成钱。</p></div>
+    <div class="card"><h4><span class="dot"></span>② Alpha 是能力，Beta 是市场</h4><p>Beta 是“市场涨你也涨”的那部分；Alpha 是“市场解释不了、来自策略本身”的那部分。买指数就能拿到 Beta，所以真正值钱的是 Alpha。量化交易员天天想着“去 Beta、抓 Alpha”。</p></div>
+    <div class="card"><h4><span class="dot"></span>③ Sharpe 衡量“风险调整后的收益”</h4><p>高收益 ≠ 好策略。赚 30% 但波动 60% 的策略，可能不如赚 12% 但波动 8% 的策略。Sharpe Ratio 就是“每承担一单位风险，换来多少超额收益”。</p></div>
+    <div class="card"><h4><span class="dot"></span>④ 期权是“观点的表达工具”</h4><p>一张期权同时包含三个变量：方向（涨/跌）、波动率（会不会大动）、时间（还剩多久）。Greeks 就是管理这三个变量的仪表盘：Delta 看方向、Vega 看波动率、Theta 看时间。</p></div>
+    <div class="card"><h4><span class="dot"></span>⑤ 做空波动率 ≠ 看空股票</h4><p>卖期权赚的是“时间价值和隐含波动率溢价”。真正押注的是：<b>市场实际波动（RV）&lt; 期权隐含波动（IV）</b>。2018 年 2 月做空 VIX 的产品（XIV）一夜跌掉 85% 后被清算，是这一课最好的反面教材。</p></div>
+    <div class="card"><h4><span class="dot"></span>⑥ 回测赚钱 ≠ 实盘赚钱</h4><p>交易成本、滑点、市场冲击、容量（钱太多策略就失效）会把“纸面收益”吃掉。量化交易员一半的工作，是在处理这些“看不见的损耗”——包括 TQQQ 这类杠杆产品的波动损耗。</p></div>
+  </div>
+
+  <div class="callout info"><b>怎么读这份报告：</b> 全程围绕 4 个案例展开——<b>Case A：QQQ</b>（讲 Beta、波动率、Sharpe、TQQQ）、<b>Case B：一只 $100 的股票</b>（讲期权与 Greeks）、<b>Case C：S&amp;P 500 / SPX</b>（讲 VIX 与隐含波动率）、<b>Case D：一个虚构的量化策略</b>（讲 Alpha、容量、成本、ML）。同一批例子反复出现，比孤立背定义容易记住。</div>
+</section>
+
+<!-- ============ PANORAMA ============ -->
+<section class="section" id="panorama">
+  <h2><span class="num">02</span>量化交易全景图 <span class="sub">先看全貌，再逐一拆解</span></h2>
+  <p class="lede">把“朋友每天在做什么”压缩成一条流水线。报告的所有章节，都是这条流水线上某一环的放大。</p>
+
+  <div class="flow">
+    <div class="node"><span class="n-title">① 市场数据</span><span class="n-desc">价格、成交量、订单簿、财报、新闻、宏观……量化交易员先把世界变成数据。</span><span class="n-q">相关章节：06 波动率、09 VIX</span></div>
+    <div class="arrow">→</div>
+    <div class="node"><span class="n-title">② 寻找 Alpha</span><span class="n-desc">在数据里找“可重复、能赚钱的统计规律”作为信号。</span><span class="n-q">相关章节：03 Alpha、14 机器学习</span></div>
+    <div class="arrow">→</div>
+    <div class="node"><span class="n-title">③ 判断 / 控制 Beta</span><span class="n-desc">这个信号是赚市场的钱，还是赚能力（Alpha）的钱？要不要对冲掉市场暴露？</span><span class="n-q">相关章节：03、12 频率 vs Beta</span></div>
+    <div class="arrow">→</div>
+    <div class="node"><span class="n-title">④ 建立策略</span><span class="n-desc">把信号写成规则：什么时候买、买多少、什么时候平仓。</span><span class="n-q">相关章节：15 成本、13 套利</span></div>
+    <div class="arrow">→</div>
+    <div class="node"><span class="n-title">⑤ 用工具表达观点</span><span class="n-desc">股票、期权、期货……不同工具表达不同观点：方向、波动率、时间。</span><span class="n-q">相关章节：04 期权、07 策略框架</span></div>
+    <div class="arrow">→</div>
+    <div class="node"><span class="n-title">⑥ 管理风险</span><span class="n-desc">用 Greeks 控制期权风险，用头寸限制控制整体回撤。</span><span class="n-q">相关章节：05 Greeks、08 杠杆</span></div>
+    <div class="arrow">→</div>
+    <div class="node"><span class="n-title">⑦ 组合构建</span><span class="n-desc">把多个信号、多只标的组合起来，让收益来源分散、风险可控。</span><span class="n-q">相关章节：03 Sharpe</span></div>
+    <div class="arrow">→</div>
+    <div class="node"><span class="n-title">⑧ 执行</span><span class="n-desc">把订单真实地下到市场里——这决定了理论收益能保留多少。</span><span class="n-q">相关章节：10 流动性、15 成本</span></div>
+    <div class="arrow">→</div>
+    <div class="node"><span class="n-title">⑨ 规模与容量</span><span class="n-desc">策略能装多少钱？钱越多，冲击成本越高，Alpha 越薄。</span><span class="n-q">相关章节：11 容量</span></div>
+    <div class="arrow">→</div>
+    <div class="node"><span class="n-title">⑩ 风险调整后收益</span><span class="n-desc">最后看的不是赚了多少，而是“冒了多少风险赚了多少”。</span><span class="n-q">相关章节：03 Sharpe</span></div>
+  </div>
+
+  <div class="callout warn"><b>一句话概括：</b> 量化交易 ≈ <b>Alpha（收益来源）＋ 风险管理 ＋ 组合构建 ＋ 执行 ＋ 成本/容量控制</b>。它既不是“预测股票涨跌的魔法”，也不是“稳赚不赔的机器”。下面每一章，都是在回答这条流水线上某个“为什么”。</div>
+</section>
+</main>
+</div>
+<div class="layout"><main>
+
+<!-- ============ ALPHA / BETA / SHARPE ============ -->
+<section class="section" id="alpha-beta">
+  <h2><span class="num">03</span>Alpha / Beta / Sharpe <span class="sub">收益从哪来？冒了多少风险？</span></h2>
+  <p class="lede">这是整个量化世界最重要的三个词。先记住一句话：<b>Beta 是市场给你的钱，Alpha 是你自己挣的钱，Sharpe 是“每冒一单位风险换多少钱”。</b></p>
+
+  <div class="grid3">
+    <div class="card"><h4><span class="dot"></span>Beta（贝塔）＝ 对市场的敏感度</h4><p>衡量你的策略（或股票）对“整个市场”涨跌的敏感程度。Beta = 1：市场涨 1%，你约涨 1%；Beta = 2：市场涨 1%，你约涨 2%；Beta = 0：市场怎么动都跟你无关。它回答的是：<b>你暴露在市场风险上多少？</b></p></div>
+    <div class="card"><h4><span class="dot"></span>Alpha（阿尔法）＝ 市场解释不了的那部分收益</h4><p>用 Beta 能解释的收益扣掉之后，剩下的、来自策略本身能力的部分。它回答的是：<b>抛开市场，你赚的钱是运气还是本事？</b></p></div>
+    <div class="card"><h4><span class="dot"></span>Sharpe（夏普比率）＝ 风险调整后收益</h4><p>衡量“每承担 1 单位波动（风险），拿到多少超额收益”。它回答的是：<b>同样是赚钱，谁的赚钱过程更稳？</b></p></div>
+  </div>
+
+  <h3 class="block">公式与直觉（本科生能看懂的程度）</h3>
+  <div class="formula">R<sub>策略</sub> ≈ R<sub>f</sub> ＋ β × (R<sub>市场</sub> − R<sub>f</sub>) ＋ α<span class="f-note">含义：策略收益 ≈ 无风险收益 ＋ “市场涨跌带来的部分” ＋ “策略自己挣的部分”。其中 R<sub>f</sub> 是无风险利率（比如短期国债利率），R<sub>市场</sub> − R<sub>f</sub> 是市场超额收益。</span></div>
+  <div class="formula">β = <span class="frac"><span class="top">Cov(R<sub>策略</sub>, R<sub>市场</sub>)</span><span class="bot">Var(R<sub>市场</sub>)</span></span><span class="f-note">直观理解：β 是“市场每动 1%，策略平均跟着动百分之几”。算法上它是策略收益与市场收益的协方差除以市场收益的方差——不必会算，知道它衡量“联动程度”即可。</span></div>
+  <div class="formula">Sharpe = <span class="frac"><span class="top">R<sub>策略</sub> − R<sub>f</sub></span><span class="bot">σ<sub>策略</sub></span></span><span class="f-note">分子：策略跑赢无风险利率的部分（超额收益）；分母：策略收益的波动率（风险）。单位是“倍”，年化后 Sharpe = 1 算不错、2 很好、3 以上非常优秀。</span></div>
+
+  <h3 class="block">用 Case A（QQQ）讲清 Alpha 和 Beta 的区别</h3>
+  <div class="card">
+    <p>假设 <b>QQQ 这一年涨了 20%</b>（把 QQQ 当作“市场”的代理）。现在有两个策略：</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <tbody><tr><th></th><th>策略①：满仓 QQQ</th><th>策略②：市场中性策略</th></tr>
+      <tr><td>Beta</td><td>≈ 1（市场涨它也涨）</td><td>≈ 0（市场涨跌与它无关）</td></tr>
+      <tr><td>这一年收益</td><td>+25%</td><td>+25%</td></tr>
+      <tr><td>其中“市场给的”（Beta 部分）</td><td>约 +20%</td><td>约 0</td></tr>
+      <tr><td>其中“自己挣的”（Alpha）</td><td>约 +5%</td><td>约 +25%</td></tr>
+      <tr><td>下一年市场跌 20% 时</td><td>大概率跟着跌约 20%</td><td>仍可能赚钱（与市场无关）</td></tr>
+    </tbody></table></div>
+    <p style="margin-top:10px">看出关键了吗？<b>策略①的 25% 里，20 个百分点是“市场顺风”，只有 5 个百分点是本事</b>；策略②的 25% 几乎全是本事（当然，它可能承担了别的风险，见下文）。这就是为什么量化交易员反复问：<b>“你赚的是 Beta 还是 Alpha？”</b></p>
+  </div>
+
+  <h3 class="block">为什么量化交易员总是强调“去 Beta”？</h3>
+  <div class="grid2">
+    <div class="card"><h4><span class="dot"></span>Beta 是“便宜的商品”</h4><p>想要 Beta，买指数基金就行了，成本极低（QQQ 费率 0.18%–0.20%<span class="ref-sup" title="Invesco 官方：2025 年 12 月结构调整后费率由 0.20% 降至 0.18%">[4][5]</span>）。如果策略收益主要来自 Beta，客户凭什么付你高额管理费？</p></div>
+    <div class="card"><h4><span class="dot"></span>Beta 可以“用杠杆造出来”</h4><p>纯 Beta 收益可以用融资放大（也能被 TQQQ 之类的产品放大）。既然能廉价复制，就不算稀缺能力。稀缺的是 Alpha。</p></div>
+    <div class="card"><h4><span class="dot"></span>去 Beta 才能评价“能力”</h4><p>牛市里人人赚钱，分不清谁有本事。把 Beta 对冲掉（做成市场中性），剩下的收益才近似等于“策略的真实能力”。</p></div>
+    <div class="card"><h4><span class="dot"></span>控制风险 / 回撤</h4><p>Beta 意味着“市场崩你也崩”。对冲掉 Beta 后，回撤不再受大盘绑架，更符合对冲基金“绝对收益”的定位。</p></div>
+  </div>
+
+  <h3 class="block">“高收益”和“好策略”为什么不是一回事？——Sharpe 登场</h3>
+  <div class="card">
+    <p>两个策略给你选（假设无风险利率 ≈ 2%）：</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <tbody><tr><th>策略</th><th>年化收益</th><th>年化波动率</th><th>最大回撤（近似）</th><th>Sharpe = (收益−2%) / 波动</th></tr>
+      <tr><td>策略 A：追涨杀跌型</td><td>+30%</td><td>60%</td><td>约 −45%</td><td>(30%−2%)/60% ≈ <b class="neg">0.47</b></td></tr>
+      <tr><td>策略 B：稳健型</td><td>+12%</td><td>8%</td><td>约 −6%</td><td>(12%−2%)/8% ≈ <b class="pos">1.25</b></td></tr>
+    </tbody></table></div>
+    <p style="margin-top:10px">A 收益更高，但 Sharpe 只有 0.47；B 收益低一半，Sharpe 却高出近三倍。为什么？因为 A 的赚钱过程“大起大落”，可能亏 45% 你根本拿不住；而 B 几乎一路平稳。<b>Sharpe 高 = 同样的风险换来了更多收益 = 更容易被资金追捧。</b> 加杠杆可以放大 A 的收益，但波动也同步放大，Sharpe 基本不变——所以“高收益”本身说明不了策略质量。</p>
+  </div>
+  <div class="chart-box" id="chart-sharpe-box">
+    <div class="cb-title">收益 vs Sharpe：谁更“好”？</div>
+    <div class="cb-note">左：年化收益与年化波动（%）；右：Sharpe 比率（示意数值，R<sub>f</sub>=2%）。策略 A：30%/60% → Sharpe≈0.47；策略 B：12%/8% → Sharpe≈1.25。</div>
+    <div id="chart-sharpe"><svg viewBox="0 0 900 300"><line x1="52" x2="884" y1="254" y2="254" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="258" text-anchor="end" font-size="11" fill="#8a97ad">0%</text><line x1="52" x2="884" y1="195" y2="195" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="199" text-anchor="end" font-size="11" fill="#8a97ad">23.6%</text><line x1="52" x2="884" y1="136" y2="136" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="140" text-anchor="end" font-size="11" fill="#8a97ad">47.2%</text><line x1="52" x2="884" y1="77" y2="77" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="81" text-anchor="end" font-size="11" fill="#8a97ad">70.8%</text><line x1="52" x2="884" y1="18" y2="18" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="22" text-anchor="end" font-size="11" fill="#8a97ad">94.4%</text><rect x="140.8" y="179" width="72" height="75" fill="#2563eb" rx="4"></rect><text x="176.8" y="173" text-anchor="middle" font-size="12" fill="#33415c" font-weight="700">30%</text><rect x="307.20000000000005" y="103.99999999999997" width="72" height="150.00000000000003" fill="#93b4f5" rx="4"></rect><text x="343.20000000000005" y="97.99999999999997" text-anchor="middle" font-size="12" fill="#33415c" font-weight="700">60%</text><text x="260" y="272" text-anchor="middle" font-size="12.5" fill="#5b6b84" font-weight="700">策略 A（高收益高波动）</text><text x="176.8" y="288" text-anchor="middle" font-size="11" fill="#8a97ad">年化收益</text><text x="343.20000000000005" y="288" text-anchor="middle" font-size="11" fill="#8a97ad">年化波动</text><rect x="556.8000000000001" y="224" width="72" height="30" fill="#0e9f6e" rx="4"></rect><text x="592.8000000000001" y="218" text-anchor="middle" font-size="12" fill="#33415c" font-weight="700">12%</text><rect x="723.2" y="234" width="72" height="20" fill="#8fdcc0" rx="4"></rect><text x="759.2" y="228" text-anchor="middle" font-size="12" fill="#33415c" font-weight="700">8%</text><text x="676" y="272" text-anchor="middle" font-size="12.5" fill="#5b6b84" font-weight="700">策略 B（稳健）</text><text x="592.8000000000001" y="288" text-anchor="middle" font-size="11" fill="#8a97ad">年化收益</text><text x="759.2" y="288" text-anchor="middle" font-size="11" fill="#8a97ad">年化波动</text></svg></div>
+  </div>
+
+  <h3 class="block">配套概念速览</h3>
+  <div class="tbl-wrap"><table class="tbl">
+    <tbody><tr><th>术语</th><th>一句话解释</th><th>在交易员嘴里常出现的样子</th></tr>
+    <tr><td><b>收益 / Return</b></td><td>资产价格的变化比例：(P<sub>t</sub> − P<sub>t−1</sub>) / P<sub>t−1</sub></td><td>“这策略年化 15%”</td></tr>
+    <tr><td><b>波动率 / Volatility</b></td><td>收益的波动幅度，是“风险”最常用的代理（详见第 06 章）</td><td>“波动太大，仓位降一降”</td></tr>
+    <tr><td><b>风险 / Risk</b></td><td>收益的不确定性（可能亏多少、多大概率亏）</td><td>“这笔交易的 risk 是多少”</td></tr>
+    <tr><td><b>最大回撤 / Max Drawdown</b></td><td>从历史最高点跌到最低点的最大跌幅</td><td>“最大回撤 20% 以内可以接受”</td></tr>
+    <tr><td><b>Benchmark / 基准</b></td><td>用来“比成绩”的参照物，如沪深 300、标普 500、QQQ</td><td>“今年跑赢基准 8 个点”</td></tr>
+    <tr><td><b>Long / 做多</b></td><td>买入，赌价格上涨</td><td>“我们 long 了科技板块”</td></tr>
+    <tr><td><b>Short / 做空</b></td><td>借券卖出、日后买回，赌价格下跌</td><td>“对这家公司 short 一点”</td></tr>
+    <tr><td><b>Market Neutral / 市场中性</b></td><td>同时持有多头和空头，把对市场的净暴露压到接近 0（Beta≈0）</td><td>“这是个 market neutral 的组合”</td></tr>
+    <tr><td><b>Exposure / 敞口</b></td><td>对某一风险因素的“暴露量”，如市场敞口、行业敞口、波动率敞口</td><td>“今晚隔夜敞口不要留太大”</td></tr>
+  </tbody></table></div>
+
+  <div class="callout info"><b>记住这组关系：</b> <b>Alpha ↓ 收益来源；Beta ↓ 市场暴露；Volatility ↓ 风险度量；Sharpe ↓ 风险调整后的收益。</b> 后面讲期权、讲 VIX、讲容量，全都是这三个概念在不同场景下的变形。</div>
+</section>
+
+<!-- ============ OPTIONS ============ -->
+<section class="section" id="options">
+  <h2><span class="num">04</span>期权基础 <span class="sub">用一只 $100 的股票讲透 Call 和 Put</span></h2>
+  <p class="lede">期权不是“高级赌博工具”，而是一种<b>“观点的表达方式”</b>。先建立四个基本问题：<b>这是买还是卖？赌的是涨还是跌？行权价在哪？还剩多久到期？</b></p>
+
+  <h3 class="block">两个基本工具：Call 和 Put</h3>
+  <div class="grid2">
+    <div class="card"><h4><span class="dot"></span>Call（看涨期权）</h4><p>买方获得<b>“以行权价买入”的权利</b>。赌的是：到期时股价会涨过行权价。买 Call = 付一笔钱（权利金），把“上涨的收益”买下来。</p></div>
+    <div class="card"><h4><span class="dot"></span>Put（看跌期权）</h4><p>买方获得<b>“以行权价卖出”的权利</b>。赌的是：到期时股价会跌破行权价。买 Put = 付一笔钱，买一份“下跌的保险”。</p></div>
+  </div>
+
+  <div class="tbl-wrap"><table class="tbl">
+    <tbody><tr><th>四个要素</th><th>是什么</th><th>例子（本章全程使用）</th></tr>
+    <tr><td><b>Strike Price 行权价</b></td><td>约定买卖的价格（K）</td><td>K = 105（Call）、K = 95（Put）</td></tr>
+    <tr><td><b>Expiration 到期日</b></td><td>权利生效的截止时间</td><td>1 个月后到期</td></tr>
+    <tr><td><b>Premium 权利金</b></td><td>买方向卖方支付的价格（教学示意值，与 Black-Scholes 在 σ=30%、30 天、r=2% 下一致）</td><td>Call 付 $1.6 / 股，Put 付 $1.4 / 股</td></tr>
+    <tr><td><b>合约单位</b></td><td>1 张期权 = 100 股标的（美股标准）</td><td>1 张 Call 的权利金 = $1.6 × 100 = $160</td></tr>
+  </tbody></table></div>
+
+  <h3 class="block">Case B 第一幕：Long Call——买一张行权价 $105、一个月到期的 Call</h3>
+  <div class="card">
+    <p>股票现在 <b>$100</b>。你花 <b>$1.6/股</b>（一张 = $160）买了一张 <b>Call：行权价 $105，一个月后到期</b>。逐步推演：</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <tbody><tr><th>情形</th><th>发生了什么</th><th>你的盈亏（每股）</th></tr>
+      <tr><td>到期时股票 <b class="pos">涨到 $120</b></td><td>你有权以 $105 买入，马上以市价 $120 卖出 → 内在价值 = 120 − 105 = <b>$15</b></td><td class="pos">+$13.4（= 15 − 1.6 权利金）<br>一张合约 +$1,340</td></tr>
+      <tr><td>到期时股票 <b class="mid">不涨，$100</b></td><td>行权价 105 &gt; 市价 100，行权没有意义 → 期权作废，内在价值 = 0</td><td class="neg">−$1.6（亏掉全部权利金）<br>一张合约 −$160</td></tr>
+      <tr><td>到期时股票 <b class="neg">暴跌到 $80</b></td><td>更不可能行权 → 期权作废</td><td class="neg">−$1.6（最大损失 = 权利金）</td></tr>
+    </tbody></table></div>
+    <p style="margin-top:10px"><b>核心结论 1：买 Call 的最大损失是固定的（权利金），但上涨收益是开放的。</b> 这就像买了一张“上涨彩票”：亏最多亏票价，赢可以赢很多。</p>
+    <p><b>核心结论 2（计算）：</b> 到期收益 = max(S<sub>T</sub> − 105, 0) − 1.6。盈亏平衡点 = 行权价 + 权利金 = <b>$106.6</b>：股票涨过 106.6 才真正开始赚钱。</p>
+    <p><b>核心结论 3（时间的作用）：</b> 上面的推演全部发生在“到期那一刻”。在到期之前，哪怕股票只涨到 $106，这张 Call 也值 <b>超过 $1</b>——因为未来一个月还有继续上涨的可能。到期前期权价格 = <b>内在价值 ＋ 时间价值</b>。这一点是第 05 章 Theta 和第 06 章波动率的伏笔。</p>
+  </div>
+
+  <h3 class="block">Case B 第二幕：Long Put——买一张行权价 $95、一个月到期的 Put</h3>
+  <div class="card">
+    <p>同样这只 $100 的股票，你花 <b>$1.4/股</b> 买了一张 <b>Put：行权价 $95，一个月后到期</b>：</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <tbody><tr><th>情形</th><th>发生了什么</th><th>你的盈亏（每股）</th></tr>
+      <tr><td>到期时股票 <b class="neg">跌到 $80</b></td><td>你有权以 $95 卖出市价 $80 的股票 → 内在价值 = 95 − 80 = <b>$15</b></td><td class="pos">+$13.6（= 15 − 1.4 权利金）</td></tr>
+      <tr><td>到期时股票 <b class="mid">不跌，$100</b></td><td>行权价 95 &lt; 市价 100，放弃行权 → 作废</td><td class="neg">−$1.4（最大损失 = 权利金）</td></tr>
+    </tbody></table></div>
+    <p style="margin-top:10px"><b>到期收益 = max(95 − S<sub>T</sub>, 0) − 1.4，盈亏平衡点 = 95 − 1.4 = $93.6。</b> 买 Put 就像买保险：跌了保险公司赔你（行权获利），不跌最多损失保费。</p>
+  </div>
+
+  <h3 class="block">先分清三个状态：ITM / ATM / OTM</h3>
+  <div class="tbl-wrap"><table class="tbl">
+    <tbody><tr><th>状态</th><th>含义</th><th>Call（K=105）示例</th><th>Put（K=95）示例</th></tr>
+    <tr><td><b>ITM</b>（In The Money，实值）</td><td>立即行权能赚钱，有内在价值</td><td>股价 &gt; 105（如 $120）</td><td>股价 &lt; 95（如 $80）</td></tr>
+    <tr><td><b>ATM</b>（At The Money，平值）</td><td>行权价 ≈ 现价</td><td>股价 ≈ 105</td><td>股价 ≈ 95</td></tr>
+    <tr><td><b>OTM</b>（Out of The Money，虚值）</td><td>立即行权不赚钱，只有时间价值</td><td>股价 &lt; 105（如 $100，我们的例子）</td><td>股价 &gt; 95（如 $100）</td></tr>
+  </tbody></table></div>
+
+  <h3 class="block">再说“卖”：Sell Call 与 Sell Put</h3>
+  <div class="grid2">
+    <div class="card"><h4><span class="dot"></span>Sell Call（卖出 Call / 裸卖看涨）</h4><p>你把“上涨的权利”卖给别人，先收 $1.6 权利金。代价是：<b>股票暴涨时你要按行权价卖给他</b>——理论上亏损无限（股票可以一直涨）。这是四个基本动作里最危险的一个。</p></div>
+    <div class="card"><h4><span class="dot"></span>Sell Put / Cash-Secured Put（卖出 Put / 现金担保看跌）</h4><p>你把“下跌的保险”卖给别人，先收 $1.4 权利金。代价是：<b>股票跌破 95 时你要按 $95 接盘</b>。现金担保 = 账户里预留 $95×100 的资金，确保接得起。最大亏损 = 行权价 − 权利金（理论上股票跌到 0）。</p></div>
+    <div class="card"><h4><span class="dot"></span>Covered Call（备兑看涨）</h4><p>你<b>已经持有 100 股</b>（成本 $100/股），再卖一张 Call（K=105，收 $1.6）。股票涨过 105，你被行权，以 105 卖出：总收益 = (105−100) + 1.6 = <b>$6.6/股 封顶</b>；股票不涨/微跌，你多收 $1.6 补贴。缺点是上涨空间被封死。</p></div>
+    <div class="card"><h4><span class="dot"></span>四个动作的“谁赚谁亏”</h4><p>期权是<b>零和游戏</b>：买方赚的钱 = 卖方亏的钱（忽略手续费）。买 Call / 买 Put 的风险有限、收益开放；卖 Call / 卖 Put 是收益有限（最多权利金）、风险开放。<b>记住这个不对称，是理解第 07 章策略框架的钥匙。</b></p></div>
+  </div>
+
+  <h3 class="block">动手看：期权到期盈亏交互图</h3>
+  <p class="lede" style="margin-top:6px">拖动滑块改变“到期时股价”，看每种头寸的盈亏怎么变。所有例子沿用 Case B（股票现价 $100，期权一个月到期）。</p>
+  <div class="chart-box">
+    <div class="cb-title">期权策略到期盈亏图（Payoff）</div>
+    <div class="cb-note">纵轴为每股盈亏，横轴为到期时股价 S<sub>T</sub>；蓝色虚线为零轴，橙点为盈亏平衡，蓝点为当前股价对应的盈亏。权利金为教学示意数值（与 σ=30%、30 天、r=2% 的 Black-Scholes 一致），仅用于展示收益形态。</div>
+    <div class="controls" id="payoff-controls"><button type="button">Long Call</button><button type="button">Long Put</button><button type="button">Covered Call</button><button type="button">Sell Put（现金担保）</button><button type="button">Short Straddle</button><button type="button">Short Strangle</button><button type="button">Iron Condor</button><button type="button">Bull Call Spread</button><label>到期股价 S<sub>T</sub>：<input type="range" id="payoff-slider" min="50" max="150" value="100" step="1"> <span id="payoff-slider-val">$100</span></label></div>
+    <div id="payoff-note" style="font-size:13px;color:#5b6b84;margin-bottom:8px">买 Call K=105，权利金 $1.6。到期收益 = max(S−105,0) − 1.6。</div>
+    <div id="chart-payoff"><svg viewBox="0 0 900 330"><line x1="52" x2="882" y1="292" y2="292" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="296" text-anchor="end" font-size="11" fill="#8a97ad">−$14.7</text><line x1="52" x2="882" y1="223" y2="223" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="227" text-anchor="end" font-size="11" fill="#8a97ad">+$3.1</text><line x1="52" x2="882" y1="154" y2="154" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="158" text-anchor="end" font-size="11" fill="#8a97ad">+$20.9</text><line x1="52" x2="882" y1="85" y2="85" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="89" text-anchor="end" font-size="11" fill="#8a97ad">+$38.7</text><line x1="52" x2="882" y1="16" y2="16" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="20" text-anchor="end" font-size="11" fill="#8a97ad">+$56.5</text><line x1="52" x2="52" y1="16" y2="292" stroke="#f4f6fa" stroke-width="1"></line><text x="52" y="308" text-anchor="middle" font-size="11" fill="#8a97ad">$50</text><line x1="218" x2="218" y1="16" y2="292" stroke="#f4f6fa" stroke-width="1"></line><text x="218" y="308" text-anchor="middle" font-size="11" fill="#8a97ad">$70</text><line x1="384" x2="384" y1="16" y2="292" stroke="#f4f6fa" stroke-width="1"></line><text x="384" y="308" text-anchor="middle" font-size="11" fill="#8a97ad">$90</text><line x1="550" x2="550" y1="16" y2="292" stroke="#f4f6fa" stroke-width="1"></line><text x="550" y="308" text-anchor="middle" font-size="11" fill="#8a97ad">$110</text><line x1="716" x2="716" y1="16" y2="292" stroke="#f4f6fa" stroke-width="1"></line><text x="716" y="308" text-anchor="middle" font-size="11" fill="#8a97ad">$130</text><line x1="882" x2="882" y1="16" y2="292" stroke="#f4f6fa" stroke-width="1"></line><text x="882" y="308" text-anchor="middle" font-size="11" fill="#8a97ad">$150</text><line x1="52" x2="882" y1="234.92592592592592" y2="234.92592592592592" stroke="#c6cfdd" stroke-width="1.4" stroke-dasharray="5 4"></line><path d="M52.00 241.12 L60.30 241.12 L68.60 241.12 L76.90 241.12 L85.20 241.12 L93.50 241.12 L101.80 241.12 L110.10 241.12 L118.40 241.12 L126.70 241.12 L135.00 241.12 L143.30 241.12 L151.60 241.12 L159.90 241.12 L168.20 241.12 L176.50 241.12 L184.80 241.12 L193.10 241.12 L201.40 241.12 L209.70 241.12 L218.00 241.12 L226.30 241.12 L234.60 241.12 L242.90 241.12 L251.20 241.12 L259.50 241.12 L267.80 241.12 L276.10 241.12 L284.40 241.12 L292.70 241.12 L301.00 241.12 L309.30 241.12 L317.60 241.12 L325.90 241.12 L334.20 241.12 L342.50 241.12 L350.80 241.12 L359.10 241.12 L367.40 241.12 L375.70 241.12 L384.00 241.12 L392.30 241.12 L400.60 241.12 L408.90 241.12 L417.20 241.12 L425.50 241.12 L433.80 241.12 L442.10 241.12 L450.40 241.12 L458.70 241.12 L467.00 241.12 L475.30 241.12 L483.60 241.12 L491.90 241.12 L500.20 241.12 L508.50 241.12 L516.80 237.25 L525.10 233.38 L533.40 229.51 L541.70 225.63 L550.00 221.76 L558.30 217.89 L566.60 214.02 L574.90 210.14 L583.20 206.27 L591.50 202.40 L599.80 198.53 L608.10 194.66 L616.40 190.78 L624.70 186.91 L633.00 183.04 L641.30 179.17 L649.60 175.30 L657.90 171.42 L666.20 167.55 L674.50 163.68 L682.80 159.81 L691.10 155.94 L699.40 152.06 L707.70 148.19 L716.00 144.32 L724.30 140.45 L732.60 136.58 L740.90 132.70 L749.20 128.83 L757.50 124.96 L765.80 121.09 L774.10 117.22 L782.40 113.34 L790.70 109.47 L799.00 105.60 L807.30 101.73 L815.60 97.86 L823.90 93.98 L832.20 90.11 L840.50 86.24 L848.80 82.37 L857.10 78.49 L865.40 74.62 L873.70 70.75 L882.00 66.88 " fill="none" stroke="#2563eb" stroke-width="3" stroke-dasharray="" opacity="1"></path><circle cx="521.78" cy="234.92592592592592" r="4.5" fill="#fff" stroke="#d97706" stroke-width="2.5"></circle><text x="521.78" y="246.92592592592592" text-anchor="middle" font-size="12" fill="#d97706" font-weight="700">BE $106.6</text><circle cx="467" cy="241.12121212121212" r="4.5" fill="#fff" stroke="#1d4ed8" stroke-width="2.5"></circle><text x="467" y="219.12121212121212" text-anchor="middle" font-size="12" fill="#1d4ed8" font-weight="700">S=$100 → −$1.6</text></svg></div>
+    <div class="stat-row" id="payoff-stats"><div class="stat"><b class="neg">−$1.6</b>当前到期股价 $100 时的每股盈亏</div><div class="stat"><b>BE $106.6</b>盈亏平衡点（到期价）</div><div class="stat"><b>最大亏损 = 权利金 $1.6</b>风险提示</div></div>
+  </div>
+</section>
+
+<!-- ============ GREEKS ============ -->
+<section class="section" id="greeks">
+  <h2><span class="num">05</span>Greeks <span class="sub">管理期权组合的四个仪表盘</span></h2>
+  <p class="lede">期权价格不是一条直线，它同时被五个变量牵着走。Greeks 就是这五个变量各自的“敏感度”，是交易员管理期权风险的仪表盘。核心心法：<b>Delta 管方向，Gamma 管方向变化的速度，Theta 管时间，Vega 管波动率。</b></p>
+
+  <div class="grid4">
+    <div class="card"><h4><span class="dot"></span>Delta（Δ）</h4><p>股票涨 $1，期权价格变多少。Call 的 Delta 在 0~1 之间，Put 在 −1~0 之间。ATM 的 Call 约 <b>+0.5</b>：股票涨 $1，Call 约涨 $0.5。</p></div>
+    <div class="card"><h4><span class="dot"></span>Gamma（Γ）</h4><p>Delta 会变化，Gamma 就是 Delta 的变化速度。Gamma 高 = Delta 不稳定 = 需要对冲得更勤快。ATM、临近到期的期权 Gamma 最大。</p></div>
+    <div class="card"><h4><span class="dot"></span>Theta（Θ）</h4><p>每过一天，期权价格损失多少（时间价值衰减）。<b>买方付 Theta，卖方收 Theta。</b></p></div>
+    <div class="card"><h4><span class="dot"></span>Vega（ν）</h4><p>隐含波动率每涨 1 个百分点，期权价格变多少。<b>买方收 Vega（波动率上涨有利），卖方付 Vega。</b></p></div>
+  </div>
+
+  <h3 class="block">为什么要聊 Greeks？——“股价 → 期权价格 → Greeks” 的关系图</h3>
+  <div class="card">
+    <p>一张期权的价格由五个输入决定，模型（如 Black-Scholes）把它们“翻译”成价格；而 Greeks 就是价格对这五个输入的偏导数，即“敏感度仪表盘”：</p>
+    <div class="flow">
+      <div class="node"><span class="n-title">输入变量</span><span class="n-desc">股价 S<br>行权价 K<br>剩余时间 T<br>波动率 σ<br>利率 r</span></div>
+      <div class="arrow">→</div>
+      <div class="node"><span class="n-title">定价模型</span><span class="n-desc">Black-Scholes 等：把输入翻译成“这张期权值多少钱”</span></div>
+      <div class="arrow">→</div>
+      <div class="node"><span class="n-title">期权价格</span><span class="n-desc">买方付出的权利金 = 内在价值 + 时间价值</span></div>
+      <div class="arrow">→</div>
+      <div class="node"><span class="n-title">Greeks（仪表盘）</span><span class="n-desc">Δ 对 S 求导<br>Γ 对 Δ 求导<br>Θ 对 T 求导<br>Vega 对 σ 求导</span></div>
+    </div>
+    <p style="margin-top:8px"><b>为什么交易员天天盯 Greeks？</b> 因为他手里往往有几百张不同行权价、不同到期日的期权。直接看“整体价格”看不出风险在哪；把组合拆成 Δ/Γ/Θ/Vega，就能回答：<i>“市场涨 1% 我赚多少？波动率跳 2 个点我亏多少？明天开盘我又会损失多少时间价值？”</i></p>
+  </div>
+
+  <h3 class="block">深入 Theta：为什么“时间”对买方不利、对卖方有利？</h3>
+  <div class="card">
+    <p>期权里除了内在价值，还有<b>时间价值</b>——“未来还有可能发生好事”的价钱。时间每过去一天，这个可能性就少一点，时间价值就折旧一点：</p>
+    <ul style="padding-left:22px;font-size:14.5px;color:#33415c;margin:8px 0">
+      <li><b>买方</b>持有时间价值，每天都在“付费”（Theta 为负）。买 1 个月 Call 付 $1.6，其中大部分都是时间价值——每天醒来它都在缩水，股票不动就亏。</li>
+      <li><b>卖方</b>卖出时间价值，每天都在“收租”（Theta 为正）。什么都不做，只要股价不出现大变动，时间流逝本身就是利润。</li>
+      <li><b>临近到期加速衰减：</b>离到期越近，时间价值缩水越快（尤其 ATM 期权）。卖方的“收租”在最后两周最肥，买方的“失血”也在最后两周最猛。</li>
+    </ul>
+    <div class="callout warn"><b>一句话：</b> 时间站在卖方一边，波动站在买方一边（Vega）。所以“卖期权”本质上是在赌 <b>“时间价值能赚回来，且市场不会出现大波动”</b>——这直接通向第 06 章的做空波动率。</div>
+  </div>
+
+  <h3 class="block">深入 Gamma：为什么 Delta 不是固定的？为什么临近到期 ATM 的 Gamma 飙升？</h3>
+  <div class="card">
+    <p><b>Delta 不是常数。</b> 一张 ATM Call 的 Delta 约 0.5，但股价每动一下 Delta 就变：股价涨，Call 越来越实值，Delta 向 1 靠拢；股价跌，Delta 向 0 滑落。Gamma 衡量的就是这个“Delta 漂移的速度”。</p>
+    <p><b>为什么临近到期、ATM 的 Gamma 特别大？</b> 因为这时候“结局只剩两种”的博弈感最强：到期时它要么实值（Delta→1 或 −1）、要么作废（Delta→0），中间没有缓冲。剩 1 天、股价恰好等于行权价时，Delta 会随着股价每动一美元在 0 和 1 之间剧烈摇摆——Gamma 极大，Delta 极不稳定。</p>
+    <ul style="padding-left:22px;font-size:14.5px;color:#33415c;margin:8px 0">
+      <li>对<b>买方</b>：高 Gamma 是双刃剑——行情来了 Delta 快速变大、越赚越多（正 Gamma 有利）；但正 Gamma 通常伴随负 Theta，等待期天天失血。</li>
+      <li>对<b>卖方</b>：负 Gamma = 行情越走越不利时，亏损加速放大；好处是每天收 Theta。这就是“在压路机前捡钢镚”的数学来源。</li>
+    </ul>
+  </div>
+
+  <h3 class="block">深入 Vega：为什么交易员总在谈“波动率”而不只谈涨跌？</h3>
+  <div class="card">
+    <p>原因有两层。第一，<b>期权价格对波动率极其敏感</b>：波动率上升 = 未来价格分布变宽 = 大涨大跌的可能都增加 = 所有期权都更贵（Vega 为正）。第二，<b>当交易员把 Delta 对冲掉以后，“涨跌”这个变量被拿走了</b>，剩下的盈亏几乎完全由波动率驱动。这时候他持有的本质上是“波动率头寸”——赚不赚钱，取决于实际波动比隐含波动大还是小。这也解释了为什么同一只股票、同一个到期日，市场会给期权报出一个“隐含波动率”（下一章展开）。</p>
+  </div>
+
+  <h3 class="block">Greeks 曲线长什么样？（Case B，K=100，剩余 30 天，σ=30%）</h3>
+  <div class="grid2">
+    <div class="chart-box"><div class="cb-title">Delta vs 股价</div><div class="cb-note">Call 的 Delta 从 0 爬到 1；Put 从 0 降到 −1。ATM（S=100）附近约 ±0.5。</div><div id="chart-delta"><svg viewBox="0 0 900 250"><line x1="52" x2="882" y1="212" y2="212" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="216" text-anchor="end" font-size="11" fill="#8a97ad">-1.4</text><line x1="52" x2="882" y1="163" y2="163" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="167" text-anchor="end" font-size="11" fill="#8a97ad">-0.7</text><line x1="52" x2="882" y1="114" y2="114" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="118" text-anchor="end" font-size="11" fill="#8a97ad">0</text><line x1="52" x2="882" y1="64.99999999999997" y2="64.99999999999997" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="68.99999999999997" text-anchor="end" font-size="11" fill="#8a97ad">0.7</text><line x1="52" x2="882" y1="16" y2="16" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="20" text-anchor="end" font-size="11" fill="#8a97ad">1.4</text><line x1="52" x2="52" y1="16" y2="212" stroke="#f4f6fa" stroke-width="1"></line><text x="52" y="228" text-anchor="middle" font-size="11" fill="#8a97ad">$60</text><line x1="259.5" x2="259.5" y1="16" y2="212" stroke="#f4f6fa" stroke-width="1"></line><text x="259.5" y="228" text-anchor="middle" font-size="11" fill="#8a97ad">$80</text><line x1="467" x2="467" y1="16" y2="212" stroke="#f4f6fa" stroke-width="1"></line><text x="467" y="228" text-anchor="middle" font-size="11" fill="#8a97ad">$100</text><line x1="674.5" x2="674.5" y1="16" y2="212" stroke="#f4f6fa" stroke-width="1"></line><text x="674.5" y="228" text-anchor="middle" font-size="11" fill="#8a97ad">$120</text><line x1="882" x2="882" y1="16" y2="212" stroke="#f4f6fa" stroke-width="1"></line><text x="882" y="228" text-anchor="middle" font-size="11" fill="#8a97ad">$140</text><line x1="52" x2="882" y1="114" y2="114" stroke="#c6cfdd" stroke-width="1.4" stroke-dasharray="5 4"></line><path d="M52.00 114.00 L62.38 114.00 L72.75 114.00 L83.13 114.00 L93.50 114.00 L103.88 114.00 L114.25 114.00 L124.63 114.00 L135.00 114.00 L145.38 114.00 L155.75 114.00 L166.13 114.00 L176.50 113.99 L186.88 113.99 L197.25 113.98 L207.63 113.97 L218.00 113.94 L228.38 113.90 L238.75 113.84 L249.13 113.75 L259.50 113.61 L269.88 113.42 L280.25 113.16 L290.63 112.80 L301.00 112.32 L311.38 111.70 L321.75 110.91 L332.13 109.94 L342.50 108.75 L352.88 107.33 L363.25 105.67 L373.63 103.76 L384.00 101.61 L394.38 99.22 L404.75 96.61 L415.13 93.82 L425.50 90.86 L435.88 87.79 L446.25 84.64 L456.63 81.46 L467.00 78.29 L477.37 75.17 L487.75 72.15 L498.13 69.25 L508.50 66.51 L518.88 63.95 L529.25 61.58 L539.63 59.42 L550.00 57.47 L560.38 55.72 L570.75 54.18 L581.13 52.82 L591.50 51.65 L601.88 50.64 L612.25 49.78 L622.63 49.06 L633.00 48.46 L643.38 47.95 L653.75 47.54 L664.13 47.21 L674.50 46.94 L684.88 46.72 L695.25 46.54 L705.63 46.41 L716.00 46.30 L726.38 46.21 L736.75 46.15 L747.13 46.10 L757.50 46.06 L767.88 46.03 L778.25 46.01 L788.63 45.99 L799.00 45.98 L809.38 45.97 L819.75 45.96 L830.13 45.96 L840.50 45.95 L850.88 45.95 L861.25 45.95 L871.63 45.95 L882.00 45.95 " fill="none" stroke="#2563eb" stroke-width="2.6" stroke-dasharray="" opacity="1"></path><path d="M52.00 182.06 L62.38 182.06 L72.75 182.06 L83.13 182.06 L93.50 182.06 L103.88 182.06 L114.25 182.06 L124.63 182.06 L135.00 182.06 L145.38 182.05 L155.75 182.05 L166.13 182.05 L176.50 182.05 L186.88 182.04 L197.25 182.04 L207.63 182.02 L218.00 182.00 L228.38 181.96 L238.75 181.90 L249.13 181.80 L259.50 181.67 L269.88 181.48 L280.25 181.21 L290.63 180.85 L301.00 180.37 L311.38 179.75 L321.75 178.97 L332.13 177.99 L342.50 176.80 L352.88 175.38 L363.25 173.72 L373.63 171.82 L384.00 169.66 L394.38 167.27 L404.75 164.67 L415.13 161.87 L425.50 158.92 L435.88 155.85 L446.25 152.70 L456.63 149.51 L467.00 146.34 L477.37 143.23 L487.75 140.20 L498.13 137.31 L508.50 134.57 L518.88 132.00 L529.25 129.64 L539.63 127.48 L550.00 125.52 L560.38 123.78 L570.75 122.23 L581.13 120.88 L591.50 119.70 L601.88 118.70 L612.25 117.84 L622.63 117.12 L633.00 116.51 L643.38 116.01 L653.75 115.60 L664.13 115.26 L674.50 114.99 L684.88 114.77 L695.25 114.60 L705.63 114.46 L716.00 114.35 L726.38 114.27 L736.75 114.20 L747.13 114.15 L757.50 114.11 L767.88 114.09 L778.25 114.06 L788.63 114.05 L799.00 114.03 L809.38 114.02 L819.75 114.02 L830.13 114.01 L840.50 114.01 L850.88 114.01 L861.25 114.00 L871.63 114.00 L882.00 114.00 " fill="none" stroke="#dc2626" stroke-width="2.6" stroke-dasharray="" opacity="1"></path><circle cx="467" cy="79.9722222222222" r="4.5" fill="#fff" stroke="#2563eb" stroke-width="2.5"></circle><text x="467" y="91.9722222222222" text-anchor="middle" font-size="12" fill="#2563eb" font-weight="700">ATM ≈ +0.5</text><circle cx="467" cy="148.02777777777777" r="4.5" fill="#fff" stroke="#dc2626" stroke-width="2.5"></circle><text x="467" y="126.02777777777777" text-anchor="middle" font-size="12" fill="#dc2626" font-weight="700">ATM ≈ −0.5</text></svg></div></div>
+    <div class="chart-box"><div class="cb-title">Gamma vs 股价</div><div class="cb-note">Gamma 在 ATM 处最高：Delta 最“敏感”。</div><div id="chart-gamma"><svg viewBox="0 0 900 250"><line x1="52" x2="882" y1="212" y2="212" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="216" text-anchor="end" font-size="11" fill="#8a97ad">-0.6</text><line x1="52" x2="882" y1="163" y2="163" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="167" text-anchor="end" font-size="11" fill="#8a97ad">1.2</text><line x1="52" x2="882" y1="114" y2="114" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="118" text-anchor="end" font-size="11" fill="#8a97ad">3</text><line x1="52" x2="882" y1="65.00000000000003" y2="65.00000000000003" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="69.00000000000003" text-anchor="end" font-size="11" fill="#8a97ad">4.8</text><line x1="52" x2="882" y1="16" y2="16" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="20" text-anchor="end" font-size="11" fill="#8a97ad">6.6</text><line x1="52" x2="52" y1="16" y2="212" stroke="#f4f6fa" stroke-width="1"></line><text x="52" y="228" text-anchor="middle" font-size="11" fill="#8a97ad">$60</text><line x1="259.5" x2="259.5" y1="16" y2="212" stroke="#f4f6fa" stroke-width="1"></line><text x="259.5" y="228" text-anchor="middle" font-size="11" fill="#8a97ad">$80</text><line x1="467" x2="467" y1="16" y2="212" stroke="#f4f6fa" stroke-width="1"></line><text x="467" y="228" text-anchor="middle" font-size="11" fill="#8a97ad">$100</text><line x1="674.5" x2="674.5" y1="16" y2="212" stroke="#f4f6fa" stroke-width="1"></line><text x="674.5" y="228" text-anchor="middle" font-size="11" fill="#8a97ad">$120</text><line x1="882" x2="882" y1="16" y2="212" stroke="#f4f6fa" stroke-width="1"></line><text x="882" y="228" text-anchor="middle" font-size="11" fill="#8a97ad">$140</text><line x1="52" x2="882" y1="195.66666666666666" y2="195.66666666666666" stroke="#c6cfdd" stroke-width="1.4" stroke-dasharray="5 4"></line><path d="M52.00 195.67 L62.38 195.67 L72.75 195.67 L83.13 195.67 L93.50 195.67 L103.88 195.67 L114.25 195.66 L124.63 195.66 L135.00 195.66 L145.38 195.64 L155.75 195.62 L166.13 195.58 L176.50 195.52 L186.88 195.40 L197.25 195.21 L207.63 194.90 L218.00 194.42 L228.38 193.71 L238.75 192.69 L249.13 191.24 L259.50 189.27 L269.88 186.66 L280.25 183.28 L290.63 179.05 L301.00 173.86 L311.38 167.70 L321.75 160.55 L332.13 152.48 L342.50 143.62 L352.88 134.15 L363.25 124.32 L373.63 114.40 L384.00 104.73 L394.38 95.63 L404.75 87.44 L415.13 80.43 L425.50 74.86 L435.88 70.93 L446.25 68.73 L456.63 68.31 L467.00 69.64 L477.37 72.61 L487.75 77.05 L498.13 82.76 L508.50 89.50 L518.88 97.02 L529.25 105.05 L539.63 113.35 L550.00 121.70 L560.38 129.90 L570.75 137.79 L581.13 145.24 L591.50 152.15 L601.88 158.46 L612.25 164.15 L622.63 169.21 L633.00 173.65 L643.38 177.49 L653.75 180.79 L664.13 183.59 L674.50 185.93 L684.88 187.88 L695.25 189.49 L705.63 190.80 L716.00 191.85 L726.38 192.70 L736.75 193.38 L747.13 193.91 L757.50 194.33 L767.88 194.65 L778.25 194.90 L788.63 195.09 L799.00 195.24 L809.38 195.35 L819.75 195.43 L830.13 195.50 L840.50 195.54 L850.88 195.58 L861.25 195.60 L871.63 195.62 L882.00 195.63 " fill="none" stroke="#0e9f6e" stroke-width="2.6" stroke-dasharray="" opacity="1"></path><circle cx="467" cy="70.44444444444446" r="4.5" fill="#fff" stroke="#0e9f6e" stroke-width="2.5"></circle><text x="467" y="82.44444444444446" text-anchor="middle" font-size="12" fill="#0e9f6e" font-weight="700">ATM 最高</text></svg></div></div>
+    <div class="chart-box"><div class="cb-title">ATM 期权 Theta vs 剩余天数</div><div class="cb-note">买方视角的每天时间损耗：越临近到期，衰减越快。</div><div id="chart-theta"><svg viewBox="0 0 900 250"><line x1="52" x2="882" y1="212" y2="212" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="216" text-anchor="end" font-size="11" fill="#8a97ad">$-0.04</text><line x1="52" x2="882" y1="163" y2="163" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="167" text-anchor="end" font-size="11" fill="#8a97ad">$0.08</text><line x1="52" x2="882" y1="114" y2="114" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="118" text-anchor="end" font-size="11" fill="#8a97ad">$0.20</text><line x1="52" x2="882" y1="64.99999999999997" y2="64.99999999999997" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="68.99999999999997" text-anchor="end" font-size="11" fill="#8a97ad">$0.32</text><line x1="52" x2="882" y1="16" y2="16" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="20" text-anchor="end" font-size="11" fill="#8a97ad">$0.44</text><line x1="52" x2="52" y1="16" y2="212" stroke="#f4f6fa" stroke-width="1"></line><text x="52" y="228" text-anchor="middle" font-size="11" fill="#8a97ad">1天</text><line x1="259.5" x2="259.5" y1="16" y2="212" stroke="#f4f6fa" stroke-width="1"></line><text x="259.5" y="228" text-anchor="middle" font-size="11" fill="#8a97ad">16天</text><line x1="467" x2="467" y1="16" y2="212" stroke="#f4f6fa" stroke-width="1"></line><text x="467" y="228" text-anchor="middle" font-size="11" fill="#8a97ad">31天</text><line x1="674.5" x2="674.5" y1="16" y2="212" stroke="#f4f6fa" stroke-width="1"></line><text x="674.5" y="228" text-anchor="middle" font-size="11" fill="#8a97ad">45天</text><line x1="882" x2="882" y1="16" y2="212" stroke="#f4f6fa" stroke-width="1"></line><text x="882" y="228" text-anchor="middle" font-size="11" fill="#8a97ad">60天</text><line x1="52" x2="882" y1="195.66666666666666" y2="195.66666666666666" stroke="#c6cfdd" stroke-width="1.4" stroke-dasharray="5 4"></line><path d="M882.00 178.13 L867.93 177.99 L853.86 177.85 L839.80 177.70 L825.73 177.55 L811.66 177.39 L797.59 177.24 L783.53 177.07 L769.46 176.90 L755.39 176.73 L741.32 176.55 L727.25 176.36 L713.19 176.17 L699.12 175.98 L685.05 175.78 L670.98 175.57 L656.92 175.35 L642.85 175.13 L628.78 174.89 L614.71 174.65 L600.64 174.40 L586.58 174.15 L572.51 173.88 L558.44 173.60 L544.37 173.31 L530.31 173.00 L516.24 172.69 L502.17 172.35 L488.10 172.01 L474.03 171.65 L459.97 171.26 L445.90 170.86 L431.83 170.44 L417.76 170.00 L403.69 169.53 L389.63 169.03 L375.56 168.50 L361.49 167.94 L347.42 167.34 L333.36 166.69 L319.29 166.00 L305.22 165.26 L291.15 164.45 L277.08 163.58 L263.02 162.62 L248.95 161.57 L234.88 160.41 L220.81 159.12 L206.75 157.67 L192.68 156.03 L178.61 154.14 L164.54 151.95 L150.47 149.36 L136.41 146.24 L122.34 142.36 L108.27 137.38 L94.20 130.62 L80.14 120.73 L66.07 104.13 L52.00 66.66 " fill="none" stroke="#d97706" stroke-width="2.6" stroke-dasharray="" opacity="1"></path><circle cx="52" cy="73.16666666666671" r="4.5" fill="#fff" stroke="#d97706" stroke-width="2.5"></circle><text x="52" y="85.16666666666671" text-anchor="middle" font-size="12" fill="#d97706" font-weight="700">临近到期加速</text></svg></div></div>
+    <div class="chart-box"><div class="cb-title">Vega vs 股价</div><div class="cb-note">Vega 在 ATM 附近最大：那里的期权价格对波动率最敏感。</div><div id="chart-vega"><svg viewBox="0 0 900 250"><line x1="52" x2="882" y1="212" y2="212" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="216" text-anchor="end" font-size="11" fill="#8a97ad">$-0.02</text><line x1="52" x2="882" y1="163" y2="163" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="167" text-anchor="end" font-size="11" fill="#8a97ad">$0.04</text><line x1="52" x2="882" y1="114" y2="114" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="118" text-anchor="end" font-size="11" fill="#8a97ad">$0.10</text><line x1="52" x2="882" y1="64.99999999999997" y2="64.99999999999997" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="68.99999999999997" text-anchor="end" font-size="11" fill="#8a97ad">$0.16</text><line x1="52" x2="882" y1="16" y2="16" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="20" text-anchor="end" font-size="11" fill="#8a97ad">$0.22</text><line x1="52" x2="52" y1="16" y2="212" stroke="#f4f6fa" stroke-width="1"></line><text x="52" y="228" text-anchor="middle" font-size="11" fill="#8a97ad">$60</text><line x1="259.5" x2="259.5" y1="16" y2="212" stroke="#f4f6fa" stroke-width="1"></line><text x="259.5" y="228" text-anchor="middle" font-size="11" fill="#8a97ad">$80</text><line x1="467" x2="467" y1="16" y2="212" stroke="#f4f6fa" stroke-width="1"></line><text x="467" y="228" text-anchor="middle" font-size="11" fill="#8a97ad">$100</text><line x1="674.5" x2="674.5" y1="16" y2="212" stroke="#f4f6fa" stroke-width="1"></line><text x="674.5" y="228" text-anchor="middle" font-size="11" fill="#8a97ad">$120</text><line x1="882" x2="882" y1="16" y2="212" stroke="#f4f6fa" stroke-width="1"></line><text x="882" y="228" text-anchor="middle" font-size="11" fill="#8a97ad">$140</text><line x1="52" x2="882" y1="195.66666666666666" y2="195.66666666666666" stroke="#c6cfdd" stroke-width="1.4" stroke-dasharray="5 4"></line><path d="M52.00 195.67 L62.38 195.67 L72.75 195.67 L83.13 195.67 L93.50 195.67 L103.88 195.67 L114.25 195.67 L124.63 195.67 L135.00 195.66 L145.38 195.66 L155.75 195.65 L166.13 195.64 L176.50 195.61 L186.88 195.56 L197.25 195.48 L207.63 195.35 L218.00 195.14 L228.38 194.81 L238.75 194.33 L249.13 193.63 L259.50 192.64 L269.88 191.30 L280.25 189.51 L290.63 187.20 L301.00 184.29 L311.38 180.72 L321.75 176.45 L332.13 171.49 L342.50 165.85 L352.88 159.62 L363.25 152.91 L373.63 145.89 L384.00 138.73 L394.38 131.67 L404.75 124.92 L415.13 118.73 L425.50 113.31 L435.88 108.85 L446.25 105.49 L456.63 103.33 L467.00 102.44 L477.37 102.81 L487.75 104.38 L498.13 107.06 L508.50 110.73 L518.88 115.21 L529.25 120.35 L539.63 125.95 L550.00 131.85 L560.38 137.87 L570.75 143.86 L581.13 149.70 L591.50 155.29 L601.88 160.53 L612.25 165.37 L622.63 169.79 L633.00 173.75 L643.38 177.26 L653.75 180.34 L664.13 183.01 L674.50 185.30 L684.88 187.24 L695.25 188.86 L705.63 190.22 L716.00 191.33 L726.38 192.24 L736.75 192.98 L747.13 193.57 L757.50 194.04 L767.88 194.42 L778.25 194.71 L788.63 194.94 L799.00 195.12 L809.38 195.25 L819.75 195.36 L830.13 195.44 L840.50 195.50 L850.88 195.54 L861.25 195.57 L871.63 195.60 L882.00 195.62 " fill="none" stroke="#7c3aed" stroke-width="2.6" stroke-dasharray="" opacity="1"></path><circle cx="467" cy="102.56666666666669" r="4.5" fill="#fff" stroke="#7c3aed" stroke-width="2.5"></circle><text x="467" y="114.56666666666669" text-anchor="middle" font-size="12" fill="#7c3aed" font-weight="700">ATM 附近最大</text></svg></div></div>
+  </div>
+
+  <div class="tbl-wrap"><table class="tbl">
+    <tbody><tr><th>Greek</th><th>测量什么</th><th>买方（Long）</th><th>卖方（Short）</th><th>交易员的行话</th></tr>
+    <tr><td><b>Delta</b></td><td>对股价的敏感度</td><td>Call +、Put −</td><td>反号</td><td>“我这张 Call 相当于 50 股多头”</td></tr>
+    <tr><td><b>Gamma</b></td><td>Delta 的变化速度</td><td>正（加速有利）</td><td>负（加速不利）</td><td>“这个组合 gamma 太大，波动一上来就失控”</td></tr>
+    <tr><td><b>Theta</b></td><td>对时间流逝的敏感度</td><td>负（每天付租）</td><td>正（每天收租）</td><td>“过个周末又要亏不少 theta”</td></tr>
+    <tr><td><b>Vega</b></td><td>对隐含波动率的敏感度</td><td>正（波动涨有利）</td><td>负（波动涨不利）</td><td>“现在 vega 太贵，别裸卖”</td></tr>
+  </tbody></table></div>
+</section>
+<!-- ============ VOLATILITY ============ -->
+<section class="section" id="volatility">
+  <h2><span class="num">06</span>波动率 Volatility <span class="sub">整份报告的重点：风险、期权定价与做空波动率</span></h2>
+  <p class="lede">波动率（Volatility）是连接“风险”、“期权定价”和“VIX”的核心变量。读懂这一章，你就听懂了一半的量化黑话。</p>
+
+  <h3 class="block">1) 什么是波动率？先看两个例子</h3>
+  <div class="card">
+    <p>两只股票，各自的“日内轨迹”如下（都是 5 个时点）：</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <tbody><tr><th>时点</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>终点</th></tr>
+      <tr><td>股票 A</td><td>$100</td><td>$101</td><td>$99</td><td>$100</td><td>$101</td><td>+1%</td></tr>
+      <tr><td>股票 B</td><td>$100</td><td>$120</td><td>$80</td><td>$110</td><td>$90</td><td>−10%</td></tr>
+    </tbody></table></div>
+    <p style="margin-top:10px">A 在 99~101 之间温和波动；B 在 80~120 之间坐过山车。<b>波动率衡量的不是“涨还是跌”（方向），而是“动得多剧烈”（幅度）。</b> 数学上，波动率 ≈ 一段时间内日收益率的标准差，再年化：</p>
+    <div class="formula">σ<sub>年化</sub> = 日收益标准差 × √252<span class="f-note">252 是美股一年约有的交易日数量。直觉：年化波动率 30% ≈ 股价一年内约 68% 的概率落在“±30%”这个范围附近（更准确地说，对应 1 个标准差）。</span></div>
+    <p><b>为什么波动率 = 风险？</b> 因为波动大意味着“结果的不确定性大”：既可能大涨也可能大跌。对于需要控制回撤的组合，波动率就是“风险”最常用的代理指标。</p>
+  </div>
+  <div class="chart-box">
+    <div class="cb-title">股票 A vs 股票 B：同样的起点，不同的波动</div>
+    <div class="cb-note">基于上方 5 个时点的价格路径绘制。</div>
+    <div id="chart-vol"><svg viewBox="0 0 900 300"><line x1="52" x2="882" y1="262" y2="262" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="266" text-anchor="end" font-size="11" fill="#8a97ad">$64</text><line x1="52" x2="882" y1="200.5" y2="200.5" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="204.5" text-anchor="end" font-size="11" fill="#8a97ad">$82</text><line x1="52" x2="882" y1="139" y2="139" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="143" text-anchor="end" font-size="11" fill="#8a97ad">$100</text><line x1="52" x2="882" y1="77.5" y2="77.5" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="81.5" text-anchor="end" font-size="11" fill="#8a97ad">$118</text><line x1="52" x2="882" y1="16" y2="16" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="20" text-anchor="end" font-size="11" fill="#8a97ad">$136</text><line x1="52" x2="52" y1="16" y2="262" stroke="#f4f6fa" stroke-width="1"></line><text x="52" y="278" text-anchor="middle" font-size="11" fill="#8a97ad">时点 1</text><line x1="259.5" x2="259.5" y1="16" y2="262" stroke="#f4f6fa" stroke-width="1"></line><text x="259.5" y="278" text-anchor="middle" font-size="11" fill="#8a97ad">时点 2</text><line x1="467" x2="467" y1="16" y2="262" stroke="#f4f6fa" stroke-width="1"></line><text x="467" y="278" text-anchor="middle" font-size="11" fill="#8a97ad">时点 3</text><line x1="674.5" x2="674.5" y1="16" y2="262" stroke="#f4f6fa" stroke-width="1"></line><text x="674.5" y="278" text-anchor="middle" font-size="11" fill="#8a97ad">时点 4</text><line x1="882" x2="882" y1="16" y2="262" stroke="#f4f6fa" stroke-width="1"></line><text x="882" y="278" text-anchor="middle" font-size="11" fill="#8a97ad">时点 5</text><path d="M52.00 139.00 L259.50 135.58 L467.00 142.42 L674.50 139.00 L882.00 135.58 " fill="none" stroke="#2563eb" stroke-width="2.4" stroke-dasharray="" opacity="1"></path><path d="M52.00 139.00 L259.50 70.67 L467.00 207.33 L674.50 104.83 L882.00 173.17 " fill="none" stroke="#dc2626" stroke-width="2.4" stroke-dasharray="" opacity="1"></path><circle cx="882" cy="135.58333333333334" r="4.5" fill="#fff" stroke="#2563eb" stroke-width="2.5"></circle><text x="882" y="149.58333333333334" text-anchor="middle" font-size="12" fill="#2563eb" font-weight="700">A 终点 $101</text><circle cx="882" cy="173.16666666666669" r="4.5" fill="#fff" stroke="#dc2626" stroke-width="2.5"></circle><text x="882" y="153.16666666666669" text-anchor="middle" font-size="12" fill="#dc2626" font-weight="700">B 终点 $90</text></svg></div>
+  </div>
+
+  <h3 class="block">2) 三个“波动率”：HV / RV / IV</h3>
+  <div class="grid3">
+    <div class="card"><h4><span class="dot"></span>Historical Volatility（历史波动率）</h4><p>用<b>过去</b>的股价数据算出来的波动率。回答：过去一个月/一年，它实际动了多少？</p></div>
+    <div class="card"><h4><span class="dot"></span>Realized Volatility（已实现波动率）</h4><p>在一段<b>已经过去的时间区间</b>里实际发生的波动。与“历史波动率”几乎是同族概念，区别只在于口径（用多长窗口、怎么采样）。交易员说“这周 realized 很低”，意思是市场这周很平静。</p></div>
+    <div class="card"><h4><span class="dot"></span>Implied Volatility（隐含波动率，IV）</h4><p>从<b>期权价格里反推</b>出来的波动率。回答：期权市场<b>现在为“未来”定价了多大的波动？</b> 这是第 2 小节的绝对主角。</p></div>
+  </div>
+
+  <h3 class="block">3) 为什么 Implied Volatility 如此重要？</h3>
+  <div class="card">
+    <p><b>第一步：期权价格天然包含“对未来的猜测”。</b> 一张期权值多少钱，取决于未来价格可能怎么分布——而“分布有多宽”正是波动率。所以：<i>期权价格 ≈ 市场对“未来波动”的定价。</i></p>
+    <p><b>第二步：IV 是这个定价的“读数”。</b> 交易员把当前期权市场价格代入定价模型（如 Black-Scholes），反解出能让模型价格恰好等于市场价格的 σ——这个 σ 就是 IV。</p>
+    <p><b>第三步：同一个股票、同一个到期日，为什么“有一个 IV”？</b> 因为流动性最好的 ATM 期权把市场对未来波动的共识“暴露”了出来。实际操作中，不同行权价的 IV 并不完全一样（会形成微笑/斜偏曲线，即 volatility smile / skew），但市场总会围绕某个“共识水平”交易——这正是“市场给这只股票的未来 30 天波动定了个价”。</p>
+    <div class="callout info"><b>关键对比：</b> HV 看后视镜（过去发生了什么）；IV 看挡风玻璃（市场预期未来发生什么）。<b>IV 高 = 期权贵 = 市场预期未来大波动</b>（可能是真担心，也可能是有人在抢买保护）。</div>
+  </div>
+
+  <h3 class="block">4) 做空波动率：卖期权到底在赌什么？</h3>
+  <p class="lede">这是量化世界里被误解最深、也最有故事性的操作。先破除一个错误观念。</p>
+  <div class="callout risk"><b>“卖期权” ≠ “认为股票不会跌”。</b> 裸卖 Call 的人最怕股票<b>暴涨</b>（要按行权价交出股票）；卖 Put 的人最怕<b>暴跌</b>（要接盘）。而卖 Straddle（同时卖 Call+Put）的人<b>两边都怕</b>——怕的是“任何方向的大幅波动”。所以做空波动率押注的从来不是方向，而是：</div>
+  <div class="formula">做空波动率的盈利条件：<b>实际实现的波动率（RV）&lt; 期权隐含的波动率（IV）</b><span class="f-note">卖期权时先收下 IV 定价的权利金；只要到期前实际波动没有“用满”这个 IV，时间价值被吃掉的只是部分，剩余权利金就是利润。反之，一旦实际波动远超 IV（暴涨或暴跌），亏损会急剧放大。</span></div>
+
+  <h3 class="block">做空波动率的常见方案一览</h3>
+  <div class="tbl-wrap"><table class="tbl">
+    <tbody><tr><th>方案</th><th>怎么做</th><th>赚什么</th><th>最怕什么</th></tr>
+    <tr><td><b>Short Call（裸卖看涨）</b></td><td>卖出 Call，收权利金</td><td>权利金（IV + Theta）</td><td>股价暴涨（亏损无上限）</td></tr>
+    <tr><td><b>Short Put / Cash-Secured Put</b></td><td>卖出 Put，账户预留接盘资金</td><td>权利金</td><td>股价暴跌（被行权接盘）</td></tr>
+    <tr><td><b>Covered Call</b></td><td>持股 + 卖出 Call</td><td>权利金 + 股票本身的收益</td><td>上涨空间被封顶（下跌时保护有限）</td></tr>
+    <tr><td><b>Short Straddle</b></td><td>同时卖出同价 ATM 的 Call 和 Put</td><td>双份权利金，纯做空波动率</td><td>任何方向的大幅波动</td></tr>
+    <tr><td><b>Short Strangle</b></td><td>同时卖出两个 OTM 的 Call 和 Put</td><td>双份权利金（比 Straddle 少但更安全）</td><td>大幅突破区间</td></tr>
+    <tr><td><b>Iron Condor</b></td><td>Short Strangle + 买更远 OTM 的保护腿</td><td>权利金，且<b>最大亏损有限</b></td><td>极端突破（亏损被封顶）</td></tr>
+    <tr><td><b>Variance / Volatility Selling</b></td><td>卖方差互换等衍生品，直接做空“已实现方差”</td><td>IV 与 RV 之间的差（波动率风险溢价）</td><td>波动率急升（如 2018.2）</td></tr>
+    <tr><td><b>ETF/ETN 类产品</b></td><td>如 VXX（做多波动率期货）、已退市的 XIV（做空）</td><td>—</td><td>见下方“血的教训”</td></tr>
+  </tbody></table></div>
+
+  <div class="callout risk"><b>血的教训（2018 年 2 月）：</b> 当时美股长时间“低波动”，大量资金通过做空波动率赚钱。2018 年 2 月 5 日，市场突然暴跌、VIX 单日暴涨约 115%，做空 VIX 期货的 ETN <b>XIV 一天之内从约 $115 跌到 $4（−96% 附近）</b>，规模从约 19 亿美元缩水到 6300 万美元，随后被瑞信提前终止清算<span class="ref-sup" title="etf.com / Nasdaq / AMF 2018 年报道：XIV 触发加速条款被清算">[9][10][11]</span>。同类的 SVXY 也单日跌超 90%。这个故事说明：<b>做空波动率平时像“捡钱”，但尾部风险一旦兑现，回撤是灾难级的</b>——这是它被称为“在压路机前捡钢镚”的原因。</div>
+
+  <div class="callout info"><b>“做空波动率”和“做空股票”的区别：</b> 做空股票赌的是股价<b>下跌</b>；做空波动率赌的是<b>波动变小</b>（无论涨跌，只要别大动）。一只慢牛股会狠狠惩罚做空者吗？不会——它波动小、IV 低，做空波动率的仓位反而舒服。真正杀死做空波动率的是<b>跳空、闪崩、暴涨暴跌</b>这类“波动率事件”。</div>
+</section>
+
+<!-- ============ STRATEGIES FRAMEWORK ============ -->
+<section class="section" id="strategies">
+  <h2><span class="num">07</span>期权策略统一框架 <span class="sub">把策略放进“方向 × 波动率 × 收益来源”三维空间</span></h2>
+  <p class="lede">Covered Call、Sell Put、Straddle……如果一个个单独背，永远记不住。把它们放进同一个坐标系，你立刻会发现它们只是“不同格子里的同一类生意”。</p>
+
+  <h3 class="block">三维框架</h3>
+  <div class="grid3">
+    <div class="card"><h4><span class="dot"></span>维度一：方向观点</h4><p><b>Bullish（看涨）/ Bearish（看跌）/ Neutral（中性）</b>——对股价未来走向的判断。</p></div>
+    <div class="card"><h4><span class="dot"></span>维度二：波动率观点</h4><p><b>Long Vol（做多波动率）/ Short Vol（做空波动率）</b>——对“未来波动大小”的判断。</p></div>
+    <div class="card"><h4><span class="dot"></span>维度三：收益来源</h4><p><b>方向收益（Directional）/ 波动率风险溢价（Vol Risk Premium）/ Theta（时间价值）/ Carry（持有收益）</b>——这笔交易到底靠什么赚钱。</p></div>
+  </div>
+
+  <h3 class="block">策略 × 维度 总表</h3>
+  <div class="tbl-wrap"><table class="tbl">
+    <tbody><tr><th>策略</th><th>方向观点</th><th>波动率观点</th><th>主要收益来源</th><th>最大风险</th></tr>
+    <tr><td><b>Long Call</b></td><td>看涨</td><td>Long Vol（隐含：波动大好）</td><td>方向上涨（减权利金）</td><td class="neg">亏掉权利金</td></tr>
+    <tr><td><b>Long Put</b></td><td>看跌</td><td>Long Vol</td><td>方向下跌（减权利金）</td><td class="neg">亏掉权利金</td></tr>
+    <tr><td><b>Covered Call</b></td><td>中性 / 温和看涨</td><td>Short Vol（卖 Call 收溢价）</td><td>权利金 + 股票收益</td><td class="neg">股票大跌（保护仅一层权利金）</td></tr>
+    <tr><td><b>Sell Put（现金担保）</b></td><td>温和看涨 / 中性</td><td>Short Vol</td><td>权利金（Premium）</td><td class="neg">股票大跌被行权</td></tr>
+    <tr><td><b>Short Straddle</b></td><td>中性（不赌方向）</td><td>Short Vol（最纯粹）</td><td>Theta + 波动率溢价</td><td class="neg">大幅波动（两边都亏）</td></tr>
+    <tr><td><b>Short Strangle</b></td><td>中性</td><td>Short Vol</td><td>Theta + 波动率溢价</td><td class="neg">大幅波动突破区间</td></tr>
+    <tr><td><b>Iron Condor</b></td><td>中性</td><td>Short Vol（带保护）</td><td>Theta + 波动率溢价</td><td class="neg">极端突破（但亏损封顶）</td></tr>
+    <tr><td><b>Long Straddle</b></td><td>中性（不赌方向）</td><td>Long Vol</td><td>大幅波动（任一方）</td><td class="neg">亏掉双份权利金（时间损耗）</td></tr>
+    <tr><td><b>Bull Call Spread</b></td><td>温和看涨</td><td>混合（买入为主）</td><td>方向上涨</td><td class="neg">亏掉净权利金（上限有限）</td></tr>
+  </tbody></table></div>
+
+  <h3 class="block">可视化：方向 × 波动率 网格</h3>
+  <div class="matrix">
+    <div></div>
+    <div class="m-head">做多波动率（Long Vol）</div>
+    <div class="m-head">做空波动率（Short Vol）</div>
+    <div class="m-rowlab">看涨<br>Bullish</div>
+    <div class="m-cell"><span class="s-name">Long Call</span><span class="s-meta">收益来源：方向；风险：权利金</span></div>
+    <div class="m-cell"><span class="s-name">Covered Call · Sell Put</span><span class="s-meta">收益来源：权利金 + 股票收益；风险：下跌</span></div>
+    <div class="m-rowlab">中性<br>Neutral</div>
+    <div class="m-cell"><span class="s-name">Long Straddle</span><span class="s-meta">收益来源：大幅波动；风险：时间损耗</span></div>
+    <div class="m-cell"><span class="s-name">Short Straddle / Strangle / Iron Condor</span><span class="s-meta">收益来源：Theta + Vol Premium；风险：大幅波动</span></div>
+    <div class="m-rowlab">看跌<br>Bearish</div>
+    <div class="m-cell"><span class="s-name">Long Put</span><span class="s-meta">收益来源：方向；风险：权利金</span></div>
+    <div class="m-cell"><span class="s-name">Sell Call（裸卖）</span><span class="s-meta">收益来源：权利金；风险：暴涨（无上限）</span></div>
+  </div>
+
+  <div class="callout info"><b>看懂这张表的“元规律”：</b>
+  （1）<b>买期权 = 花钱买“凸性”</b>：亏损封顶、收益开放，代价是付 Theta 和 Vega 溢价（时间站在你对面）；<br>
+  （2）<b>卖期权 = 收钱卖“保险”</b>：收益封顶、风险开放，报酬是收 Theta 和 Vol Premium（时间站在你这边）；<br>
+  （3）方向观点和波动率观点是<b>独立的两根轴</b>：你可以“看涨但怕波动”（买 Call），也可以“看涨但赚时间”（Sell Put / Covered Call），还可以“不赌方向只赌波动”（Straddle）。量化交易员每天做的，就是在这张表里选择“哪个格子现在最划算”。</div>
+</section>
+<!-- ============ TQQQ VS QQQ ============ -->
+<section class="section" id="tqqq">
+  <h2><span class="num">08</span>TQQQ vs QQQ <span class="sub">用杠杆产品讲透“波动损耗”与“路径依赖”</span></h2>
+  <p class="lede">TQQQ 是 ProShares 发行的“纳指 100 每日 3 倍”ETF（每日追求纳指 100 日收益的 3 倍）<span class="ref-sup" title="ProShares 官方：TQQQ 追求每日收益为纳斯达克100指数的3倍">[6]</span>。很多新手以为它等于“QQQ × 3”，这是本报告要纠正的最大误区之一。</p>
+
+  <h3 class="block">1) “3x daily leverage” 是什么意思？</h3>
+  <div class="card">
+    <p>关键是 <b>daily（每日）</b> 这个词：TQQQ 的合约承诺是——<b>每一个交易日，TQQQ 当天的收益 ≈ QQQ 当天收益 × 3</b>。它不承诺“长期收益 = QQQ 长期收益 × 3”。</p>
+    <p><b>Daily Reset（每日重置）</b>：每个交易日收盘后，基金重新调整杠杆仓位，让第二天的目标仍然是“当日 3 倍”。这意味着昨天的盈亏会被“滚入”今天的基数——复利效应让长期结果严重偏离简单的 3 倍。</p>
+  </div>
+
+  <h3 class="block">2) 数字模拟：为什么 QQQ 回到原点，TQQQ 却亏了？</h3>
+  <div class="card">
+    <p>用户最经典的例子：<b>Day 1 QQQ +10%，Day 2 QQQ −10%</b>。</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <tbody><tr><th>路径</th><th>Day 0</th><th>Day 1 后</th><th>Day 2 后</th><th>总收益</th></tr>
+      <tr><td>QQQ</td><td>100</td><td>110（+10%）</td><td>99（−10%）</td><td class="neg">−1%</td></tr>
+      <tr><td>TQQQ（每日 3 倍）</td><td>100</td><td>130（+30%）</td><td>91（−30%）</td><td class="neg">−9%</td></tr>
+      <tr><td>“朴素 3 倍”幻觉（3 × QQQ 总收益）</td><td>100</td><td>—</td><td>—</td><td class="neg">−3%</td></tr>
+    </tbody></table></div>
+    <p style="margin-top:10px">QQQ 两天合计只亏 1%，TQQQ 却亏了 9%——比“3 × (−1%) = −3%”还多亏 6 个百分点。这 6 个百分点就是 <b>Volatility Drag（波动损耗）</b>，也叫 Volatility Decay。</p>
+    <div class="formula">(1 + 3r₁)(1 + 3r₂) = 1 + 3(r₁ + r₂) + <b>9·r₁r₂</b><span class="f-note">当 r₁、r₂ 异号（先涨后跌或先跌后涨）时，交叉项 9·r₁r₂ 为负 → 损耗出现。波动越大、来回越频繁，损耗越大。数学上可以说：杠杆产品的长期收益 ≈ 3× 基准收益 −（由日波动平方累积出的损耗）。</span></div>
+  </div>
+
+  <h3 class="block">3) 路径依赖：同一个“平均日收益”，不同的结果</h3>
+  <div class="card">
+    <p>杠杆产品的结局强烈依赖<b>路径顺序</b>，而不只是起点终点：</p>
+    <ul style="padding-left:22px;font-size:14.5px;color:#33415c;margin:8px 0">
+      <li><b>趋势市场（单边上涨）：</b>每天同向复利，TQQQ 的 3 倍滚雪球，长期表现往往<b>超过</b>“3 × QQQ 总收益”（正凸性帮你放大）。</li>
+      <li><b>震荡市场（来回拉扯）：</b>涨跌互现，交叉项不断累积为负，TQQQ 显著跑输“3 × QQQ 总收益”，甚至 QQQ 回到原点它还在亏。</li>
+      <li><b>长期持有：</b>除了波动损耗，还要付 <b>约 0.82%–0.97% 的年费率</b>（TQQQ 官方：毛费率 0.97%、净费率约 0.82%–0.84%<span class="ref-sup" title="ProShares 官方招股书与官网：TQQQ 毛费率 0.97%，净费率约 0.82%~0.84%">[6][7]</span>），以及隐含的融资成本。而 QQQ 费率仅约 0.18%–0.20%<span class="ref-sup" title="Invesco 官方：QQQ 费率 0.20%，2025年12月结构调整后降至 0.18%">[4][5]</span>。所以“长期 buy-and-hold TQQQ”的代价远不止手续费。</li>
+    </ul>
+    <div class="callout warn"><b>结论：</b> TQQQ 最大的代价不是“佣金”，而是<b>路径依赖 + 波动损耗 + 费率/融资成本 + 极端回撤风险</b>。它是短期战术工具，不是“QQQ 的 3 倍代餐”。</div>
+  </div>
+
+  <div class="chart-box">
+    <div class="cb-title">TQQQ vs QQQ 模拟器（每日重置）</div>
+    <div class="cb-note">选择一个市场情景，比较 QQQ（基准）、TQQQ（每日 3 倍复利）与“朴素 3×（3 × QQQ 总收益）”三条路径。损耗 = TQQQ 实际结果 − 朴素 3× 结果。</div>
+    <div class="controls" id="tqqq-controls"><button type="button" title="Day1 +10%，Day2 −10%" class="on">两日反转（用户例子）</button><button type="button" title="+10%/−10% 交替 6 天">来回震荡</button><button type="button" title="6 天温和上涨">单边上涨趋势</button><button type="button" title="−5%/+7% 交替 6 天">剧烈震荡</button></div>
+    <div id="chart-tqqq"><svg viewBox="0 0 900 340"><line x1="52" x2="882" y1="302" y2="302" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="306" text-anchor="end" font-size="11" fill="#8a97ad">-30.1%</text><line x1="52" x2="882" y1="230.5" y2="230.5" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="234.5" text-anchor="end" font-size="11" fill="#8a97ad">-13.7%</text><line x1="52" x2="882" y1="158.99999999999997" y2="158.99999999999997" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="162.99999999999997" text-anchor="end" font-size="11" fill="#8a97ad">2.7%</text><line x1="52" x2="882" y1="87.49999999999994" y2="87.49999999999994" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="91.49999999999994" text-anchor="end" font-size="11" fill="#8a97ad">19.1%</text><line x1="52" x2="882" y1="16" y2="16" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="20" text-anchor="end" font-size="11" fill="#8a97ad">35.5%</text><line x1="52" x2="52" y1="16" y2="302" stroke="#f4f6fa" stroke-width="1"></line><text x="52" y="318" text-anchor="middle" font-size="11" fill="#8a97ad">Day 0</text><line x1="190.33333333333331" x2="190.33333333333331" y1="16" y2="302" stroke="#f4f6fa" stroke-width="1"></line><text x="190.33333333333331" y="318" text-anchor="middle" font-size="11" fill="#8a97ad">Day 1</text><line x1="328.66666666666663" x2="328.66666666666663" y1="16" y2="302" stroke="#f4f6fa" stroke-width="1"></line><text x="328.66666666666663" y="318" text-anchor="middle" font-size="11" fill="#8a97ad">Day 2</text><line x1="467" x2="467" y1="16" y2="302" stroke="#f4f6fa" stroke-width="1"></line><text x="467" y="318" text-anchor="middle" font-size="11" fill="#8a97ad">Day 3</text><line x1="605.3333333333333" x2="605.3333333333333" y1="16" y2="302" stroke="#f4f6fa" stroke-width="1"></line><text x="605.3333333333333" y="318" text-anchor="middle" font-size="11" fill="#8a97ad">Day 4</text><line x1="743.6666666666667" x2="743.6666666666667" y1="16" y2="302" stroke="#f4f6fa" stroke-width="1"></line><text x="743.6666666666667" y="318" text-anchor="middle" font-size="11" fill="#8a97ad">Day 5</text><line x1="882" x2="882" y1="16" y2="302" stroke="#f4f6fa" stroke-width="1"></line><text x="882" y="318" text-anchor="middle" font-size="11" fill="#8a97ad">Day 6</text><path d="M52.00 170.68 L190.33 127.07 L328.67 175.04 L467.00 131.86 L605.33 179.36 L743.67 136.61 L882.00 183.64 " fill="none" stroke="#2563eb" stroke-width="2.6" stroke-dasharray="" opacity="1"></path><path d="M52.00 170.68 L190.33 39.83 L328.67 209.94 L467.00 90.86 L605.33 245.66 L743.67 137.30 L882.00 278.17 " fill="none" stroke="#dc2626" stroke-width="2.6" stroke-dasharray="" opacity="1"></path><path d="M52.00 170.68 L190.33 39.83 L328.67 183.77 L467.00 54.23 L605.33 196.72 L743.67 68.48 L882.00 209.55 " fill="none" stroke="#8a97ad" stroke-width="2" stroke-dasharray="6 5" opacity="1"></path><circle cx="882" cy="183.63744756104316" r="4.5" fill="#fff" stroke="#2563eb" stroke-width="2.5"></circle><text x="882" y="197.63744756104316" text-anchor="middle" font-size="12" fill="#2563eb" font-weight="700">QQQ −3.0%</text><circle cx="882" cy="278.1666666666667" r="4.5" fill="#fff" stroke="#dc2626" stroke-width="2.5"></circle><text x="882" y="256.1666666666667" text-anchor="middle" font-size="12" fill="#dc2626" font-weight="700">TQQQ −24.6%</text></svg></div>
+    <div class="stat-row" id="tqqq-stats"><div class="stat"><b>−3.0%</b>QQQ 区间总收益</div><div class="stat"><b>−24.6%</b>TQQQ 实际（每日重置）</div><div class="stat"><b>−8.9%</b>“朴素 3×”幻觉</div><div class="stat danger"><b>−15.7%</b>波动损耗（TQQQ − 朴素3×）</div></div>
+  </div>
+</section>
+
+<!-- ============ VIX ============ -->
+<section class="section" id="vix">
+  <h2><span class="num">09</span>VIX：所谓的“恐慌指数” <span class="sub">准确地说，是市场对未来波动的定价</span></h2>
+  <p class="lede">VIX 常被媒体叫“恐慌指数”。这个外号方便，但不准确。准确的定义是：<b>由 S&amp;P 500 指数期权（SPX）价格推算出的、市场对未来 30 天标普 500 波动率的预期（年化）</b><span class="ref-sup" title="Cboe 官方 VIX 方法论：30 天前瞻预期波动率，取自 SPX 期权买卖中间价">[1][2][3]</span>。</p>
+
+  <h3 class="block">1) VIX 到底是什么、怎么算出来的</h3>
+  <div class="grid2">
+    <div class="card"><h4><span class="dot"></span>它是 IV，不是 HV</h4><p>VIX 不是拿历史数据算的（那不是历史波动率），而是从<b>当前 SPX 期权价格反推</b>出来的隐含波动率。它回答的是：<i>期权市场现在认为，未来 30 天标普 500 会波动多少？</i></p></div>
+    <div class="card"><h4><span class="dot"></span>它是“一篮子期权”的加权读数</h4><p>Cboe 取近月与次月、到期日约 23–37 天的 SPX 期权，对<b>大量 OTM 看涨和看跌期权</b>的买卖中间价做方差互换式的加权（model-free 方法），得到 30 天预期方差，再开方年化：VIX = σ × 100。所以 VIX = 20 ≈ 市场预期未来 30 天年化波动约 20%<span class="ref-sup" title="Cboe VIX Methodology / S&amp;P Global VIX 介绍">[1][2]</span>。</p></div>
+    <div class="card"><h4><span class="dot"></span>和 S&amp;P 500 的关系：负相关</h4><p>历史上两者强烈负相关：市场大跌 → 抢购 Put 保护 → 期权变贵 → 隐含波动率上升 → VIX 冲高。反过来，平静上涨时 VIX 走低（常年在 12–20 附近徘徊）。</p></div>
+    <div class="card"><h4><span class="dot"></span>为什么暴跌时 VIX 总暴涨？</h4><p>两点：一是<b>供需</b>——恐慌时人人买保险（Put），期权被抢贵；二是<b>凸性</b>——大跌时价格分布变宽，隐含波动率自然上移。另外，VIX 的上涨通常比下跌快得多（人们抢保险的速度远快于退保险）。</p></div>
+  </div>
+
+  <h3 class="block">2) 历史上 VIX 的“名场面”（常见公开记录，量级仅供参考）</h3>
+  <div class="tbl-wrap"><table class="tbl">
+    <tbody><tr><th>时期</th><th>发生了什么</th><th>VIX 量级</th></tr>
+    <tr><td>2008 年金融危机</td><td>雷曼倒闭、市场崩盘</td><td class="neg">收盘一度超过 80</td></tr>
+    <tr><td>2018 年 2 月 5 日</td><td>低波动时代终结、单日暴跌</td><td class="neg">单日涨幅约 115%（盘中一度突破 50）</td></tr>
+    <tr><td>2020 年 3 月</td><td>新冠疫情全球恐慌</td><td class="neg">收盘一度接近 83</td></tr>
+    <tr><td>常态年份（如 2017）</td><td>市场极度平静</td><td class="pos">长期低于 15，甚至 9–11</td></tr>
+  </tbody></table></div>
+  <p class="tbl-cap">注：以上为公开历史记录的常见说法，量级准确但个别精确值因盘中/收盘口径不同略有差异，本节不用于精确回测。</p>
+
+  <h3 class="block">3) 关键澄清：VIX 不是“恐慌程度调查问卷”</h3>
+  <div class="callout warn"><b>不要把 VIX 简单写成“VIX = 市场恐慌程度”。</b> 它是<b>期权市场对波动率的定价</b>，是交易出来的价格，不是情绪量表。恐慌时它确实往往很高，但高 VIX 也可能由“大家都在买保险”或“期权被逼空”造成——它测量的是“未来波动被市场标价多少”，仅此而已。</div>
+  <div class="callout info"><b>VIX 能直接买吗？</b> 不能直接买卖“VIX 指数”本身（它是计算出来的数字）。想表达波动率观点，要用 VIX 期货、VIX 期权，或者 VXX / UVXY 这类基于 VIX 期货的产品。还要注意：这些产品本身也有滚动换仓成本和升贴水，长期持有 VXX 会因期货展期而持续损耗——和 TQQQ 的“复利损耗”是两种不同的损耗。</div>
+
+  <div class="chart-box">
+    <div class="cb-title">SPX 与 VIX 的镜像关系（示意）</div>
+    <div class="cb-note">示意曲线，仅展示“市场下跌 → VIX 冲高”的典型形态与几个历史事件点，非精确历史数据。</div>
+    <div id="chart-vix"><svg viewBox="0 0 900 340"><line x1="52" x2="882" y1="302" y2="302" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="306" text-anchor="end" font-size="11" fill="#8a97ad">-650</text><line x1="52" x2="882" y1="230.5" y2="230.5" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="234.5" text-anchor="end" font-size="11" fill="#8a97ad">1.3k</text><line x1="52" x2="882" y1="159" y2="159" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="163" text-anchor="end" font-size="11" fill="#8a97ad">3.3k</text><line x1="52" x2="882" y1="87.5" y2="87.5" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="91.5" text-anchor="end" font-size="11" fill="#8a97ad">5.2k</text><line x1="52" x2="882" y1="16" y2="16" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="20" text-anchor="end" font-size="11" fill="#8a97ad">7.2k</text><line x1="52" x2="52" y1="16" y2="302" stroke="#f4f6fa" stroke-width="1"></line><text x="52" y="318" text-anchor="middle" font-size="11" fill="#8a97ad">2006</text><line x1="190.33333333333331" x2="190.33333333333331" y1="16" y2="302" stroke="#f4f6fa" stroke-width="1"></line><text x="190.33333333333331" y="318" text-anchor="middle" font-size="11" fill="#8a97ad">2009</text><line x1="328.66666666666663" x2="328.66666666666663" y1="16" y2="302" stroke="#f4f6fa" stroke-width="1"></line><text x="328.66666666666663" y="318" text-anchor="middle" font-size="11" fill="#8a97ad">2012</text><line x1="467" x2="467" y1="16" y2="302" stroke="#f4f6fa" stroke-width="1"></line><text x="467" y="318" text-anchor="middle" font-size="11" fill="#8a97ad">2015</text><line x1="605.3333333333333" x2="605.3333333333333" y1="16" y2="302" stroke="#f4f6fa" stroke-width="1"></line><text x="605.3333333333333" y="318" text-anchor="middle" font-size="11" fill="#8a97ad">2018</text><line x1="743.6666666666667" x2="743.6666666666667" y1="16" y2="302" stroke="#f4f6fa" stroke-width="1"></line><text x="743.6666666666667" y="318" text-anchor="middle" font-size="11" fill="#8a97ad">2021</text><line x1="882" x2="882" y1="16" y2="302" stroke="#f4f6fa" stroke-width="1"></line><text x="882" y="318" text-anchor="middle" font-size="11" fill="#8a97ad">2024</text><line x1="52" x2="882" y1="278.1666666666667" y2="278.1666666666667" stroke="#c6cfdd" stroke-width="1.4" stroke-dasharray="5 4"></line><path d="M52.00 231.42 L98.11 226.47 L144.22 227.57 L178.81 245.17 L190.33 240.03 L236.44 232.33 L282.56 234.90 L328.67 227.57 L374.78 211.80 L420.89 203.00 L467.00 201.90 L513.11 196.03 L559.22 187.60 L609.94 174.40 L612.25 178.80 L623.78 178.43 L651.44 164.50 L702.17 159.37 L706.78 195.67 L725.22 149.83 L743.67 105.83 L789.78 146.17 L835.89 105.83 L882.00 58.17 " fill="none" stroke="#2563eb" stroke-width="2.6" stroke-dasharray="" opacity="1"></path><path d="M52.00 260.57 L98.11 253.23 L144.22 247.37 L178.81 172.57 L190.33 219.50 L236.44 248.83 L282.56 234.17 L328.67 254.70 L374.78 254.70 L420.89 253.23 L467.00 245.90 L513.11 256.17 L559.22 263.50 L609.94 259.10 L612.25 226.83 L623.78 257.63 L651.44 256.17 L702.17 253.23 L706.78 168.17 L725.22 240.03 L743.67 253.23 L789.78 237.10 L835.89 256.17 L882.00 259.10 " fill="none" stroke="#dc2626" stroke-width="2.6" stroke-dasharray="" opacity="1"></path><circle cx="178.80555555555557" cy="245.16666666666669" r="4.5" fill="#fff" stroke="#2563eb" stroke-width="2.5"></circle><text x="178.80555555555557" y="225.16666666666669" text-anchor="middle" font-size="12" fill="#2563eb" font-weight="700">2008 危机</text><circle cx="178.80555555555557" cy="172.56666666666666" r="4.5" fill="#fff" stroke="#dc2626" stroke-width="2.5"></circle><text x="178.80555555555557" y="186.56666666666666" text-anchor="middle" font-size="12" fill="#dc2626" font-weight="700">VIX&gt;80</text><circle cx="612.2500000000042" cy="226.83333333333331" r="4.5" fill="#fff" stroke="#dc2626" stroke-width="2.5"></circle><text x="612.2500000000042" y="240.83333333333331" text-anchor="middle" font-size="12" fill="#dc2626" font-weight="700">2018.2 单日+115%</text><circle cx="706.7777777777799" cy="168.16666666666666" r="4.5" fill="#fff" stroke="#dc2626" stroke-width="2.5"></circle><text x="706.7777777777799" y="182.16666666666666" text-anchor="middle" font-size="12" fill="#dc2626" font-weight="700">2020.3 ≈82</text></svg></div>
+  </div>
+</section>
+
+<!-- ============ LIQUIDITY ============ -->
+<section class="section" id="liquidity">
+  <h2><span class="num">10</span>流动性：股票和期权一样吗？ <span class="sub">“这只股票很流动” ≠ “它的所有期权都流动”</span></h2>
+  <p class="lede">流动性（Liquidity）决定一件事：<b>你想交易时，能不能按接近“合理价格”的价位、以足够大的量成交。</b></p>
+
+  <h3 class="block">1) 股票 vs 期权：一个“点” vs 一张“面”</h3>
+  <div class="grid2">
+    <div class="card"><h4><span class="dot"></span>股票：单一标的</h4><p>一只股票（如 QQQ）只有一个交易标的、一个市场。买卖双方聚集在同一个地方，深度好、价差小。流动性问题相对简单。</p></div>
+    <div class="card"><h4><span class="dot"></span>期权：一张 liquidity surface（流动性曲面）</h4><p>一只股票的期权却是“一大片”：<b>不同行权价 × 不同到期日 × Call/Put</b>。每个格子都是独立的“市场”，都有自己的买卖价差、成交量、持仓量。</p></div>
+  </div>
+  <div class="callout warn"><b>推论：</b> “QQQ 这只股票非常流动”完全不意味着“QQQ 的每一张期权都流动”。通常只有 <b>ATM 附近、近月到期</b> 的期权最活跃（流动性最集中）；深度 OTM、超远月的期权可能一天都没几手成交，价差宽得吓人。</div>
+
+  <h3 class="block">2) 衡量流动性的六个指标</h3>
+  <div class="grid3">
+    <div class="card"><h4><span class="dot"></span>Bid-Ask Spread（买卖价差）</h4><p>买价与卖价之差。价差越小越流动。对期权来说，<b>价差往往比佣金贵得多</b>（详见第 15 章）。</p></div>
+    <div class="card"><h4><span class="dot"></span>Trading Volume（成交量）</h4><p>单位时间成交的合约/股数。量大 = 参与者多。</p></div>
+    <div class="card"><h4><span class="dot"></span>Open Interest（持仓量）</h4><p>市场上未平仓的合约总数。它反映“存量深度”——OI 高的合约，即使当天没人交易，盘口也往往更厚。</p></div>
+    <div class="card"><h4><span class="dot"></span>Market Depth（市场深度）</h4><p>盘口挂单的数量与厚度。深度够，大单才不会把价格打穿。</p></div>
+    <div class="card"><h4><span class="dot"></span>Slippage（滑点）</h4><p>你预期成交价与实际成交价之差。流动性越差，滑点越大。</p></div>
+    <div class="card"><h4><span class="dot"></span>Liquidity Concentration（流动性集中度）</h4><p>成交集中在哪些合约（通常 ATM + 近月）。这告诉你：<b>你想交易的那个“格子”到底有没有人陪你玩。</b></p></div>
+  </div>
+
+  <h3 class="block">3) 为什么这对量化策略是生死问题</h3>
+  <div class="card">
+    <p>策略回测时假设“按中间价成交”，但真实世界你买要付卖价、卖要收买价，还要承担滑点和冲击。如果一个策略专挑“冷门期权格子”交易：</p>
+    <ul style="padding-left:22px;font-size:14.5px;color:#33415c;margin:8px 0">
+      <li>每次进出都吃宽价差 → 高频交易的成本可能吃掉全部 Alpha；</li>
+      <li>想平仓时发现对手盘稀少 → “进得去出不来”；</li>
+      <li>资金量大时，你的订单本身就是市场 → 自己把自己的价格打坏（这直接通向下一章：容量）。</li>
+    </ul>
+    <div class="callout info"><b>一句话：</b> 流动性的本质是<b>“交易的对手盘成本”</b>。量化交易员把“能不能成交、以什么价格成交”当作策略设计的一等公民，而不是最后才考虑的执行细节。</div>
+  </div>
+</section>
+<!-- ============ CAPACITY ============ -->
+<section class="section" id="capacity">
+  <h2><span class="num">11</span>策略容量 Capacity <span class="sub">为什么“年化 30%”不代表多少钱都能赚 30%</span></h2>
+  <p class="lede">Capacity（容量）= <b>一个策略在不显著损害收益的前提下，最多能管理多少钱。</b> 这是量化里最重要、也最容易被普通投资者忽略的概念之一。</p>
+
+  <h3 class="block">1) 核心直觉：Alpha 是“一桶水”，不是“一条河”</h3>
+  <div class="card">
+    <p>假设一个策略的 Alpha（超额收益）来源于某个市场里有限的“定价错误”机会。这个机会每年大概值 <b>固定的那么多钱</b>（比如 $1,000 万）。那么：</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <tbody><tr><th>管理资金</th><th>年化 Alpha（毛）</th><th>发生了什么</th></tr>
+      <tr><td>$1,000 万</td><td class="pos">100%（$1,000 万 ÷ $1,000 万）</td><td>机会足够容纳，表现惊人</td></tr>
+      <tr><td>$1 亿</td><td class="pos">10%（$1,000 万 ÷ $1 亿）</td><td>开始拥挤，每笔单子都推动价格</td></tr>
+      <tr><td>$10 亿</td><td class="neg">1%（$1,000 万 ÷ $10 亿）</td><td>机会被淹没，收益趋近于 0（甚至为负）</td></tr>
+    </tbody></table></div>
+    <p style="margin-top:10px"><b>更糟的是</b>：资金变大不只是“摊薄 Alpha”，还会<b>制造反噬</b>——你的订单本身在冲击市场，把机会的价格直接打没（market impact），同时持仓变大会吸引更多竞争者进入同一机会。</p>
+  </div>
+
+  <h3 class="block">2) 影响容量的因素</h3>
+  <div class="grid3">
+    <div class="card"><h4><span class="dot"></span>市场流动性</h4><p>交易对象本身有多少成交量。小盘股、冷门期权的容量天然小。</p></div>
+    <div class="card"><h4><span class="dot"></span>换手率（Turnover）</h4><p>策略每天换仓多少。换手越高，每单位资金产生的冲击成本越大。</p></div>
+    <div class="card"><h4><span class="dot"></span>市场冲击（Market Impact）</h4><p>自己买卖把价格推得多远。资金越大，冲击越大。</p></div>
+    <div class="card"><h4><span class="dot"></span>滑点 / 买卖价差</h4><p>进出场的固定“摩擦”，高频策略最敏感。</p></div>
+    <div class="card"><h4><span class="dot"></span>Alpha Decay（Alpha 衰减）</h4><p>信号的生命周期：有的信号几分钟就失效（容量小但可重复），有的信号几周才失效（容量大）。</p></div>
+    <div class="card"><h4><span class="dot"></span>持仓集中度 / 做空可得性</h4><p>仓位越集中、做空标的越稀缺，容量越小。</p></div>
+  </div>
+
+  <h3 class="block">3) 具体例子：一个“小市值策略”的容量曲线</h3>
+  <div class="card">
+    <p>一个典型的小市值股票策略（示意模型）：</p>
+    <ul style="padding-left:22px;font-size:14.5px;color:#33415c;margin:8px 0">
+      <li><b>$100 万</b>：非常好做——订单小到不引起注意，摩擦可以忽略，年化可能 30%+；</li>
+      <li><b>$1 亿</b>：开始明显影响市场——每笔订单都吃掉一部分流动性和价差，年化降到 10% 出头；</li>
+      <li><b>$10 亿</b>：策略可能失效——买入行为本身就是市场，Alpha 被冲击成本完全吞噬，甚至亏损。</li>
+    </ul>
+    <p><b>这就是为什么对冲基金会主动“封盘”</b>：不是不想赚钱，而是保护已有投资者——让新钱进来会把所有人的收益一起拉垮。管理费是 AUM 的函数，但业绩是 capacity 的函数。</p>
+  </div>
+  <div class="chart-box">
+    <div class="cb-title">容量曲线：资金规模 vs 年化收益（示意模型）</div>
+    <div class="cb-note">横轴为管理资金（对数刻度），纵轴为年化净收益。标注“收益腰斩点”。示意性质，用于展示形态。</div>
+    <div id="chart-capacity"><svg viewBox="0 0 900 300"><line x1="52" x2="882" y1="262" y2="262" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="266" text-anchor="end" font-size="11" fill="#8a97ad">-3.2%</text><line x1="52" x2="882" y1="200.5" y2="200.5" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="204.5" text-anchor="end" font-size="11" fill="#8a97ad">6.4%</text><line x1="52" x2="882" y1="139" y2="139" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="143" text-anchor="end" font-size="11" fill="#8a97ad">16%</text><line x1="52" x2="882" y1="77.5" y2="77.5" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="81.5" text-anchor="end" font-size="11" fill="#8a97ad">25.6%</text><line x1="52" x2="882" y1="16" y2="16" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="20" text-anchor="end" font-size="11" fill="#8a97ad">35.2%</text><line x1="52" x2="52" y1="16" y2="262" stroke="#f4f6fa" stroke-width="1"></line><text x="52" y="278" text-anchor="middle" font-size="11" fill="#8a97ad">1百万</text><line x1="328.66666666666663" x2="328.66666666666663" y1="16" y2="262" stroke="#f4f6fa" stroke-width="1"></line><text x="328.66666666666663" y="278" text-anchor="middle" font-size="11" fill="#8a97ad">334亿</text><line x1="605.3333333333333" x2="605.3333333333333" y1="16" y2="262" stroke="#f4f6fa" stroke-width="1"></line><text x="605.3333333333333" y="278" text-anchor="middle" font-size="11" fill="#8a97ad">667亿</text><line x1="882" x2="882" y1="16" y2="262" stroke="#f4f6fa" stroke-width="1"></line><text x="882" y="278" text-anchor="middle" font-size="11" fill="#8a97ad">10亿</text><line x1="52" x2="882" y1="241.5" y2="241.5" stroke="#c6cfdd" stroke-width="1.4" stroke-dasharray="5 4"></line><path d="M52.00 57.37 L52.10 58.09 L52.21 58.89 L52.34 59.75 L52.48 60.68 L52.63 61.69 L52.81 62.78 L53.01 63.96 L53.23 65.23 L53.47 66.61 L53.75 68.09 L54.06 69.68 L54.41 71.39 L54.79 73.23 L55.23 75.19 L55.72 77.29 L56.26 79.53 L56.87 81.91 L57.56 84.44 L58.32 87.12 L59.18 89.95 L60.15 92.93 L61.22 96.06 L62.43 99.34 L63.78 102.77 L65.29 106.34 L66.99 110.04 L68.89 113.86 L71.01 117.81 L73.39 121.85 L76.06 125.99 L79.05 130.20 L82.39 134.48 L86.14 138.80 L90.34 143.14 L95.04 147.50 L100.30 151.85 L106.20 156.17 L112.80 160.44 L120.20 164.66 L128.48 168.80 L137.76 172.85 L148.15 176.80 L159.78 180.63 L172.82 184.34 L187.42 187.91 L203.76 191.34 L222.08 194.63 L242.58 197.77 L265.55 200.75 L291.28 203.59 L320.09 206.27 L352.37 208.81 L388.51 211.19 L428.99 213.44 L474.33 215.54 L525.11 217.51 L581.98 219.35 L645.68 221.07 L717.02 222.66 L796.92 224.15 " fill="none" stroke="#0e9f6e" stroke-width="3" stroke-dasharray="" opacity="1"></path><circle cx="52" cy="57.64062500000003" r="4.5" fill="#fff" stroke="#0e9f6e" stroke-width="2.5"></circle><text x="52" y="71.64062500000003" text-anchor="middle" font-size="12" fill="#0e9f6e" font-weight="700">$100万 → ~29%</text><circle cx="92.71071071071071" cy="145.40625" r="4.5" fill="#fff" stroke="#d97706" stroke-width="2.5"></circle><text x="92.71071071071071" y="159.40625" text-anchor="middle" font-size="12" fill="#d97706" font-weight="700">$5000万 → 收益腰斩</text><circle cx="882" cy="225.484375" r="4.5" fill="#fff" stroke="#dc2626" stroke-width="2.5"></circle><text x="882" y="205.484375" text-anchor="middle" font-size="12" fill="#dc2626" font-weight="700">$10亿 → ~2.5%</text></svg></div>
+  </div>
+</section>
+
+<!-- ============ FREQUENCY VS BETA ============ -->
+<section class="section" id="frequency">
+  <h2><span class="num">12</span>天级别 vs 分钟级策略 <span class="sub">交易频率 ≠ Beta——但两者确实有统计倾向</span></h2>
+  <p class="lede">有人问：日频策略和分钟级（高频）策略，哪个和 Beta 的相关性更高？直觉会说“日频更高”，但真实答案更微妙。先记住铁律：<b>交易频率 ≠ 市场暴露。</b></p>
+
+  <h3 class="block">1) 用六个维度拆开看</h3>
+  <div class="tbl-wrap"><table class="tbl">
+    <tbody><tr><th>维度</th><th>分钟级 / 高频策略（典型画像）</th><th>日线级策略（典型画像）</th></tr>
+    <tr><td><b>持有期（Holding Period）</b></td><td>秒~分钟，通常当天进出</td><td>数天~数周甚至更长</td></tr>
+    <tr><td><b>市场暴露（Market Exposure）</b></td><td>往往日内即时对冲，敞口短暂且小</td><td>往往持有敞口过夜/过周</td></tr>
+    <tr><td><b>隔夜风险（Overnight Risk）</b></td><td>收盘前基本清仓，几乎不承担隔夜跳空</td><td>承担隔夜/周末跳空风险</td></tr>
+    <tr><td><b>日内市场中性（Intraday Neutral）</b></td><td>容易做成“日内中性”：日内 Delta 近似为 0</td><td>难做完全中性（但可以每日收盘对冲）</td></tr>
+    <tr><td><b>因子暴露（Factor Exposure）</b></td><td>通常很小——持仓太短，来不及积累风格因子</td><td>常携带价值/动量/规模等风格暴露</td></tr>
+    <tr><td><b>调仓（Rebalancing）</b></td><td>极频繁，对交易成本极度敏感</td><td>低频，单笔成本容忍度高</td></tr>
+  </tbody></table></div>
+
+  <h3 class="block">2) 为什么“高频更容易中性、低频更容易带 Beta”？</h3>
+  <div class="card">
+    <p>这不是必然规律，而是<b>统计倾向 + 工程约束</b>：</p>
+    <ul style="padding-left:22px;font-size:14.5px;color:#33415c;margin:8px 0">
+      <li><b>隔夜风险太难控制：</b>高频策略如果持仓过夜，要面对开盘跳空、隔夜消息等完全不可预测的风险，而它的优势（快进快出）根本用不上——所以干脆收盘清零，顺带把 Beta 也清掉了。</li>
+      <li><b>低频策略付得起“持有”的代价：</b>日线信号本来就靠“方向/因子”赚钱，持有几天才能兑现，天然带着市场暴露；要做成市场中性也可以（每天用指数期货对冲），但很多低频策略<b>刻意保留方向暴露</b>，因为那本身就是它的 Alpha 来源之一。</li>
+    </ul>
+  </div>
+
+  <h3 class="block">3) 反例：频率与 Beta 可以完全脱钩</h3>
+  <div class="grid2">
+    <div class="card"><h4><span class="dot"></span>分钟级 ≠ 低 Beta</h4><p>一个日内策略如果<b>只做多、从不做空、收盘也满仓</b>，它每天暴露在市场的涨跌里，对日收益的 Beta 可能接近 1——哪怕它持仓只有几分钟。频率低不了它的市场暴露。</p></div>
+    <div class="card"><h4><span class="dot"></span>日线级 ≠ 高 Beta</h4><p>一个日频策略如果<b>每天收盘前用指数期货把多头空头对冲干净</b>（delta-neutral），它可以做到 Beta ≈ 0——持仓几天，但对市场的净暴露为零。它赚的是因子/价差的 Alpha。</p></div>
+  </div>
+  <div class="callout info"><b>结论：</b> “分钟级策略 Beta 低、日频策略 Beta 高”是<b>统计倾向</b>，不是必然规律。判断一个策略的 Beta，要看它的<b>持仓暴露和对冲行为</b>，而不是看它多久交易一次。下次朋友说“我们是个高频中性策略”，你就能明白：高频是频率标签，中性是风险标签，两者是独立的。</div>
+</section>
+
+<!-- ============ ARBITRAGE ============ -->
+<section class="section" id="arbitrage">
+  <h2><span class="num">13</span>“无风险套利”到底是什么意思？ <span class="sub">以及为什么现实中它几乎不存在</span></h2>
+  <p class="lede">Arbitrage（套利）在教科书里有个美丽定义，在现实世界里却有一堆“但是”。这一章把它们分开。</p>
+
+  <h3 class="block">1) 三个概念，先分清楚</h3>
+  <div class="grid3">
+    <div class="card"><h4><span class="dot"></span>Arbitrage（套利）</h4><p>广义：利用同一资产/相关资产在不同市场的<b>价格不一致</b>赚钱。核心是“低买高卖同时完成，锁定价差”。</p></div>
+    <div class="card"><h4><span class="dot"></span>Risk-free Arbitrage（无风险套利）</h4><p>理想化的套利：<b>同时、确定、零风险</b>地锁定利润。教科书例子：同一资产在 A 市场卖 $100、B 市场卖 $102，同时买 A 卖 B，锁死 $2。</p></div>
+    <div class="card"><h4><span class="dot"></span>Statistical Arbitrage（统计套利）</h4><p>用统计模型找“历史上相关、暂时背离”的资产对（如两只走势高度相关的股票），赌它们<b>均值回归</b>。有风险、有概率，赚的是长期期望为正——<b>不是无风险</b>。</p></div>
+  </div>
+
+  <h3 class="block">2) 教科书例子 vs 现实世界的“但是”</h3>
+  <div class="card">
+    <p><b>教科书：</b> 黄金在纽约 $100/盎司、在伦敦 $102/盎司，同时纽约买、伦敦卖，每盎司锁死 $2，无论之后价格怎么动都不亏。</p>
+    <p><b>现实：</b> 这 $2 的价差在你看清的同一瞬间，已经被全世界最快的人抢走了。而且——</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <tbody><tr><th>现实摩擦</th><th>它如何杀死“无风险”</th></tr>
+      <tr><td><b>交易成本（Transaction Cost）</b></td><td>双边佣金、费用可能超过 $2 的价差</td></tr>
+      <tr><td><b>延迟（Latency）</b></td><td>你下单的毫秒间，价格可能已经变了</td></tr>
+      <tr><td><b>执行风险（Execution Risk）</b></td><td>“买 A”成交了，“卖 B”却滑价/没成交——敞口就暴露了</td></tr>
+      <tr><td><b>对手方风险（Counterparty Risk）</b></td><td>你的对手方（或交易所/清算所）可能违约</td></tr>
+      <tr><td><b>融资成本（Funding Cost）</b></td><td>占用保证金/资金本身要付利息，持有期间一直在消耗</td></tr>
+      <tr><td><b>流动性风险（Liquidity Risk）</b></td><td>想平仓时对手盘消失，价差收不回来</td></tr>
+      <tr><td><b>模型风险（Model Risk）</b></td><td>你以为“同一资产”，其实两边的标的/条款/信用有细微差异（如两家公司、两种到期日）</td></tr>
+    </tbody></table></div>
+  </div>
+
+  <h3 class="block">3) 那量化交易里的“套利”是什么？</h3>
+  <div class="card">
+    <p>现实中的量化“套利”绝大多数是<b>统计套利 / 收敛交易</b>：基于模型和历史关系，赌“价差会回归”，承担方向、波动、流动性和模型风险，靠<b>大量交易 + 期望为正</b>赚钱。比如：</p>
+    <ul style="padding-left:22px;font-size:14.5px;color:#33415c;margin:8px 0">
+      <li><b>配对交易（Pairs Trading）</b>：两只高度相关的股票，一只暂时偏贵、一只暂时偏便宜 → 做空贵的、做多便宜的，赌价差回归；</li>
+      <li><b>指数套利</b>：股指期货相对现货指数出现基差 → 买低卖高，等收敛；</li>
+      <li><b>事件/并购套利</b>：并购宣布后，目标公司股价通常折价交易，买入并持有到交割，赚“完成概率 × 价差”。</li>
+    </ul>
+    <div class="callout warn"><b>一句话：</b> 教科书里的 risk-free arbitrage 是理论极限；现实里“套利”二字更多是指<b>“低风险、高胜率、但绝非无风险”</b>的收敛交易。听到有人说“我们在做套利”，可以追问一句：<i>“你们承担的主要风险是什么？”</i>——答案往往比“套利”二字更有信息量。</div>
+  </div>
+</section>
+
+<!-- ============ ML ============ -->
+<section class="section" id="ml">
+  <h2><span class="num">14</span>机器学习在量化里到底有没有用？ <span class="sub">有用，但要放在对的位置</span></h2>
+  <p class="lede">不回答“ML 很有用”这种空话，也不吹“AI 能预测股票”。把 ML 放进真实的量化流水线里，你自然知道它在哪里发光、在哪里翻车。</p>
+
+  <h3 class="block">1) 量化交易的标准流水线（Pipeline）</h3>
+  <div class="flow-v">
+    <div class="node"><span class="n-title">① Market Data 市场数据</span><span class="n-desc">行情、订单簿、新闻、宏观、另类数据（卫星图、信用卡流水……）</span></div>
+    <div class="arrow">↓</div>
+    <div class="node"><span class="n-title">② Feature Engineering 特征工程</span><span class="n-desc">把原始数据加工成“有预测力的输入”：动量、价差、情绪、波动率状态……</span></div>
+    <div class="arrow">↓</div>
+    <div class="node"><span class="n-title">③ Signal / Alpha 信号</span><span class="n-desc">预测未来收益/波动/方向的信号——ML 的用武之地之一</span></div>
+    <div class="arrow">↓</div>
+    <div class="node"><span class="n-title">④ Portfolio Construction 组合构建</span><span class="n-desc">多个信号合成、按风险分配权重</span></div>
+    <div class="arrow">↓</div>
+    <div class="node"><span class="n-title">⑤ Risk Model 风险模型</span><span class="n-desc">预测组合的波动、回撤、因子暴露</span></div>
+    <div class="arrow">↓</div>
+    <div class="node"><span class="n-title">⑥ Execution 执行</span><span class="n-desc">把订单拆成可成交的路径，最小化冲击成本</span></div>
+    <div class="arrow">↓</div>
+    <div class="node"><span class="n-title">⑦ PnL 盈亏</span><span class="n-desc">真实结果回流，反哺特征和模型（研究闭环）</span></div>
+  </div>
+
+  <h3 class="block">2) ML 在流水线各环节的实际角色</h3>
+  <div class="tbl-wrap"><table class="tbl">
+    <tbody><tr><th>环节</th><th>ML 做什么</th><th>现实中的“可信度”</th></tr>
+    <tr><td>收益预测（Alpha Prediction）</td><td>从特征预测未来收益</td><td class="mid">信号极弱，是 ML 最难、也最容易被过度宣传的环节</td></tr>
+    <tr><td>波动率预测</td><td>预测未来波动率（直接服务期权定价和风险模型）</td><td class="pos">较靠谱：波动率有强自相关（聚集性），ML 有优势</td></tr>
+    <tr><td>订单簿预测（Order Book）</td><td>从逐笔/盘口数据预测短期价格方向或成交量</td><td class="pos">高频领域最有效的 ML 应用之一（高维、弱信号但海量样本）</td></tr>
+    <tr><td>市场状态识别（Regime Detection）</td><td>识别“现在是趋势市还是震荡市”，切换策略</td><td class="pos">有用，但 regime 切换是滞后指标，容易慢半拍</td></tr>
+    <tr><td>组合优化</td><td>在收益、风险、成本约束下求最优权重</td><td class="pos">成熟应用（本质上是最优化问题，ML 只是工具）</td></tr>
+    <tr><td>执行优化</td><td>预测市场冲击、决定下单节奏和拆分</td><td class="pos">业界落地最扎实的方向之一</td></tr>
+  </tbody></table></div>
+
+  <h3 class="block">3) ML 在量化里翻车的七宗罪</h3>
+  <div class="grid2">
+    <div class="card"><h4><span class="dot"></span>低信噪比（Low SNR）</h4><p>金融数据里“真信号”淹没在噪声里，模型很容易把噪声当信号学进去。</p></div>
+    <div class="card"><h4><span class="dot"></span>非平稳（Non-stationarity）</h4><p>市场的统计规律会变（regime change）。去年有效的规律，今年可能反过来。</p></div>
+    <div class="card"><h4><span class="dot"></span>过拟合（Overfitting）</h4><p>模型把历史细节背得滚瓜烂熟，一到新数据就失效——量化里最常见的死法。</p></div>
+    <div class="card"><h4><span class="dot"></span>数据泄漏（Data Leakage）</h4><p>特征里不小心混进了“未来信息”（如用了未复权价格、未来财报），回测神准、实盘扑街。</p></div>
+    <div class="card"><h4><span class="dot"></span>回测过拟合（Backtest Overfitting）</h4><p>试了 1000 个参数组合，总有一个回测很漂亮——那是“选择偏差”，不是能力。</p></div>
+    <div class="card"><h4><span class="dot"></span>交易成本</h4><p>回测不计成本时 ML 信号看着很美；一加手续费和滑点，收益归零。</p></div>
+    <div class="card"><h4><span class="dot"></span>容量限制</h4><p>就算信号是真的，能装的钱也有限（见第 11 章），ML 并不能创造容量。</p></div>
+    <div class="card"><h4><span class="dot"></span>Regime Change</h4><p>市场风格切换时，训练出来的模型集体失效——2022 年的加息环境杀死了一堆“低波动”模型。</p></div>
+  </div>
+
+  <h3 class="block">4) 那到底有没有用？——有条件的答案</h3>
+  <div class="callout ok"><b>结论（有条件地）：</b> ML 在量化里<b>非常有用，但不是“预测股票的神器”</b>。
+  <br>① 在 <b>订单簿预测、波动率预测、执行优化、市场冲击建模</b> 这类“高维、弱信号、样本海量、目标清晰”的环节，ML 是主力工具；
+  <br>② 在 <b>纯收益预测</b> 环节，ML 的边际价值取决于特征质量、数据独占性和风控纪律——大多数人在这里赚不到钱，不是因为 ML 没用，而是因为<b>信噪比太低、过拟合太容易</b>；
+  <br>③ 量化研究的真正壁垒，通常是<b>数据 + 特征 + 执行 + 风控</b>的组合，模型只是其中一环。
+  <br>所以下次听到“我们用 AI 做量化”，值得追问的是：<i>“用在流水线的哪一环？特征是什么？样本外怎么验证？扣完成本还剩多少？”</i></div>
+</section>
+<!-- ============ TRANSACTION COST ============ -->
+<section class="section" id="costs">
+  <h2><span class="num">15</span>交易成本：期权 vs 股票 <span class="sub">先分清“佣金”和“价差”，再谈贵几倍</span></h2>
+  <p class="lede">“期权手续费是股票的多少倍？”——这个问题没有单一答案，因为它混淆了至少五类成本。先把它们拆开（以下以<b>美国市场</b>为主，数据时点 2025–2026 年，来源见文末）。</p>
+
+  <h3 class="block">1) 成本的五层结构</h3>
+  <div class="tbl-wrap"><table class="tbl">
+    <tbody><tr><th>成本层</th><th>是什么</th><th>股票（美股主流零售券商）</th><th>期权（美股）</th></tr>
+    <tr><td><b>Commission 佣金</b></td><td>券商收的“手续费”</td><td>普遍 $0<span class="ref-sup" title="IBKR 官方费率页：美股股票佣金低至每股 $0.0005 起，多数零售券商 $0 佣金">[12]</span></td><td>常见约 <b>$0.50–$0.65/合约</b>（如 IBKR Pro $0.65，量大可低至 $0.15；部分券商 $0 佣金但另收费用）<span class="ref-sup" title="IBKR 官方期权佣金表 / Robinhood 费用说明">[12][16]</span></td></tr>
+    <tr><td><b>Exchange Fee 交易所费</b></td><td>交易所收的“过路费”（maker/taker 阶梯）</td><td>通常极低或已含</td><td>约 <b>$0.02–$0.50/合约</b> 区间，视交易所与订单类型而定（示意）<span class="ref-sup" title="Cboe / NYSE Arca 官方费率表（SEC 备案）">[13][14]</span></td></tr>
+    <tr><td><b>Clearing Fee 清算费</b></td><td>OCC（期权清算公司）收</td><td>—</td><td>约 <b>$0.025/合约</b><span class="ref-sup" title="OCC 官方费率表">[15]</span></td></tr>
+    <tr><td><b>Regulatory Fee 监管费</b></td><td>SEC/FINRA/交易所监管费（ORF 等）</td><td>SEC 交易费约按卖出金额的 0.0000206 左右，金额极小<span class="ref-sup" title="IBKR 费率说明：SEC 交易费">[12]</span></td><td>ORF 约 <b>$0.0006–$0.0023/合约/边</b>（各交易所不同时期不同）<span class="ref-sup" title="Cboe / Nasdaq 官方 ORF 费率">[17][18]</span></td></tr>
+    <tr><td><b>Bid-Ask Spread + Slippage + Impact</b></td><td>“看不见”的市场成本</td><td>大盘股价差极窄，通常很小</td><td><b>通常比佣金大得多</b>，且随合约冷热程度剧烈变化</td></tr>
+  </tbody></table></div>
+
+  <h3 class="block">2) 那到底“贵几倍”？——给不出一个数，但能给你判断框架</h3>
+  <div class="grid2">
+    <div class="card"><h4><span class="dot"></span>如果只比“佣金”</h4><p>股票 $0，期权 $0.65/合约——从 0 到有，确实像“无穷倍”。但期权 1 张 = 100 股的名义价值，$0.65 摊到 100 股上 ≈ 每股 $0.0065，按名义金额折算并不离谱。</p></div>
+    <div class="card"><h4><span class="dot"></span>如果比“全部成本”</h4><p>大头往往不是佣金，而是<b>买卖价差</b>。一张买卖价差 $0.30 的期权，来回就是 $0.60/股（一张 $60），远超佣金。冷门合约价差几美元都正常——<b>“期权更贵”主要是贵在价差和滑点，不是贵在佣金</b>。</p></div>
+    <div class="card"><h4><span class="dot"></span>如果比“真实可成交价”</h4><p>还要加上冲击成本：你的单子多大、市场多深。对机构来说，<b>冲击成本通常远大于佣金</b>（这也是第 10、11 章要强调的）。</p></div>
+    <div class="card"><h4><span class="dot"></span>一个随手算的参考</h4><p>假设用 IBKR 交易 1 张 $3 权利金的期权：佣金 $0.65 + OCC $0.025 + 交易所/监管费约 $0.05 ≈ <b>约 $0.72/张的固定费用</b>，占总权利金（$300）约 0.24%。但如果价差是 $0.20（来回 $40），价差成本反而是固定费用的 55 倍。</p></div>
+  </div>
+  <div class="callout warn"><b>最容易被误解的一点：</b> 网上说“期权手续费是股票 10 倍/20 倍”，通常只算了佣金，<b>把 commission 和 spread 混为一谈</b>。严谨的说法是：<i>期权的“固定费用”以“每合约”计、比股票多几层（交易所费+清算费+监管费），但真正决定贵不贵的是你交易的合约流动性（价差）和资金规模（冲击）。</i></div>
+  <div class="chart-box">
+    <div class="cb-title">1 张期权合约的固定费用构成（示意，2025–2026 美国市场）</div>
+    <div class="cb-note">以 IBKR Pro 费率为例：佣金 $0.65 + OCC $0.025 + 交易所/监管约 $0.05 ≈ $0.72/张；股票佣金 $0。注：价差/滑点因合约而异，此处不纳入。</div>
+    <div id="chart-costs"><svg viewBox="0 0 900 320"><line x1="52" x2="884" y1="274" y2="274" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="278" text-anchor="end" font-size="11" fill="#8a97ad">$0.00</text><line x1="52" x2="884" y1="210" y2="210" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="214" text-anchor="end" font-size="11" fill="#8a97ad">$0.24</text><line x1="52" x2="884" y1="146" y2="146" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="150" text-anchor="end" font-size="11" fill="#8a97ad">$0.47</text><line x1="52" x2="884" y1="82" y2="82" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="86" text-anchor="end" font-size="11" fill="#8a97ad">$0.71</text><line x1="52" x2="884" y1="18" y2="18" stroke="#edf0f6" stroke-width="1"></line><text x="44" y="22" text-anchor="end" font-size="11" fill="#8a97ad">$0.94</text><rect x="224" y="274" width="72" height="0.5" fill="#0e9f6e" rx="4"></rect><text x="260" y="268" text-anchor="middle" font-size="12" fill="#33415c" font-weight="700">0</text><text x="260" y="292" text-anchor="middle" font-size="12.5" fill="#5b6b84" font-weight="700">股票（主流零售券商）</text><text x="260" y="308" text-anchor="middle" font-size="11" fill="#8a97ad">佣金</text><rect x="529.0666666666667" y="97.72881355932202" width="72" height="176.27118644067798" fill="#2563eb" rx="4"></rect><text x="565.0666666666667" y="91.72881355932202" text-anchor="middle" font-size="12" fill="#33415c" font-weight="700">0.65</text><rect x="640" y="267.22033898305085" width="72" height="6.779661016949149" fill="#93b4f5" rx="4"></rect><text x="676" y="261.22033898305085" text-anchor="middle" font-size="12" fill="#33415c" font-weight="700">0.025</text><rect x="750.9333333333334" y="260.4406779661017" width="72" height="13.559322033898297" fill="#c7d8fb" rx="4"></rect><text x="786.9333333333334" y="254.4406779661017" text-anchor="middle" font-size="12" fill="#33415c" font-weight="700">0.05</text><text x="676" y="292" text-anchor="middle" font-size="12.5" fill="#5b6b84" font-weight="700">期权（IBKR Pro 示例）</text><text x="565.0666666666667" y="308" text-anchor="middle" font-size="11" fill="#8a97ad">券商佣金</text><text x="676" y="308" text-anchor="middle" font-size="11" fill="#8a97ad">OCC 清算</text><text x="786.9333333333334" y="308" text-anchor="middle" font-size="11" fill="#8a97ad">交易所+监管</text></svg></div>
+  </div>
+</section>
+
+<!-- ============ FINAL MAP ============ -->
+<section class="section" id="map">
+  <h2><span class="num">16</span>最终知识地图 <span class="sub">所以，你的朋友每天到底在干什么？</span></h2>
+  <p class="lede">把全部 15 章缩回一张图。看完它，你应该能在饭桌上接住朋友的大部分黑话了。</p>
+
+  <div class="flow">
+    <div class="node"><span class="n-title">市场数据</span><span class="n-desc">价格/量/订单簿/新闻/另类数据</span></div>
+    <div class="arrow">→</div>
+    <div class="node"><span class="n-title">寻找 Alpha</span><span class="n-desc">可重复的统计规律（ML 参与）</span></div>
+    <div class="arrow">→</div>
+    <div class="node"><span class="n-title">判断/控制 Beta</span><span class="n-desc">市场钱 vs 能力钱；对冲或不对冲</span></div>
+    <div class="arrow">→</div>
+    <div class="node"><span class="n-title">建立策略</span><span class="n-desc">规则、信号、频率、持仓期</span></div>
+    <div class="arrow">→</div>
+    <div class="node"><span class="n-title">工具表达观点</span><span class="n-desc">股票/期权/期货——方向、波动率、时间</span></div>
+    <div class="arrow">→</div>
+    <div class="node"><span class="n-title">控制 Vol/Greeks/Risk</span><span class="n-desc">Δ/Γ/Θ/ν 仪表盘；回撤上限</span></div>
+    <div class="arrow">→</div>
+    <div class="node"><span class="n-title">组合构建</span><span class="n-desc">多信号多标的，追求 Sharpe</span></div>
+    <div class="arrow">→</div>
+    <div class="node"><span class="n-title">执行</span><span class="n-desc">拆单、择时、最小化冲击</span></div>
+    <div class="arrow">→</div>
+    <div class="node"><span class="n-title">成本/流动性/容量</span><span class="n-desc">佣金、价差、滑点、能装多少钱</span></div>
+    <div class="arrow">→</div>
+    <div class="node"><span class="n-title">风险调整后收益</span><span class="n-desc">Sharpe、回撤、稳定性</span></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card"><h4><span class="dot"></span>朋友可能说的黑话，现在你能翻译了</h4><p>
+      “这策略 alpha 不错” → 市场之外自己挣的钱可观；<br>
+      “我们把它做成 market neutral” → 把市场暴露（Beta）对冲掉；<br>
+      “主要吃 theta 和 vol premium” → 靠卖时间价值与波动率溢价赚钱（做空波动率）；<br>
+      “这个信号容量不大” → 钱一多 Alpha 就薄了；<br>
+      “回测好看但实盘不行” → 大概率栽在过拟合或交易成本上；<br>
+      “VIX 冲到 30 了” → 期权市场把未来 30 天波动定价到年化 30%。</p></div>
+    <div class="card"><h4><span class="dot"></span>可以继续追问的高质量问题</h4><p>
+      ① 你们的 Alpha 主要来自哪个环节——信号、执行还是风险控制？<br>
+      ② 组合现在的 Beta 和因子暴露大概是多少？<br>
+      ③ 扣掉成本后，样本外的 Sharpe 还有多少？<br>
+      ④ 策略容量大概多少？现在装到几成了？<br>
+      ⑤ 做空波动率的头寸，尾部风险怎么对冲？<br>
+      ⑥ ML 在 pipeline 里用在哪一环，怎么防过拟合？</p></div>
+  </div>
+
+  <div class="callout ok"><b>全报告的一句话总结：</b> 量化交易不是“用程序预测股票涨跌”，而是<b>在大量数据中寻找可重复的收益来源（Alpha），同时严格控制风险（Beta/Greeks/回撤）、交易成本、流动性与容量问题，最终交付风险调整后的收益（Sharpe）</b>。</div>
+</section>
+
+<!-- ============ GLOSSARY ============ -->
+<section class="section" id="glossary">
+  <h2><span class="num">17</span>术语表 Glossary <span class="sub">点击展开，每条都带“为什么重要”</span></h2>
+  <p class="lede">按主题分组，作为全文的快速检索工具。</p>
+
+  <details class="acc"><summary>收益与风险：Alpha / Beta / Sharpe / 波动率 / 回撤 / 敞口</summary><div class="acc-body">
+    <p><b>Alpha：</b> 市场（Beta）解释不了的那部分收益，来自策略自身能力。</p>
+    <p><b>Beta：</b> 对市场整体涨跌的敏感度；也是“市场收益”的代称。</p>
+    <p><b>Sharpe Ratio：</b> （策略收益 − 无风险利率）÷ 波动率，衡量每单位风险换来的超额收益。</p>
+    <p><b>Volatility：</b> 收益的波动幅度（年化标准差），风险最常用的代理。</p>
+    <p><b>Max Drawdown：</b> 从历史峰值到谷底的最大跌幅，决定资金和心态能不能扛住。</p>
+    <p><b>Exposure：</b> 对某风险因素（市场、行业、波动率…）的暴露量。</p>
+  </div></details>
+
+  <details class="acc"><summary>期权：Call / Put / 行权价 / 权利金 / ITM / ATM / OTM / 内在价值 / 时间价值</summary><div class="acc-body">
+    <p><b>Call：</b> 以行权价买入的权利；<b>Put：</b> 以行权价卖出的权利。</p>
+    <p><b>Strike Price：</b> 行权价 K，约定买卖的价格。</p>
+    <p><b>Premium：</b> 权利金，买方付给卖方的价格（1 张 = 100 股）。</p>
+    <p><b>ITM/ATM/OTM：</b> 实值/平值/虚值——立即行权能否赚钱、赚多少的状态。</p>
+    <p><b>Intrinsic Value：</b> 内在价值 = 立即行权能赚的钱（max(S−K,0) 或 max(K−S,0)）。</p>
+    <p><b>Time Value：</b> 时间价值 = 期权价格 − 内在价值，代表“未来还有可能发生好事”的价钱，随到期衰减。</p>
+  </div></details>
+
+  <details class="acc"><summary>Greeks：Delta / Gamma / Theta / Vega</summary><div class="acc-body">
+    <p><b>Delta：</b> 股价每变 $1 期权价格变多少；Call 0~1、Put −1~0。</p>
+    <p><b>Gamma：</b> Delta 的变化速度；ATM 且临近到期时最大，意味着 Delta 不稳定。</p>
+    <p><b>Theta：</b> 时间流逝的损耗；买方付、卖方收，临近到期加速。</p>
+    <p><b>Vega：</b> 隐含波动率每变 1 个百分点期权价格变多少；买方受益于波动率上升。</p>
+  </div></details>
+
+  <details class="acc"><summary>波动率：HV / RV / IV / 波动率微笑 / 做空波动率 / Volatility Drag</summary><div class="acc-body">
+    <p><b>Historical Volatility：</b> 用过去数据算的波动率（后视镜）。</p>
+    <p><b>Realized Volatility：</b> 一段已过去区间里实际发生的波动。</p>
+    <p><b>Implied Volatility：</b> 从期权价格反推的、市场对未来波动的定价（挡风玻璃）。</p>
+    <p><b>Volatility Smile/Skew：</b> 不同行权价的 IV 并不相同，形成的微笑/斜偏曲线。</p>
+    <p><b>做空波动率：</b> 卖期权收权利金，赌实际波动 &lt; 隐含波动；尾部风险大（2018 年 XIV 案例）。</p>
+    <p><b>Volatility Drag：</b> 杠杆产品每日重置带来的复利损耗（TQQQ 长期跑输“3×总收益”的原因）。</p>
+  </div></details>
+
+  <details class="acc"><summary>市场结构：流动性 / 容量 / 滑点 / 市场冲击 / Open Interest / 买卖价差</summary><div class="acc-body">
+    <p><b>Liquidity：</b> 能不能按合理价格、以足够量成交；期权是“行权价×到期×Call/Put”的流动性曲面。</p>
+    <p><b>Capacity：</b> 策略不显著损害收益时能装的最大资金量；Alpha 总量有限，钱多会摊薄。</p>
+    <p><b>Slippage：</b> 预期成交价与实际成交价之差。</p>
+    <p><b>Market Impact：</b> 自己订单把价格推走的幅度。</p>
+    <p><b>Open Interest：</b> 未平仓合约数，反映期权合约的存量深度。</p>
+    <p><b>Bid-Ask Spread：</b> 买价与卖价之差，通常比佣金更贵。</p>
+  </div></details>
+
+  <details class="acc"><summary>策略与执行：市场中性 / 统计套利 / 无风险套利 / 因子暴露 / 交易频率 / 机器学习</summary><div class="acc-body">
+    <p><b>Market Neutral：</b> 多空对冲后对市场净暴露≈0（Beta≈0）。</p>
+    <p><b>Risk-free Arbitrage：</b> 理论上的无风险锁价差；现实中几乎不存在（成本/延迟/对手方/融资……）。</p>
+    <p><b>Statistical Arbitrage：</b> 基于模型与均值回归的套利，有风险，赚期望为正。</p>
+    <p><b>Factor Exposure：</b> 对风格因子（价值/动量/规模等）的暴露；低频策略常携带。</p>
+    <p><b>交易频率：</b> 多久交易一次；与 Beta 高低没有必然关系（统计倾向≠规律）。</p>
+    <p><b>机器学习：</b> 流水线里的一环——在订单簿/波动率/执行优化环节很有用，纯收益预测环节信噪比太低、易过拟合。</p>
+  </div></details>
+
+  <details class="acc"><summary>指数与产品：VIX / SPX / QQQ / TQQQ / VXX / XIV / Benchmark</summary><div class="acc-body">
+    <p><b>VIX：</b> Cboe 波动率指数——SPX 期权隐含的 30 天预期波动率（年化），是 IV 不是 HV。</p>
+    <p><b>SPX：</b> 标普 500 指数及其期权；VIX 的数据来源。</p>
+    <p><b>QQQ：</b> 追踪纳斯达克 100 的 ETF（费率约 0.18%–0.20%）。</p>
+    <p><b>TQQQ：</b> 纳指 100 每日 3 倍杠杆 ETF（费率约 0.82%–0.97%），每日重置，长期≠3×。</p>
+    <p><b>VXX：</b> 做多 VIX 期货的 ETN/ETF 类产品，长期受期货展期损耗。</p>
+    <p><b>XIV：</b> 曾经的做空 VIX 期货 ETN，2018 年 2 月 5 日单日跌约 85%–96% 后被清算。</p>
+    <p><b>Benchmark：</b> 基准指数，用来评估策略跑赢/跑输。</p>
+  </div></details>
+</section>
+
+<!-- ============ CHEAT SHEET ============ -->
+<section class="section" id="cheat">
+  <h2><span class="num">18</span>如果只记住 20 个概念 <span class="sub">Cheat Sheet</span></h2>
+  <p class="lede">读完还想带走点什么，就带走这 20 张卡片。</p>
+  <div class="cheat">
+    <div class="c"><span class="c-n">1</span><div class="c-t">Alpha</div><div class="c-d">市场解释不了、来自策略本身能力的收益。</div></div>
+    <div class="c"><span class="c-n">2</span><div class="c-t">Beta</div><div class="c-d">对市场涨跌的敏感度；“去 Beta”是为了留下 Alpha。</div></div>
+    <div class="c"><span class="c-n">3</span><div class="c-t">Sharpe</div><div class="c-d">每承担一单位风险换来多少超额收益；高收益≠好策略。</div></div>
+    <div class="c"><span class="c-n">4</span><div class="c-t">Volatility</div><div class="c-d">波动幅度＝风险的代理；年化标准差。</div></div>
+    <div class="c"><span class="c-n">5</span><div class="c-t">Max Drawdown</div><div class="c-d">从峰值到谷底的最大跌幅；决定你拿不拿得住。</div></div>
+    <div class="c"><span class="c-n">6</span><div class="c-t">Call / Put</div><div class="c-d">买入的权利 / 卖出的权利；买方风险有限、卖方风险开放。</div></div>
+    <div class="c"><span class="c-n">7</span><div class="c-t">Premium</div><div class="c-d">权利金；买方付、卖方收，卖方赚的就是时间与波动溢价。</div></div>
+    <div class="c"><span class="c-n">8</span><div class="c-t">ITM / ATM / OTM</div><div class="c-d">实值/平值/虚值；决定期权价格里内在价值占多少。</div></div>
+    <div class="c"><span class="c-n">9</span><div class="c-t">Delta</div><div class="c-d">股价每动 $1 期权价格变多少；ATM Call≈+0.5。</div></div>
+    <div class="c"><span class="c-n">10</span><div class="c-t">Gamma</div><div class="c-d">Delta 的变化速度；ATM 临近到期时最大。</div></div>
+    <div class="c"><span class="c-n">11</span><div class="c-t">Theta</div><div class="c-d">时间衰减；买方每天付费、卖方每天收租。</div></div>
+    <div class="c"><span class="c-n">12</span><div class="c-t">Vega</div><div class="c-d">对隐含波动率的敏感度；交易员谈波动率的理由。</div></div>
+    <div class="c"><span class="c-n">13</span><div class="c-t">IV vs RV</div><div class="c-d">隐含（市场对未来的定价）vs 已实现（实际发生的）；做空波动率赌 RV&lt;IV。</div></div>
+    <div class="c"><span class="c-n">14</span><div class="c-t">Short Vol</div><div class="c-d">卖期权/卖波动率；≠看空股票，怕的是暴涨暴跌；2018 年 XIV 一夜蒸发。</div></div>
+    <div class="c"><span class="c-n">15</span><div class="c-t">Volatility Drag</div><div class="c-d">杠杆每日重置的复利损耗；TQQQ 震荡市长期跑输 3×。</div></div>
+    <div class="c"><span class="c-n">16</span><div class="c-t">VIX</div><div class="c-d">SPX 期权隐含的 30 天预期波动率（年化）；是价格不是情绪。</div></div>
+    <div class="c"><span class="c-n">17</span><div class="c-t">Liquidity</div><div class="c-d">能不能按好价格成交；期权是“行权价×到期×Call/Put”的流动性曲面。</div></div>
+    <div class="c"><span class="c-n">18</span><div class="c-t">Capacity</div><div class="c-d">策略能装多少钱；Alpha 总量有限，钱多会摊薄甚至反噬。</div></div>
+    <div class="c"><span class="c-n">19</span><div class="c-t">Stat Arb</div><div class="c-d">统计套利＝基于模型赌均值回归；有风险，≠无风险套利。</div></div>
+    <div class="c"><span class="c-n">20</span><div class="c-t">量化全貌</div><div class="c-d">Alpha＋风控＋组合＋执行＋成本/容量；不是“程序预测涨跌”。</div></div>
+  </div>
+</section>
+
+<!-- ============ REFERENCES ============ -->
+<section class="section" id="references">
+  <h2><span class="num">19</span>数据来源与说明</h2>
+  <p class="lede">事实与数据均来自官方或高质量来源；检索时间 2026-09-15。所有“当前费率/费率”类数据以来源页面标注的生效时间为准，使用时请再次核实。</p>
+  <ol class="ref-list">
+    <li><span class="t">Cboe — VIX Methodology（官方方法论）</span><br><span class="d">VIX = 对 SPX 期权实时买卖中间价计算的 30 天前瞻波动率；VIX = σ × 100。https://cdn.cboe.com/resources/vix/VIX_Methodology.pdf</span></li>
+    <li><span class="t">Cboe — Volatility Index Methodology（官方）</span><br><span class="d">https://cdn.cboe.com/resources/indices/Volatility_Index_Methodology_Cboe_Volatility_Index.pdf</span></li>
+    <li><span class="t">Cboe — VIX Options Specifications / VIX FAQ / S&amp;P Global VIX 介绍</span><br><span class="d">VIX 取自 SPX 周五到期期权、23–37 天窗口。https://www.cboe.com/tradable_products/vix/vix_options/specifications ；https://www.spglobal.com/spdji/en/vix-intro/</span></li>
+    <li><span class="t">Invesco — QQQ ETF 官方（费率 0.20%→0.18%，2025-12 结构调整）</span><br><span class="d">https://www.invesco.com/qqq-etf/en/market-outlook/whats-new-about-qqq.html</span></li>
+    <li><span class="t">Vanguard 页面 — QQQ 总费率 0.18%（2025-12-22）</span><br><span class="d">https://investor.vanguard.com/investment-products/etfs/profile/qqq</span></li>
+    <li><span class="t">ProShares — TQQQ 官方（每日 3 倍纳指 100；毛费率 0.97%）</span><br><span class="d">https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq</span></li>
+    <li><span class="t">ProShares — TQQQ 招股书（净费率 0.84%）</span><br><span class="d">https://pre-prod.proshares.com/globalassets/proshares/prospectuses/tqqq_summary_prospectus.pdf</span></li>
+    <li><span class="t">Nasdaq — 杠杆 ETF 文章（TQQQ 年费 0.82% 等）</span><br><span class="d">https://www.nasdaq.com/articles/leveraged-etfs-investors-seeking-bold-tactical-opportunities</span></li>
+    <li><span class="t">etf.com — Inverse VIX ETN Shuts Down（XIV 清算，2018-02）</span><br><span class="d">https://www.etf.com/sections/news/inverse-vix-etn-shuts-down</span></li>
+    <li><span class="t">Nasdaq — XIV 触发加速条款、瑞信停止交易（2018-02-07）</span><br><span class="d">https://www.nasdaq.com/articles/volatility-spike-triggers-inverse-etf-xiv-closure-2018-02-07</span></li>
+    <li><span class="t">AMF — 2018 年 2 月波动率事件报告（XIV 五天下跌 96%）</span><br><span class="d">https://www.amf-france.org/sites/default/files/contenu_simple/lettre_ou_cahier/risques_tendances/Heightened%20volatility%20in%20early%20February%202018%20the%20impact%20of%20VIX%20products.pdf</span></li>
+    <li><span class="t">Interactive Brokers — 期权佣金与监管费（$0.65/合约，SEC 费）</span><br><span class="d">https://www.interactivebrokers.com/cn/index.php?f=49623 ；https://gdcdyn.interactivebrokers.com/cn/general/about/ibkr-fact-sheet.php</span></li>
+    <li><span class="t">Cboe 交易所费率表（SEC 备案，含 ORF $0.0023/合约边，2025-12 生效）</span><br><span class="d">https://www.sec.gov/files/rules/sro/cboe/2025/34-104417-ex5.pdf</span></li>
+    <li><span class="t">NYSE Arca 期权费率表（SEC 备案，2025-11 生效）</span><br><span class="d">https://www.sec.gov/files/rules/sro/nysearca/2025/34-104271-ex5.pdf</span></li>
+    <li><span class="t">OCC — 清算费率（$0.025/合约）</span><br><span class="d">https://www.theocc.com/company-information/schedule-of-fees</span></li>
+    <li><span class="t">Robinhood — 交易费用（期权 $0.0035/合约 FINRA；OCC+ORF 合并 $0.04/合约）</span><br><span class="d">https://www.robinhood.com/us/en/support/articles/trading-fees-on-robinhood/</span></li>
+    <li><span class="t">Nasdaq Options 7 — ORF（2026-01 起 $0.0006/合约边）</span><br><span class="d">https://listingcenter.nasdaq.com/rulebook/nasdaq/rules/Nasdaq%20Options%207</span></li>
+    <li><span class="t">IBKR 国际页面 — OCC 清算费与 ORF 说明</span><br><span class="d">https://www.interactivebrokers.eu/ru/index.php?f=47905&amp;p=options6</span></li>
+  </ol>
+  <p class="tbl-cap" style="margin-top:14px">免责声明：本报告为金融科普教育材料，所有示例（价格、权利金、费率、策略表现）均为教学设定或标注“示意”，不构成任何投资建议。期权与杠杆产品可能损失全部本金甚至更多，请以专业机构文件为准。</p>
+</section>
+
+<footer class="footer">
+  量化交易 101 · 科普报告 · 生成于 2026-09-15<br>
+  单一文件 HTML，可离线打开；图表为内嵌 SVG/JS，无外部依赖。<br>
+  欢迎带着这份地图，去和你的朋友聊聊 Alpha 和容量。
+</footer>
+
+</main>
+</div>
+
+<button id="toTop" type="button" title="回到顶部" class="show">↑</button>
+<noscript><div style="padding:14px 18px;background:#fff7e6;border:1px solid #f4dcb2;border-radius:12px;margin:16px">本报告的交互图表需要启用 JavaScript。核心文字内容无需脚本即可阅读。</div></noscript>
+
+<script>
+/* =========================================================
+   量化交易 101 —— 内嵌交互图表（原生 SVG/JS，无外部依赖）
+   ========================================================= */
+(function(){
+"use strict";
+
+/* ---------- 工具 ---------- */
+function $(id){return document.getElementById(id);}
+function svgEl(name,attrs){var e=document.createElementNS("http://www.w3.org/2000/svg",name);for(var k in attrs){e.setAttribute(k,attrs[k]);}return e;}
+function num(v){v=Math.round(v*10)/10;return String(v);}
+function fmt$(v){return (v>=0?"+$":"−$")+Math.abs(v).toFixed(1);}
+function fmtPct(v){return (v>=0?"+":"−")+Math.abs(v).toFixed(1)+"%";}
+function normPdf(x){return Math.exp(-x*x/2)/Math.sqrt(2*Math.PI);}
+function normCdf(x){
+  var t=1/(1+0.2316419*Math.abs(x));
+  var d=0.3989422804014327*Math.exp(-x*x/2);
+  var p=d*t*(0.319381530+t*(-0.356563782+t*(1.781477937+t*(-1.821255978+t*1.330274429))));
+  return x>0?1-p:p;
+}
+function bs(S,K,T,sigma,r){
+  r=r||0.02;
+  if(T<=1e-9){
+    return {call:Math.max(S-K,0),put:Math.max(K-S,0),deltaCall:S>K?1:0,deltaPut:S<K?-1:0,gamma:0,vega:0,thetaCall:0,thetaPut:0};
+  }
+  var sq=Math.sqrt(T);
+  var d1=(Math.log(S/K)+(r+sigma*sigma/2)*T)/(sigma*sq);
+  var d2=d1-sigma*sq;
+  var cdf1=normCdf(d1),cdf2=normCdf(d2);
+  var call=S*cdf1-K*Math.exp(-r*T)*cdf2;
+  var put=call-S+K*Math.exp(-r*T);
+  var thetaCall=-(S*normPdf(d1)*sigma)/(2*sq)-r*K*Math.exp(-r*T)*cdf2;
+  return {call:call,put:put,deltaCall:cdf1,deltaPut:cdf1-1,gamma:normPdf(d1)/(S*sigma*sq),vega:S*normPdf(d1)*sq/100,thetaCall:thetaCall,thetaPut:thetaCall+r*K*Math.exp(-r*T)};
+}
+
+/* ---------- 折线图 ---------- */
+function lineChart(cfg){
+  var el=typeof cfg.el==="string"?$(cfg.el):cfg.el;
+  el.innerHTML="";
+  var W=cfg.width||900,H=cfg.height||340;
+  var padL=cfg.padL!=null?cfg.padL:52,padR=cfg.padR||18,padT=cfg.padT||16,padB=cfg.padB||38;
+  var svg=svgEl("svg",{viewBox:"0 0 "+W+" "+H});
+  var xmin,xmax,ymin,ymax;
+  if(cfg.xDomain){xmin=cfg.xDomain[0];xmax=cfg.xDomain[1];}
+  else{xmin=Infinity;xmax=-Infinity;cfg.series.forEach(function(s){s.data.forEach(function(p){if(p[0]<xmin)xmin=p[0];if(p[0]>xmax)xmax=p[0];});});}
+  if(cfg.yDomain){ymin=cfg.yDomain[0];ymax=cfg.yDomain[1];}
+  else{ymin=Infinity;ymax=-Infinity;cfg.series.forEach(function(s){s.data.forEach(function(p){if(p[1]<ymin)ymin=p[1];if(p[1]>ymax)ymax=p[1];});});}
+  if(ymin===ymax){ymin-=1;ymax+=1;}
+  var padY=(ymax-ymin)*0.10;ymin-=padY;ymax+=padY;
+  var X=function(v){return padL+(v-xmin)/(xmax-xmin)*(W-padL-padR);};
+  var Y=function(v){return H-padB-(v-ymin)/(ymax-ymin)*(H-padT-padB);};
+  var yTicks=cfg.yTicks||5;
+  for(var i=0;i<=yTicks;i++){
+    var v=ymin+(ymax-ymin)*i/yTicks,y=Y(v);
+    svg.appendChild(svgEl("line",{x1:padL,x2:W-padR,y1:y,y2:y,stroke:"#edf0f6","stroke-width":1}));
+    var t=svgEl("text",{x:padL-8,y:y+4,"text-anchor":"end","font-size":11,fill:"#8a97ad"});
+    t.textContent=cfg.yFmt?cfg.yFmt(v):num(v);
+    svg.appendChild(t);
+  }
+  var xTicks=cfg.xTicks||5;
+  for(var j=0;j<=xTicks;j++){
+    var v2=xmin+(xmax-xmin)*j/xTicks,x2=X(v2);
+    svg.appendChild(svgEl("line",{x1:x2,x2:x2,y1:padT,y2:H-padB,stroke:"#f4f6fa","stroke-width":1}));
+    var t2=svgEl("text",{x:x2,y:H-padB+16,"text-anchor":"middle","font-size":11,fill:"#8a97ad"});
+    t2.textContent=cfg.xFmt?cfg.xFmt(v2):num(v2);
+    svg.appendChild(t2);
+  }
+  if(cfg.zero!==false&&ymin<0&&ymax>0){
+    svg.appendChild(svgEl("line",{x1:padL,x2:W-padR,y1:Y(0),y2:Y(0),stroke:"#c6cfdd","stroke-width":1.4,"stroke-dasharray":"5 4"}));
+  }
+  cfg.series.forEach(function(s){
+    var d="";
+    s.data.forEach(function(p,idx){d+=(idx?"L":"M")+X(p[0]).toFixed(2)+" "+Y(p[1]).toFixed(2)+" ";});
+    svg.appendChild(svgEl("path",{d:d,fill:"none",stroke:s.color||"#2563eb","stroke-width":s.width||2.4,"stroke-dasharray":s.dash||"",opacity:s.op!=null?s.op:1}));
+  });
+  (cfg.marks||[]).forEach(function(m){
+    var x=X(m.x),y=Y(m.y);
+    svg.appendChild(svgEl("circle",{cx:x,cy:y,r:4.5,fill:"#fff",stroke:m.color||"#1d4ed8","stroke-width":2.5}));
+    var t=svgEl("text",{x:x,y:y-(m.dy||12),"text-anchor":"middle","font-size":12,fill:m.color||"#1d4ed8","font-weight":700});
+    t.textContent=m.label;
+    svg.appendChild(t);
+  });
+  el.appendChild(svg);
+}
+
+/* ---------- 柱状图（分组） ---------- */
+function barChart(cfg){
+  var el=typeof cfg.el==="string"?$(cfg.el):cfg.el;
+  el.innerHTML="";
+  var W=900,H=cfg.height||320,padL=52,padR=16,padT=18,padB=cfg.padB||46;
+  var svg=svgEl("svg",{viewBox:"0 0 "+W+" "+H});
+  var groups=cfg.groups;
+  var maxV=cfg.yMax||0;
+  groups.forEach(function(g){g.bars.forEach(function(b){if(b.value>maxV)maxV=b.value;});});
+  maxV*=1.18;
+  var Y=function(v){return H-padB-(v/maxV)*(H-padT-padB);};
+  for(var i=0;i<=4;i++){
+    var v=maxV*i/4,y=Y(v);
+    svg.appendChild(svgEl("line",{x1:padL,x2:W-padR,y1:y,y2:y,stroke:"#edf0f6","stroke-width":1}));
+    var t=svgEl("text",{x:padL-8,y:y+4,"text-anchor":"end","font-size":11,fill:"#8a97ad"});
+    t.textContent=cfg.yFmt?cfg.yFmt(v):num(v);
+    svg.appendChild(t);
+  }
+  var gW=(W-padL-padR)/groups.length;
+  groups.forEach(function(g,gi){
+    var gx=padL+gW*gi+gW*0.1,gw=gW*0.8;
+    var bw=Math.min(72,gw/g.bars.length*0.66);
+    g.bars.forEach(function(b,bi){
+      var x=gx+gw*(bi+0.5)/g.bars.length-bw/2;
+      var y=Y(b.value);
+      svg.appendChild(svgEl("rect",{x:x,y:y,width:bw,height:Math.max(0.5,H-padB-y),fill:b.color||"#2563eb",rx:4}));
+      var tv=svgEl("text",{x:x+bw/2,y:y-6,"text-anchor":"middle","font-size":12,fill:"#33415c","font-weight":700});
+      tv.textContent=(b.labelValue!=null?b.labelValue:b.value)+(b.suffix||"");
+      svg.appendChild(tv);
+    });
+    var tg=svgEl("text",{x:gx+gw/2,y:H-padB+18,"text-anchor":"middle","font-size":12.5,fill:"#5b6b84","font-weight":700});
+    tg.textContent=g.label;
+    svg.appendChild(tg);
+    g.bars.forEach(function(b,bi){
+      var x=gx+gw*(bi+0.5)/g.bars.length;
+      var tl=svgEl("text",{x:x,y:H-padB+34,"text-anchor":"middle","font-size":11,fill:"#8a97ad"});
+      tl.textContent=b.label;
+      svg.appendChild(tl);
+    });
+  });
+  el.appendChild(svg);
+}
+
+/* =========================================================
+   ① 股票 A vs B 波动示例
+   ========================================================= */
+lineChart({
+  el:"chart-vol",height:300,yTicks:4,xTicks:4,
+  xDomain:[1,5],yDomain:[70,130],xFmt:function(v){return "时点 "+num(v);},yFmt:function(v){return "$"+num(v);},
+  series:[
+    {name:"股票 A",color:"#2563eb",data:[[1,100],[2,101],[3,99],[4,100],[5,101]]},
+    {name:"股票 B",color:"#dc2626",data:[[1,100],[2,120],[3,80],[4,110],[5,90]]}
+  ],
+  marks:[
+    {x:5,y:101,label:"A 终点 $101",color:"#2563eb",dy:-14},
+    {x:5,y:90,label:"B 终点 $90",color:"#dc2626",dy:20}
+  ]
+});
+
+/* =========================================================
+   ② 收益 vs Sharpe 柱状图
+   ========================================================= */
+barChart({
+  el:"chart-sharpe",height:300,yMax:80,
+  groups:[
+    {label:"策略 A（高收益高波动）",bars:[
+      {label:"年化收益",value:30,suffix:"%",color:"#2563eb"},
+      {label:"年化波动",value:60,suffix:"%",color:"#93b4f5"}
+    ]},
+    {label:"策略 B（稳健）",bars:[
+      {label:"年化收益",value:12,suffix:"%",color:"#0e9f6e"},
+      {label:"年化波动",value:8,suffix:"%",color:"#8fdcc0"}
+    ]}
+  ],
+  yFmt:function(v){return num(v)+"%";}
+});
+
+/* =========================================================
+   ③ 期权到期盈亏交互图
+   权利金与 Black-Scholes 一致（S=100, 30 天, σ=30%, r=2%）
+   ========================================================= */
+var payoffDefs={
+  "Long Call":{
+    note:"买 Call K=105，权利金 $1.6。到期收益 = max(S−105,0) − 1.6。",
+    pay:function(S){return Math.max(S-105,0)-1.6;},
+    risk:"最大亏损 = 权利金 $1.6；收益上不封顶。"
+  },
+  "Long Put":{
+    note:"买 Put K=95，权利金 $1.4。到期收益 = max(95−S,0) − 1.4。",
+    pay:function(S){return Math.max(95-S,0)-1.4;},
+    risk:"最大亏损 = 权利金 $1.4；下跌越大赚越多。"
+  },
+  "Covered Call":{
+    note:"持有 100 股（成本 $100）+ 卖 Call K=105，收 $1.6。收益 = (S−100) + 1.6 − max(S−105,0)。",
+    pay:function(S){return (S-100)+1.6-Math.max(S-105,0);},
+    risk:"上涨收益封顶于 $6.6；下跌损失仅被权利金缓冲 $1.6。"
+  },
+  "Sell Put（现金担保）":{
+    note:"卖 Put K=95，收 $1.4。到期收益 = 1.4 − max(95−S,0)。",
+    pay:function(S){return 1.4-Math.max(95-S,0);},
+    risk:"最大亏损 = 95 − 1.4 = $93.6（股价归零）；最大盈利 = 权利金 $1.4。"
+  },
+  "Short Straddle":{
+    note:"同时卖 ATM Call(K=100,~$3.5) 和 Put(K=100,~$3.4)，共收约 $6.9。收益 = 6.9 − |S−100|。",
+    pay:function(S){return 6.9-Math.abs(S-100);},
+    risk:"纯做空波动率：任何方向大幅波动都巨亏，理论上亏损无上限。"
+  },
+  "Short Strangle":{
+    note:"卖 OTM Call(K=110,~$0.6) 和 OTM Put(K=90,~$0.4)，共收约 $1.05。",
+    pay:function(S){return 1.05-Math.max(S-110,0)-Math.max(90-S,0);},
+    risk:"突破区间两端亏损，理论上无上限（比 Straddle 更靠外）。"
+  },
+  "Iron Condor":{
+    note:"Short Strangle + 买 Call K=120(~$0.06) + 买 Put K=80(~$0.02)，净收约 $0.97。",
+    pay:function(S){return 0.97-Math.max(S-110,0)-Math.max(90-S,0)+Math.max(S-120,0)+Math.max(80-S,0);},
+    risk:"有限亏损的做空波动率：极端突破时亏损封顶（约 $9.03）。"
+  },
+  "Bull Call Spread":{
+    note:"买 Call K=100($3.5) + 卖 Call K=110($0.6)，净成本 $2.9。收益 = max(S−100,0) − max(S−110,0) − 2.9。",
+    pay:function(S){return Math.max(S-100,0)-Math.max(S-110,0)-2.9;},
+    risk:"最大亏损 = 净权利金 $2.9；最大盈利 = 10 − 2.9 = $7.1（成本可控的方向观点）。"
+  }
+};
+var payoffKeys=Object.keys(payoffDefs);
+function round1(v){return Math.round(v*10)/10;}
+function buildPayoff(){
+  var key=payoffSel.key;
+  var def=payoffDefs[key];
+  var pts=[],S;
+  for(S=50;S<=150;S+=1){pts.push([S,def.pay(S)]);}
+  var ymin=Infinity,ymax=-Infinity;
+  pts.forEach(function(p){if(p[1]<ymin)ymin=p[1];if(p[1]>ymax)ymax=p[1];});
+  var bes=[];
+  for(var i=0;i<pts.length-1;i++){
+    var a=pts[i][1],b=pts[i+1][1];
+    if((a<=0&&b>=0)||(a>=0&&b<=0)){
+      var x0=pts[i][0],x1=pts[i+1][0];
+      var t=a/(a-b);
+      var bx=x0+(x1-x0)*t;
+      if(bes.indexOf(round1(bx))<0)bes.push(round1(bx));
+    }
+  }
+  var pad=(ymax-ymin)*0.16||1;ymin-=pad;ymax+=pad;
+  var cur=+$("payoff-slider").value;
+  var marks=[];
+  bes.forEach(function(b){marks.push({x:b,y:def.pay(b),label:"BE $"+b,color:"#d97706",dy:-12});});
+  marks.push({x:cur,y:def.pay(cur),label:"S=$"+cur+" → "+fmt$(def.pay(cur)),color:"#1d4ed8",dy:22});
+  lineChart({
+    el:"chart-payoff",height:330,yTicks:4,xTicks:5,
+    xDomain:[50,150],yDomain:[ymin,ymax],
+    xFmt:function(v){return "$"+num(v);},yFmt:fmt$,
+    series:[{name:key,color:"#2563eb",width:3,data:pts}],
+    marks:marks
+  });
+  var pnl=def.pay(cur);
+  var cls=pnl>0?"pos":(pnl<0?"neg":"mid");
+  $("payoff-stats").innerHTML=
+    '<div class="stat"><b class="'+cls+'">'+fmt$(pnl)+'</b>当前到期股价 $'+cur+' 时的每股盈亏</div>'+
+    '<div class="stat"><b>BE '+(bes.length?bes.map(function(b){return "$"+b;}).join(" / "):"—")+'</b>盈亏平衡点（到期价）</div>'+
+    '<div class="stat"><b>'+def.risk.split("；")[0]+'</b>风险提示</div>';
+  $("payoff-note").innerHTML=def.note;
+}
+var payoffSel={key:payoffKeys[0]};
+(function(){
+  var c=$("payoff-controls");
+  payoffKeys.forEach(function(k){
+    var b=document.createElement("button");
+    b.type="button";b.textContent=k;
+    b.onclick=function(){
+      payoffSel.key=k;
+      var bs=c.querySelectorAll("button");
+      for(var i=0;i<bs.length;i++)bs[i].classList.remove("on");
+      b.classList.add("on");
+      buildPayoff();
+    };
+    c.appendChild(b);
+  });
+  var lbl=document.createElement("label");
+  lbl.innerHTML='到期股价 S<sub>T</sub>：<input type="range" id="payoff-slider" min="50" max="150" value="100" step="1"> <span id="payoff-slider-val">$100</span>';
+  c.appendChild(lbl);
+  $("payoff-slider").oninput=function(){
+    $("payoff-slider-val").textContent="$"+this.value;
+    buildPayoff();
+  };
+  buildPayoff();
+})();
+
+/* =========================================================
+   ④ Greeks 曲线（Black-Scholes：K=100，σ=30%，r=2%）
+   ========================================================= */
+(function(){
+  var K=100,SIG=0.30,R=0.02,T30=30/365;
+  var gammaPts=[],vegaPts=[],deltaCall=[],deltaPut=[];
+  var S;
+  for(S=60;S<=140;S+=1){
+    var v=bs(S,K,T30,SIG,R);
+    deltaCall.push([S,v.deltaCall]);
+    deltaPut.push([S,v.deltaPut]);
+    gammaPts.push([S,v.gamma*100]);
+    vegaPts.push([S,v.vega]);
+  }
+  lineChart({el:"chart-delta",height:250,yTicks:4,xTicks:4,xDomain:[60,140],yDomain:[-1.2,1.2],
+    xFmt:function(v){return "$"+num(v);},yFmt:num,
+    series:[
+      {name:"Call Delta",color:"#2563eb",width:2.6,data:deltaCall},
+      {name:"Put Delta",color:"#dc2626",width:2.6,data:deltaPut}
+    ],
+    marks:[{x:100,y:0.5,label:"ATM ≈ +0.5",color:"#2563eb",dy:-12},{x:100,y:-0.5,label:"ATM ≈ −0.5",color:"#dc2626",dy:22}]});
+  lineChart({el:"chart-gamma",height:250,yTicks:4,xTicks:4,xDomain:[60,140],yDomain:[0,6],
+    xFmt:function(v){return "$"+num(v);},yFmt:function(v){return num(v);},
+    series:[{name:"Gamma（×100）",color:"#0e9f6e",width:2.6,data:gammaPts}],
+    marks:[{x:100,y:4.6,label:"ATM 最高",color:"#0e9f6e",dy:-12}]});
+  var thetaPts=[];
+  for(var d=60;d>=1;d--){
+    var tv=bs(100,K,d/365,SIG,R);
+    thetaPts.push([d,-tv.thetaCall/365]);
+  }
+  lineChart({el:"chart-theta",height:250,yTicks:4,xTicks:4,xDomain:[1,60],yDomain:[0,0.4],
+    xFmt:function(v){return Math.round(v)+"天";},yFmt:function(v){return "$"+v.toFixed(2);},
+    series:[{name:"买方每日 Theta 损耗",color:"#d97706",width:2.6,data:thetaPts}],
+    marks:[{x:1,y:0.3,label:"临近到期加速",color:"#d97706",dy:-12}]});
+  lineChart({el:"chart-vega",height:250,yTicks:4,xTicks:4,xDomain:[60,140],yDomain:[0,0.2],
+    xFmt:function(v){return "$"+num(v);},yFmt:function(v){return "$"+v.toFixed(2);},
+    series:[{name:"Vega（每 1 个波动率点）",color:"#7c3aed",width:2.6,data:vegaPts}],
+    marks:[{x:100,y:0.114,label:"ATM 附近最大",color:"#7c3aed",dy:-12}]});
+})();
+
+/* =========================================================
+   ⑤ TQQQ vs QQQ 模拟器
+   ========================================================= */
+var tqqqScenarios={
+  "两日反转（用户例子）":{desc:"Day1 +10%，Day2 −10%",r:[0.10,-0.10]},
+  "来回震荡":{desc:"+10%/−10% 交替 6 天",r:[0.10,-0.10,0.10,-0.10,0.10,-0.10]},
+  "单边上涨趋势":{desc:"6 天温和上涨",r:[0.02,0.015,0.02,0.015,0.02,0.015]},
+  "剧烈震荡":{desc:"−5%/+7% 交替 6 天",r:[-0.05,0.07,-0.04,0.06,-0.05,0.05]}
+};
+function buildTQQQ(){
+  var sc=tqqqSel.scenario;
+  var r=tqqqScenarios[sc].r;
+  var q=[1],t=[1];
+  for(var i=0;i<r.length;i++){
+    q.push(q[i]*(1+r[i]));
+    t.push(t[i]*(1+3*r[i]));
+  }
+  var qPts=[],tPts=[],nPts=[];
+  for(var d=0;d<=r.length;d++){
+    qPts.push([d,q[d]]);
+    tPts.push([d,t[d]]);
+    nPts.push([d,1+3*(q[d]-1)]);
+  }
+  lineChart({
+    el:"chart-tqqq",height:340,yTicks:4,xTicks:r.length,
+    xDomain:[0,r.length],
+    xFmt:function(v){return "Day "+num(v);},yFmt:function(v){return num((v-1)*100)+"%";},
+    series:[
+      {name:"QQQ",color:"#2563eb",width:2.6,data:qPts},
+      {name:"TQQQ（每日 3 倍复利）",color:"#dc2626",width:2.6,data:tPts},
+      {name:"朴素 3×（3×QQQ 总收益）",color:"#8a97ad",width:2,dash:"6 5",data:nPts}
+    ],
+    marks:[
+      {x:r.length,y:q[q.length-1],label:"QQQ "+fmtPct((q[q.length-1]-1)*100),color:"#2563eb",dy:-14},
+      {x:r.length,y:t[t.length-1],label:"TQQQ "+fmtPct((t[t.length-1]-1)*100),color:"#dc2626",dy:22}
+    ]
+  });
+  var qR=(q[q.length-1]-1)*100,tR=(t[t.length-1]-1)*100,nR=(1+3*(q[q.length-1]-1)-1)*100,drag=tR-nR;
+  $("tqqq-stats").innerHTML=
+    '<div class="stat"><b>'+fmtPct(qR)+'</b>QQQ 区间总收益</div>'+
+    '<div class="stat"><b>'+fmtPct(tR)+'</b>TQQQ 实际（每日重置）</div>'+
+    '<div class="stat"><b>'+fmtPct(nR)+'</b>“朴素 3×”幻觉</div>'+
+    '<div class="stat '+(drag<0?"danger":"")+'"><b>'+fmtPct(drag)+'</b>波动损耗（TQQQ − 朴素3×）</div>';
+}
+var tqqqSel={scenario:"来回震荡"};
+(function(){
+  var c=$("tqqq-controls");
+  Object.keys(tqqqScenarios).forEach(function(k){
+    var b=document.createElement("button");
+    b.type="button";b.textContent=k;
+    b.title=tqqqScenarios[k].desc;
+    b.onclick=function(){
+      tqqqSel.scenario=k;
+      var bs=c.querySelectorAll("button");
+      for(var i=0;i<bs.length;i++)bs[i].classList.remove("on");
+      b.classList.add("on");
+      buildTQQQ();
+    };
+    c.appendChild(b);
+  });
+  c.querySelector("button").classList.add("on");
+  buildTQQQ();
+})();
+
+/* =========================================================
+   ⑥ VIX 与 SPX 镜像关系（示意曲线）
+   ========================================================= */
+(function(){
+  /* 示意路径：仅展示形态与量级，非精确历史数据 */
+  var spx=[[2006,1275],[2007,1410],[2008,1380],[2008.75,900],[2009,1040],[2010,1250],[2011,1180],[2012,1380],[2013,1810],[2014,2050],[2015,2080],[2016,2240],[2017,2470],[2018.1,2830],[2018.15,2710],[2018.4,2720],[2019,3100],[2020.1,3240],[2020.2,2250],[2020.6,3500],[2021,4700],[2022,3600],[2023,4700],[2024,6000]];
+  var vix=[[2006,12],[2007,17],[2008,21],[2008.75,72],[2009,40],[2010,20],[2011,30],[2012,16],[2013,16],[2014,17],[2015,22],[2016,15],[2017,10],[2018.1,13],[2018.15,35],[2018.4,14],[2019,15],[2020.1,17],[2020.2,75],[2020.6,26],[2021,17],[2022,28],[2023,15],[2024,13]];
+  lineChart({
+    el:"chart-vix",height:340,yTicks:4,xTicks:6,
+    xDomain:[2006,2024],yDomain:[0,6500],
+    xFmt:function(v){return num(v);},yFmt:function(v){return v>=1000?num(v/1000)+"k":num(v);},
+    series:[
+      {name:"S&P 500（示意）",color:"#2563eb",width:2.6,data:spx},
+      {name:"VIX ×40（同轴缩放，示意）",color:"#dc2626",width:2.6,data:vix.map(function(p){return [p[0],p[1]*40];})}
+    ],
+    marks:[
+      {x:2008.75,y:900,label:"2008 危机",color:"#2563eb",dy:20},
+      {x:2008.75,y:72*40,label:"VIX>80",color:"#dc2626",dy:-14},
+      {x:2018.15,y:35*40,label:"2018.2 单日+115%",color:"#dc2626",dy:-14},
+      {x:2020.2,y:75*40,label:"2020.3 ≈82",color:"#dc2626",dy:-14}
+    ]
+  });
+})();
+
+/* =========================================================
+   ⑦ 容量曲线（示意模型）
+   ========================================================= */
+(function(){
+  var pts=[];
+  for(var aum=1;aum<=1000;aum*=1.12){
+    var net=30/Math.pow(1+Math.pow(aum/50,0.8),1);
+    pts.push([aum,net]);
+  }
+  lineChart({
+    el:"chart-capacity",height:300,yTicks:4,xTicks:3,
+    xDomain:[1,1000],yDomain:[0,32],
+    xFmt:function(v){
+      if(v>=1000)return "10亿";
+      if(v>=100)return num(v)+"亿";
+      if(v>=10)return num(v)+"千万";
+      return num(v)+"百万";
+    },
+    yFmt:function(v){return num(v)+"%";},
+    series:[{name:"年化净收益（示意）",color:"#0e9f6e",width:3,data:pts}],
+    marks:[
+      {x:1,y:28.7,label:"$100万 → ~29%",color:"#0e9f6e",dy:-14},
+      {x:50,y:15,label:"$5000万 → 收益腰斩",color:"#d97706",dy:-14},
+      {x:1000,y:2.5,label:"$10亿 → ~2.5%",color:"#dc2626",dy:20}
+    ]
+  });
+})();
+
+/* =========================================================
+   ⑧ 期权 vs 股票 固定费用（示意，2025–2026 美国市场）
+   ========================================================= */
+barChart({
+  el:"chart-costs",height:320,yMax:0.8,
+  groups:[
+    {label:"股票（主流零售券商）",bars:[
+      {label:"佣金",value:0,suffix:"",color:"#0e9f6e"}
+    ]},
+    {label:"期权（IBKR Pro 示例）",bars:[
+      {label:"券商佣金",value:0.65,suffix:"",color:"#2563eb"},
+      {label:"OCC 清算",value:0.025,suffix:"",color:"#93b4f5"},
+      {label:"交易所+监管",value:0.05,suffix:"",color:"#c7d8fb"}
+    ]}
+  ],
+  yFmt:function(v){return "$"+v.toFixed(2);}
+});
+
+/* =========================================================
+   导航：滚动高亮 / 移动端菜单 / 回到顶部
+   ========================================================= */
+var tocLinks=Array.prototype.slice.call(document.querySelectorAll(".toc a"));
+var sections=tocLinks.map(function(a){return document.querySelector(a.getAttribute("href"));}).filter(Boolean);
+if("IntersectionObserver" in window){
+  var spy=new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){
+        var id="#"+en.target.id;
+        tocLinks.forEach(function(a){a.classList.toggle("active",a.getAttribute("href")===id);});
+      }
+    });
+  },{rootMargin:"-12% 0px -70% 0px"});
+  sections.forEach(function(s){spy.observe(s);});
+}
+var menuBtn=$("menuBtn"),toc=document.getElementById("toc");
+if(menuBtn){
+  menuBtn.onclick=function(){toc.classList.toggle("open");};
+  toc.querySelectorAll("a").forEach(function(a){
+    a.addEventListener("click",function(){toc.classList.remove("open");});
+  });
+}
+var toTop=$("toTop");
+window.addEventListener("scroll",function(){
+  if(window.scrollY>700){toTop.classList.add("show");}else{toTop.classList.remove("show");}
+},{passive:true});
+if(toTop){toTop.onclick=function(){window.scrollTo({top:0,behavior:"smooth"});};}
+
+})();
+</script>
+
+
+</body></html>
