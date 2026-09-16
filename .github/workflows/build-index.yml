@@ -30,10 +30,10 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add index.html
+          git add index.html *.html
           if git diff --staged --quiet; then
-            echo "No changes to index.html"
+            echo "No changes to commit"
           else
-            git commit -m "chore: rebuild index [skip ci]"
+            git commit -m "chore: rebuild index and inject widgets [skip ci]"
             git push
           fi
