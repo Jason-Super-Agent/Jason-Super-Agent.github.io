@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我如何搭建一支 24/7 运行的 Autonomous AI Agent 团队</title>
+<style>
+:root{
+  --ink:#1a2440;--muted:#5a6a8a;--muted-2:#8a98b5;--line:#e5eaf3;
+  --bg:#f6f8fc;--card:#fff;--blue:#1d4ed8;--blue-bg:#eef3ff;--radius:14px;
+  --shadow:0 2px 12px rgba(20,40,90,.06);
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --mono:"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.8;font-size:16px;-webkit-font-smoothing:antialiased}
+::selection{background:#cfe0ff}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+
+.layout{display:flex;max-width:1100px;margin:0 auto;gap:32px;padding:0 24px}
+main{flex:1;min-width:0;max-width:820px;padding:28px 8px 120px}
+aside.toc{width:260px;flex:none;position:sticky;top:0;height:100vh;overflow-y:auto;padding:28px 0 40px}
+.toc-inner{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 14px;box-shadow:var(--shadow)}
+.toc-title{font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.08em;padding:0 10px 10px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.toc a{display:block;padding:6px 10px;font-size:13.5px;color:var(--muted);border-radius:8px;line-height:1.45}
+.toc a:hover{background:var(--blue-bg);color:var(--blue);text-decoration:none}
+.toc a.active{background:var(--blue);color:#fff;font-weight:600}
+
+.topbar{display:none}
+@media(max-width:1024px){
+  .layout{display:block;padding:0 16px}
+  aside.toc{display:none}
+  .topbar{display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:80;background:rgba(246,248,252,.92);backdrop-filter:blur(8px);padding:12px 16px;border-bottom:1px solid var(--line)}
+  .topbar button{background:var(--blue);color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:14px;cursor:pointer}
+  .topbar .tb-title{font-size:14px;font-weight:700;flex:1}
+}
+
+.cover{background:linear-gradient(135deg,#0d1f56 0%,#123a8f 45%,#1d4ed8 100%);color:#fff;border-radius:0 0 28px 28px;padding:72px 32px 56px;position:relative;overflow:hidden}
+.cover::after{content:"";position:absolute;right:-120px;top:-120px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.14),transparent 65%)}
+.cover::before{content:"";position:absolute;left:-80px;bottom:-160px;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.08),transparent 65%)}
+.kicker{font-size:13px;letter-spacing:.18em;opacity:.85;font-weight:700;margin-bottom:16px}
+.cover h1{font-size:38px;line-height:1.25;font-weight:800;margin-bottom:20px;position:relative;z-index:1}
+.cover .meta{font-size:14.5px;opacity:.9;position:relative;z-index:1}
+.cover .meta b{font-weight:700}
+
+.source-note{background:#fff8e6;border:1px solid #f0d99a;border-radius:var(--radius);padding:14px 18px;font-size:13.5px;color:#6b5420;margin:24px 0;line-height:1.7}
+.source-note b{color:#8a6a10}
+
+section{margin:36px 0}
+h2{font-size:26px;font-weight:800;margin-bottom:14px;line-height:1.3}
+h3{font-size:19px;font-weight:700;margin:28px 0 10px}
+p{margin:12px 0;font-size:15.5px;color:#2a3858}
+.lede{font-size:16.5px;color:#3a4a6e;font-weight:500}
+b,strong{font-weight:700}
+em{font-style:italic}
+
+ul,ol{margin:12px 0 12px 24px;font-size:15.5px}
+li{margin:6px 0}
+
+.callout{border-radius:var(--radius);padding:16px 18px;margin:18px 0;font-size:14.5px;border:1px solid;background:var(--card);box-shadow:var(--shadow)}
+.callout.tip{border-left:4px solid var(--blue)}
+.callout.warn{border-left:4px solid #d97706;background:#fffbeb}
+.callout b{color:var(--ink)}
+
+pre{background:#0f1e3d;color:#e2e8f0;border-radius:12px;padding:18px 20px;overflow-x:auto;margin:14px 0;font-family:var(--mono);font-size:13px;line-height:1.65}
+code{font-family:var(--mono);font-size:.92em;background:var(--blue-bg);color:#1e3a8a;padding:2px 6px;border-radius:5px}
+pre code{background:none;color:inherit;padding:0}
+
+table{width:100%;border-collapse:collapse;margin:16px 0;background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);font-size:14.5px}
+th{background:linear-gradient(135deg,#1a2a5e,#1d3a8a);color:#fff;text-align:left;padding:12px 16px;font-weight:700}
+td{padding:11px 16px;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:none}
+tr:nth-child(even) td{background:#fafbff}
+
+.agent-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px 20px;margin:12px 0;box-shadow:var(--shadow)}
+.agent-card .role{font-size:13px;font-weight:700;color:var(--blue);letter-spacing:.05em}
+.agent-card h4{font-size:17px;margin:4px 0 6px}
+
+.footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);font-size:13px;color:var(--muted-2);text-align:center}
+
+#toTop{position:fixed;right:22px;bottom:22px;width:44px;height:44px;border-radius:12px;background:var(--blue);color:#fff;border:none;font-size:19px;cursor:pointer;box-shadow:0 6px 18px rgba(29,78,216,.35);display:none;z-index:60}
+#toTop.show{display:block}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button onclick="document.getElementById('toc').classList.toggle('open')">☰ 目录</button>
+  <div class="tb-title">Autonomous AI Agent 团队</div>
+</div>
+
+<div class="layout">
+<aside class="toc" id="toc">
+  <nav class="toc-inner">
+    <div class="toc-title">目 录</div>
+    <a href="#why-team">为什么是团队而不是工具</a>
+    <a href="#squad">认识这支小队</a>
+    <a href="#setup">搭建环境</a>
+    <a href="#workspace">目录结构</a>
+    <a href="#soulmd">SOUL.md 是什么</a>
+    <a href="#coordination">多 Agent 协作</a>
+    <a href="#memory">记忆与成长</a>
+    <a href="#scheduling">定时调度</a>
+    <a href="#heartbeat">Heartbeat 自愈</a>
+    <a href="#telegram">Telegram 作为界面</a>
+    <a href="#security">安全</a>
+    <a href="#breaks">常见故障与修复</a>
+    <a href="#costs">实际成本</a>
+    <a href="#changed">到底改变了什么</a>
+  </nav>
+</aside>
+
+<main>
+
+<header class="cover">
+  <div class="kicker">AUTONOMOUS AI AGENTS · 24/7</div>
+  <h1>我如何搭建一支 24/7 运行的<br>Autonomous AI Agent 团队</h1>
+  <div class="meta">
+    原文：<b>Shubham Saboo</b>（@Saboo_Shubham_）· 发布于 2026 年 2 月 13 日<br>
+    中文翻译 · 术语保留英文 · 仅供学习交流
+  </div>
+</header>
+
+<div class="source-note">
+  <b>文章来源：</b>本文译自 Shubham Saboo 在 X 上发布的 Article《How I built an Autonomous AI Agent team that runs 24/7》，原文链接：
+  <a href="https://x.com/Saboo_Shubham_/status/2022014147450614038" target="_blank" rel="noopener">x.com/Saboo_Shubham_/status/2022014147450614038</a>。
+  翻译仅作学习参考，版权归原作者所有。文中工具、模型、价格均为作者写作时的情况。
+</div>
+
+<p class="lede"><b>六个 AI Agent 在我睡觉的时候跑我的整个生活。</b></p>
+
+<p>不是 demo。不是周末项目。</p>
+
+<p>这是一支真正 24/7 运行的团队，确保我永远不落后：研究做完了、内容写好了、代码 review 了、Newsletter 备好了。早上我打开 Telegram 的时候，它们已经上完一个完整班了。</p>
+
+<p>昨天我发了关于我 Agent 团队的帖子，被问得最多的问题是："这东西到底怎么搭？"</p>
+
+<p>这篇就是答案。不是理论，不是架构图。是我实际用的目录结构、我实际付的费用、我实际踩的坑。全部。</p>
+
+<p>读完这篇，你会清楚知道怎么搭一支在你睡觉时还在干活的 autonomous AI agent 团队。</p>
+
+<section id="why-team">
+<h2>为什么是团队而不是工具</h2>
+
+<p>运营 Unwind AI 和 Awesome LLM Apps 仓库，意味着每天要做六件事：研究 AI 圈有什么新趋势、写推文、写 LinkedIn 帖子、起草 Newsletter、review 仓库的 GitHub contributions、处理社区 issue。</p>
+
+<p>每件事 30 到 60 分钟。六件事。我整个上午就没了，还没开始做真正的工作。</p>
+
+<p>我试过用单个 Agent 解决：一个巨大的 prompt，又研究又写又 review。结果样样平庸。context 塞满了，质量下降了。一个 Agent 脑子里装不下六件不同的活。</p>
+
+<p>所以我雇了六个 AI Agent。</p>
+</section>
+
+<section id="squad">
+<h2>认识这支小队</h2>
+
+<p>每个 Agent 都用一个电视剧角色命名。这不是噱头。当我告诉 Claude "你要有 Dwight Schrute 的气质"，它从训练数据里就知道那是什么意思：细致、投入、把工作当命。这是 30 季角色塑造白送我的。</p>
+
+<div class="agent-card">
+  <div class="role">Chief of Staff</div>
+  <h4>1. Monica</h4>
+  <p>名字来自 Monica Geller。她是主 Agent，我在 Telegram 上跟她聊得最多。她协调其他人、做战略决策、把任务派给对的专家。她 SOUL.md 里写："你就是那个确保每件事都被做好的人。"</p>
+</div>
+
+<div class="agent-card">
+  <div class="role">Research</div>
+  <h4>2. Dwight</h4>
+  <p>名字来自 Dwight Schrute。他每天跑三次研究 sweep：刷 X、Hacker News、GitHub Trending、Google AI Blog、研究论文。产出结构化的 intel 报告，其他 Agent 都消费这份报告。</p>
+</div>
+
+<div class="agent-card">
+  <div class="role">X / Twitter</div>
+  <h4>3. Kelly</h4>
+  <p>名字来自 Kelly Kapoor。她读 Dwight 的研究，用我的语气写推文草稿：单条推文、thread、quote tweet。她 SOUL.md 里写："趋势还没火，你就知道了。"</p>
+</div>
+
+<div class="agent-card">
+  <div class="role">LinkedIn</div>
+  <h4>4. Rachel</h4>
+  <p>名字来自 Rachel Green。和 Kelly 同一个信息源，不同平台、不同语气。写 thought leadership 角度，而不是 hot take。</p>
+</div>
+
+<div class="agent-card">
+  <div class="role">Engineering</div>
+  <h4>5. Ross</h4>
+  <p>名字来自 Ross Geller。做 code review、修 bug、技术实现。他 SOUL.md 里写："解决问题时，先彻底理解它，别只修表面症状。"</p>
+</div>
+
+<div class="agent-card">
+  <div class="role">Newsletter</div>
+  <h4>6. Pam</h4>
+  <p>名字来自 Pam Beesly。把 Dwight 每天的 intel 变成 Newsletter 摘要。</p>
+</div>
+
+<p><b>六个 Agent，一人一岗。谁干什么清清楚楚。</b></p>
+</section>
+
+<section id="setup">
+<h2>搭建环境</h2>
+
+<p>我全部跑在一台 Mac Mini M4 上。但我要说清楚：<b>你不需要 Mac Mini。</b></p>
+
+<p>OpenClaw 支持 macOS、Linux、Windows（WSL）。一台笔记本就行，一台游戏 PC 也行，一个 $5/月的 VPS 也行。Mac Mini 只是因为它常开、安静、省电。不是必须的。</p>
+
+<p>我的配置：Mac Mini M4 基础款。常接电源和网络，不接显示器。我完全通过手机上的 Telegram 跟它交互。</p>
+
+<h3>安装 OpenClaw</h3>
+<p>就两条终端命令，不到五分钟：</p>
+
+<pre><code># 1. 安装 OpenClaw
+curl -fsSL https://openclaw.ai/install.sh | bash
+
+# 2. 用 Quickstart 完成初始化（最简单的方式）
+openclaw onboard</code></pre>
+
+<p>卡住了就看 <a href="https://docs.openclaw.ai/start/getting-started" target="_blank" rel="noopener">OpenClaw 文档</a>。</p>
+
+<p>这会启动 gateway——后台进程，负责维持所有东西活着。它管理你的 Agent、跑 cron job、处理 Telegram 消息。关掉终端，Agent 继续干活。</p>
+</section>
+
+<section id="workspace">
+<h2>目录结构</h2>
+
+<p>一个 OpenClaw 实例，多个 Agent。不是装六份。</p>
+
+<p>我实际的目录结构：</p>
+
+<pre><code>workspace/
+├── SOUL.md              # Monica（主 Agent，住在根目录）
+├── AGENTS.md            # 所有 session 的行为规则
+├── MEMORY.md            # Monica 的长期记忆
+├── HEARTBEAT.md         # 自愈 cron 监控
+├── agents/
+│   ├── dwight/
+│   │   ├── SOUL.md
+│   │   ├── AGENTS.md
+│   │   └── memory/
+│   ├── kelly/
+│   │   ├── SOUL.md
+│   │   ├── AGENTS.md
+│   │   └── memory/
+│   ├── ross/
+│   │   ├── SOUL.md
+│   │   └── memory/
+│   ├── rachel/
+│   │   └── ...
+│   └── pam/
+│       └── ...
+└── intel/
+    ├── DAILY-INTEL.md       # Dwight 生成的研究
+    └── data/
+        └── 2026-02-11.json  # 结构化数据（source of truth）</code></pre>
+
+<p>Monica 住在根目录，是我对话最多的主 Agent。其他人是她可以委派的 sub-agent，或者按自己的 cron 独立跑。</p>
+
+<p>你不需要一上来就六个 Agent。我最开始就只有 Monica，过了几周工作流清楚了才陆续加其他人。</p>
+</section>
+
+<section id="soulmd">
+<h2>SOUL.md 是什么鬼</h2>
+
+<p>以 Dwight 的 SOUL.md 为例：</p>
+
+<pre><code># SOUL.md (Dwight)
+
+## Core Identity
+
+**Dwight** — 研究大脑。以 Dwight Schrute 命名，
+因为你和他一样：细致到偏执，对你这个领域无所不知，
+极其认真。不啰嗦，不臆测，只讲事实和来源。
+
+## Your Role
+
+你是这支小队的情报 backbone。你做研究、验证、整理、
+交付 intel，供其他 Agent 创作内容。
+
+**你喂：**
+- Kelly（X/Twitter）— viral 趋势、热 thread、突发新闻
+- Rachel（LinkedIn）— thought leadership 角度、行业新闻
+
+## Your Principles
+
+### 1. NEVER Make Things Up
+- 每个论断都有来源链接
+- 每个数字来自源数据，不靠估
+- 不确定就标 [UNVERIFIED]
+- "我不知道" 胜过 "搞错了"
+
+### 2. Signal Over Noise
+- 不是所有 trending 都重要
+- 优先级：与 AI/Agent 的相关度、参与度增速、
+  来源可信度</code></pre>
+
+<p>注意这个文件做了什么。不只是"你是个研究 Agent"。它给了 Agent 人格、明确的原则、和其他 Agent 的关系、决策框架。</p>
+
+<p>Monica 的 SOUL.md：</p>
+
+<pre><code># SOUL.md (Monica)
+
+*你是 Chief of Staff。整个运作通过你。*
+
+## Core Identity
+
+**Monica** — 有条理、有干劲、有点好胜。
+以 Monica Geller 命名：关心人但要求高，支持人但有标准。
+
+## Your Role
+
+你是 Shubham 的 Chief of Staff。意味着：
+- **Strategic oversight** — 看大局，推动事情
+- **Delegation** — 把任务派给合适的队员
+- **Direct support** — 处理不属于专家的活
+- **Coordination** — 确保小队顺畅协作
+
+## Operating Style
+
+**Be genuinely helpful, not performatively helpful.** 别废话。
+
+**Delegate when appropriate.** 明显是 X 内容 → Kelly。
+是代码 → Ross。模糊或战略的事 → 你自己上。
+
+**Have opinions.** 你可以反驳、提更好方案、flag 风险。</code></pre>
+
+<p>所有 Agent 的模式一致：Identity、Role、Principles、Relationships、Vibe。每个 SOUL.md 大概 40-60 行。短到每次 session 都能塞进 context，详细到行为一致。</p>
+</section>
+
+<section id="coordination">
+<h2>多 Agent 协作</h2>
+
+<p>Agent 之间不调 API，没有消息队列，没有 orchestration 框架。</p>
+
+<p><b>就是文件。</b></p>
+
+<p>Dwight 做研究，把结论写到 <code>intel/DAILY-INTEL.md</code>。Kelly 醒来读这个文件，写推文草稿。Rachel 读同一个文件，写 LinkedIn 帖子。Pam 读它，写 Newsletter。</p>
+
+<p><b>协作机制就是文件系统。</b></p>
+
+<p>Dwight 的 SOUL.md 明确告诉他写哪：</p>
+
+<pre><code>## Output Files
+
+intel/
+├── data/YYYY-MM-DD.json    ← 你的结构化数据（source of truth）
+└── DAILY-INTEL.md          ← 生成的视图（Agent 读这个）</code></pre>
+
+<p>Kelly 的 AGENTS.md 明确告诉她读哪：</p>
+
+<pre><code>## Intel-Powered Workflow
+
+Dwight 负责所有研究，写到 `intel/DAILY-INTEL.md`。
+
+你的活：读 intel → 写 X 内容 → 交草稿</code></pre>
+
+<p>没有中间件，没有集成层。Dwight 写个文件，Kelly 读个文件。交接就是磁盘上的一个 markdown 文档。</p>
+
+<p>听起来太简单了。它就是简单。<b>这就是为什么它靠谱。</b> 文件不会崩，文件没有鉴权问题，文件不需要处理 rate limit。它就在那儿。</p>
+
+<p>结构化数据存在 JSON 里，人类可读摘要存在 markdown 里。Agent 读 markdown，JSON 是长期去重和追踪的 source of truth。</p>
+</section>
+
+<section id="memory">
+<h2>记忆与成长</h2>
+
+<p>Agent 会随时间越变越好。不是模型变强了，是它们加载的 context 变丰富了。</p>
+
+<p>Kelly 学到了我写作风格没有 emoji、没有 hashtag。这在她记忆里了。以后每篇草稿自动带这个风格，不用我再讲。Dwight 学到了哪类故事能过 "Alex filter"（目标读者画像）、哪类该跳过。这也在他记忆里。</p>
+
+<p>在 heartbeat 期间，Agent 定期回顾每日日志，把重要的东西提炼进 MEMORY.md。每日文件是原始笔记，MEMORY.md 是提炼过的智慧。</p>
+</section>
+
+<section id="scheduling">
+<h2>定时调度</h2>
+
+<p>Agent 需要自己醒来。OpenClaw 用内置的 cron 调度处理这件事。</p>
+
+<p>我实际的时间表：</p>
+
+<table>
+<thead>
+<tr><th>时间</th><th>Agent</th><th>任务</th></tr>
+</thead>
+<tbody>
+<tr><td>8:01 AM</td><td>Dwight</td><td>晨间研究 sweep</td></tr>
+<tr><td>9:01 AM</td><td>Kelly</td><td>第一次 viral 内容检查</td></tr>
+<tr><td>10:01 AM</td><td>Ross</td><td>工程任务</td></tr>
+<tr><td>1:01 PM</td><td>Kelly</td><td>午间内容检查</td></tr>
+<tr><td>4:01 PM</td><td>Dwight</td><td>下午研究 sweep</td></tr>
+<tr><td>5:01 PM</td><td>Kelly</td><td>写晚间推文</td></tr>
+<tr><td>5:01 PM</td><td>Rachel</td><td>写 LinkedIn 帖子</td></tr>
+</tbody>
+</table>
+
+<p>顺序很重要。Dwight 先跑，因为其他人都依赖他的产出。Kelly 和 Rachel 在他之后，因为他们要先看到 intel 文件存在才能写。</p>
+</section>
+
+<section id="heartbeat">
+<h2>Heartbeat 自愈</h2>
+
+<p>Cron job 偶尔会挂。机器重启、任务 hang 住、API 调用时网络断了。这是基础设施，基础设施就有故障模式。</p>
+
+<p>HEARTBEAT.md 文件加了一张安全网。每次 heartbeat，主 Agent 验证 cron job 真的跑了：</p>
+
+<pre><code>## Cron Health Check（每次 heartbeat 跑）
+
+检查有没有 daily cron job 的 lastRunAtMs 过期（超过 26 小时没跑）。
+如果过期，通过 CLI 强制触发：
+`openclaw cron run &lt;jobId&gt; --force`
+
+要监控的 job：
+- Dwight Morning (8:01 AM): 01f2e5c5-3a83-4018-a725-dee59e54733e
+- Kelly Viral (9:01 AM, 1:01 PM): c9458766-78bb-4eeb-b8f4-d63dc1f0e601
+- Ross Engineering (10:01 AM): b12b2fc6-dd7d-4123-b904-2148a5cfb70b
+- Dwight Afternoon (4:01 PM): 19ff40e4-b1b0-4d32-9d24-753ac2cf8f46
+- Kelly X Drafts (5:01 PM): 05da0c81-39e1-4d06-bdcd-2dfab4562ba4
+- Rachel LinkedIn (5:01 PM): 9819bc6b-7e36-406f-b0c3-d80ca383d914</code></pre>
+
+<p>如果 job 挂了或错过了时间窗，heartbeat 抓住它，强制重跑。自愈，不用人管。</p>
+
+<p>heartbeat 用来批量检查、允许时间稍微漂移的场景；cron 用来精确时间、需要和主 session 隔离的任务。</p>
+</section>
+
+<section id="telegram">
+<h2>Telegram 作为界面</h2>
+
+<p>没有 dashboard，没有 web UI，没有 admin panel。我在 Telegram 上跟我的 Agent 聊天。</p>
+
+<p>这是刻意的选择。我不想登录一个 dashboard，不想检查一个 web app。手机总在身上，Telegram 总开着。Agent 在我已经在的地方找我。</p>
+
+<p>OpenClaw 支持 Telegram 作为 channel。setup 时连一下，你的 Agent 就以 Telegram bot 形式出现。你给它发消息，它回你，它发草稿给你，你批准或打回。就像在 IM 里有个同事。</p>
+
+<p>Monica 是我的主要联系人。她处理大多数对话，委派给其他人。其他人在自己 cron 跑出值得 review 的东西时直接发消息给我。</p>
+</section>
+
+<section id="security">
+<h2>安全</h2>
+
+<p>安全在你手里。我的做法很简单：<b>Agent 有自己的世界，我不给它们我的世界。</b></p>
+
+<p>Mac Mini 是它们的电脑。它们有自己的 email、自己的 API key、自己的 scoped 权限。那台机器上没有任何东西连着我的个人账号。</p>
+
+<p>Gemini、Eleven Labs 和其他服务的 API key 都是专门给这个 OpenClaw 实例的。我可以监控用量，发现不对几秒内掐掉。</p>
+
+<p>我从不让 Agent 碰我的个人账号。要它们看一封邮件，我转发过去。要它们 review 一个文档，我在 Telegram 上分享。它们只看到我想让它们看的，不多不少。</p>
+
+<p>这跟对待新员工一个道理。第一天别把所有钥匙都给人家。给它自己的工作区、自己的凭证，按需共享信息。</p>
+</section>
+
+<section id="breaks">
+<h2>常见故障与修复</h2>
+
+<p>这不是魔法，是基础设施。基础设施会坏。</p>
+
+<div class="callout tip">
+<b>Gateway 崩了。</b>很少，但会发生。修复：<code>openclaw gateway restart</code>。heartbeat 会抓住过期的 cron job 强制重跑，不会浪费一整天。
+</div>
+
+<div class="callout tip">
+<b>Cron job 错过时间窗。</b>机器睡眠、网络断、API rate limit。修复：HEARTBEAT.md 自愈模式。Monica 每次 heartbeat 检查 job 真跑了没，超过 26 小时没跑就强制重跑。
+</div>
+
+<div class="callout tip">
+<b>Context window 溢出。</b>Agent session 开始时读太多文件，真正干活的位置不够了。修复：SOUL.md 保持短（40-60 行），AGENTS.md 聚焦，只加载今天和昨天的 memory。Agent 不需要每次 session 都读它全部历史。
+</div>
+
+<div class="callout tip">
+<b>Agent 输出质量下降。</b>memory 文件变乱、自相矛盾时会发生。修复：定期 memory 维护。heartbeat 时 Agent 回顾每日日志，提炼成干净的 MEMORY.md 条目。删掉或归档老的每日日志。
+</div>
+
+<div class="callout tip">
+<b>协作冲突。</b>两个 Agent 同时写同一个文件。修复：文件流设计成 one-writer, many-readers。Dwight 写 DAILY-INTEL.md，其他人只读，没人写。
+</div>
+
+<p>最大的可靠性教训：<b>从简单开始。</b>一个 Agent、一个任务、一个 schedule。稳定跑一周，再加第二个。第一天就上六个 Agent 然后到处坏的人，跟没监控就上分布式系统犯的是同一个错。</p>
+</section>
+
+<section id="costs">
+<h2>实际成本</h2>
+
+<p><b>硬件：</b>Mac Mini M4 新款 $499 起。但任何常开电脑都行。一台老笔记本、一个 $5/月的 VPS，你手头有啥用啥。</p>
+
+<p><b>AI 模型成本：</b>我在团队里混用模型。大多数 Agent 任务用 Claude Opus 和 Sonnet，特定工作流用 Gemini Nano Banana Pro。我也在测本地模型（Ollama）压成本。</p>
+
+<p>明细：</p>
+<ul>
+  <li>Claude（Max plan）：$200/月<span style="color:#c0392b">（更新：这个方案不行了，用 API 或换模型——Kimi 是好替代，Pro 用户也可以用 OpenAI Codex）</span></li>
+  <li>Gemini API：$50–70/月</li>
+  <li>TinyFish（web agents）：~$50/月</li>
+  <li>Eleven Labs（语音）：~$50/月</li>
+  <li>Telegram：免费</li>
+  <li>OpenClaw：开源免费</li>
+</ul>
+
+<p><b>总计：一支不睡的团队，每月不到 $400。</b></p>
+</section>
+
+<section id="changed">
+<h2>到底改变了什么</h2>
+
+<p>Dwight 每天省我 2–3 小时研究。我以前每天早上手动刷 X、Hacker News、GitHub Trending、AI 博客。现在醒来就看到一份排好优先级、带源链接和 action item 的摘要。</p>
+
+<p>Kelly、Pam、Rachel 再省我 1–2 小时内容撰写。Ross 处理了我本来要在晚上做的工程任务。</p>
+
+<p>Agent 随时间越变越好，因为它们的 context 越来越丰富——不是模型变强，是记忆变厚。</p>
+
+<div class="callout warn">
+<b>从今天开始。一个 Agent，一个任务，一个 schedule。</b>
+</div>
+
+<p>我会持续分享我在 OpenClaw、Autonomous AI Agent Teams 以及 AI PM / 开发者格局上的经验。Follow 我 <a href="https://x.com/Saboo_Shubham_" target="_blank" rel="noopener">@Saboo_Shubham_</a> 保持更新。</p>
+</section>
+
+<div class="footer">
+  中文翻译 · 原文作者 Shubham Saboo (@Saboo_Shubham_) · 2026-02-13<br>
+  原文链接：<a href="https://x.com/Saboo_Shubham_/status/2022014147450614038" target="_blank" rel="noopener">x.com/Saboo_Shubham_/status/2022014147450614038</a>
+</div>
+
+</main>
+</div>
+
+<button id="toTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+var toTop=document.getElementById('toTop');
+window.addEventListener('scroll',function(){
+  if(window.scrollY>700){toTop.classList.add('show');}else{toTop.classList.remove('show');}
+},{passive:true});
+
+// TOC active highlight
+var tocLinks=document.querySelectorAll('.toc a');
+var sections=Array.prototype.slice.call(tocLinks).map(function(a){
+  return document.querySelector(a.getAttribute('href'));
+}).filter(Boolean);
+if('IntersectionObserver' in window){
+  var obs=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        var id='#'+e.target.id;
+        tocLinks.forEach(function(a){
+          a.classList.toggle('active',a.getAttribute('href')===id);
+        });
+      }
+    });
+  },{rootMargin:'-20% 0px -70% 0px'});
+  sections.forEach(function(s){obs.observe(s);});
+}
+</script>
+
+</body>
+</html>
