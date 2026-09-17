@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>期权收益 ETF 101：QQQI 与 JEPQ 的运转逻辑</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231d4ed8'/%3E%3Cpath d='M16 40 L28 28 L36 34 L50 18' stroke='%23fff' stroke-width='5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='50' cy='18' r='5' fill='%23fff'/%3E%3C/svg%3E">
+<style>
+:root{
+--bg:#f6f8fc; --card:#ffffff; --line:#e3e8f0; --line-2:#d4dcea;
+--ink:#16233b; --muted:#5b6b84; --muted-2:#8a97ad;
+--blue:#1d4ed8; --blue-2:#2563eb; --blue-bg:#eef4ff; --blue-deep:#0f2f86;
+--green:#0e9f6e; --green-bg:#eafaf3;
+--red:#dc2626; --red-bg:#fdf0f0;
+--amber:#d97706; --amber-bg:#fff7e6;
+--radius:14px; --shadow:0 1px 3px rgba(22,35,59,.06),0 8px 24px -12px rgba(22,35,59,.12);
+--font:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Segoe UI",sans-serif;
+--math:Georgia,"Times New Roman","Songti SC","SimSun",serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.75;font-size:16px;-webkit-font-smoothing:antialiased}
+::selection{background:#cfe0ff}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ===== Layout ===== */
+.layout{display:flex;max-width:1320px;margin:0 auto;gap:28px;padding:0 24px}
+main{flex:1;min-width:0;max-width:980px;padding:28px 8px 120px}
+aside.toc{width:272px;flex:none;position:sticky;top:0;height:100vh;overflow-y:auto;padding:28px 6px 40px 0}
+.toc-inner{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 14px;box-shadow:var(--shadow)}
+.toc-title{font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.08em;padding:0 10px 10px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.toc a{display:block;padding:6px 10px;font-size:13.5px;color:var(--muted);border-radius:8px;line-height:1.45}
+.toc a:hover{background:var(--blue-bg);color:var(--blue);text-decoration:none}
+.toc a.active{background:var(--blue);color:#fff;font-weight:600}
+.toc a small{display:block;color:var(--muted-2);font-size:11.5px}
+.toc a.active small{color:#dbe7ff}
+.topbar{display:none}
+@media(max-width:1100px){
+ .layout{display:block;padding:0 16px}
+aside.toc{display:none;position:fixed;inset:0;z-index:90;width:100%;height:100%;background:rgba(15,28,60,.35);padding:64px 16px 16px}
+aside.toc.open{display:block}
+ .toc-inner{max-height:calc(100vh - 84px);overflow-y:auto}
+ .topbar{display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:80;background:rgba(246,248,252,.92);backdrop-filter:blur(8px);padding:12px 16px;border-bottom:1px solid var(--line)}
+ .topbar button{background:var(--blue);color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:14px;cursor:pointer;font-family:inherit}
+ .topbar .tb-title{font-size:14px;font-weight:700;flex:1}
+}
+
+/* ===== Cover ===== */
+.cover{background:linear-gradient(135deg,#0d1f56 0%,#123a8f 45%,#1d4ed8 100%);color:#fff;border-radius:0 0 28px 28px;padding:72px 32px 56px;position:relative;overflow:hidden}
+.cover::after{content:"";position:absolute;right:-120px;top:-120px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.14),transparent 65%)}
+.cover::before{content:"";position:absolute;left:-80px;bottom:-160px;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.08),transparent 65%)}
+.cover .kicker{display:inline-block;font-size:13px;letter-spacing:.14em;color:#bcd0ff;border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:4px 14px;margin-bottom:20px}
+.cover h1{font-size:clamp(28px,4.6vw,46px);line-height:1.2;font-weight:800;letter-spacing:.01em;margin-bottom:14px}
+.cover p.lead{font-size:clamp(15px,1.6vw,18px);color:#d7e3ff;max-width:800px;margin-bottom:22px}
+.cover .meta{font-size:13px;color:#9db6f2;display:flex;flex-wrap:wrap;gap:8px 22px}
+.cover .meta b{color:#e8efff;font-weight:600}
+.cover .cta{margin-top:26px;display:inline-flex;gap:10px;flex-wrap:wrap}
+.cover .cta a{background:#fff;color:var(--blue);font-weight:700;padding:10px 22px;border-radius:10px;font-size:14.5px;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+.cover .cta a:hover{text-decoration:none;transform:translateY(-1px)}
+.cover .cta a.ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.4)}
+
+/* ===== Section ===== */
+.section{margin-top:54px}
+.section>h2{font-size:clamp(21px,2.6vw,27px);font-weight:800;letter-spacing:-.01em;display:flex;align-items:center;gap:12px;scroll-margin-top:24px}
+.section>h2 .num{flex:none;width:38px;height:38px;border-radius:11px;background:var(--blue);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:16px;font-weight:800}
+.section>h2 .sub{font-size:14px;color:var(--muted);font-weight:500;letter-spacing:0}
+.section>p.lede{color:var(--muted);font-size:15.5px;margin:10px 0 20px;max-width:820px}
+h3.block{font-size:17.5px;font-weight:700;margin:26px 0 10px;display:flex;align-items:center;gap:8px}
+h3.block::before{content:"";width:5px;height:18px;border-radius:3px;background:var(--blue-2)}
+
+/* ===== Cards & grids ===== */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow)}
+.card h4{font-size:15.5px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.card h4 .dot{width:8px;height:8px;border-radius:50%;background:var(--blue);flex:none}
+.card p{font-size:14.5px;color:#33415c}
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:900px){.grid3,.grid4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.grid2,.grid3,.grid4{grid-template-columns:1fr}}
+
+/* ===== Callouts ===== */
+.callout{border-radius:var(--radius);padding:16px 18px 16px 52px;position:relative;margin:18px 0;font-size:14.5px;border:1px solid}
+.callout::before{position:absolute;left:16px;top:14px;font-size:20px;line-height:1;font-weight:800}
+.callout b{font-weight:700}
+.callout.info{background:var(--blue-bg);border-color:#c7d8fb;color:#173a8f}
+.callout.info::before{content:"i";color:var(--blue)}
+.callout.warn{background:var(--amber-bg);border-color:#f4dcb2;color:#7c4a03}
+.callout.warn::before{content:"!";color:var(--amber)}
+.callout.risk{background:var(--red-bg);border-color:#f5cccc;color:#8c1616}
+.callout.risk::before{content:"!";color:var(--red)}
+.callout.ok{background:var(--green-bg);border-color:#c2ecd9;color:#0b6447}
+.callout.ok::before{content:"✓";color:var(--green)}
+
+/* ===== Formula ===== */
+.formula{background:#fafcff;border:1px solid var(--line);border-left:4px solid var(--blue);border-radius:10px;padding:14px 18px;margin:14px 0;font-family:var(--math);font-size:17px;text-align:center;overflow-x:auto}
+.formula .f-note{display:block;font-family:var(--font);font-size:13px;color:var(--muted);margin-top:6px;font-style:normal;text-align:left}
+.formula var{font-style:italic;font-family:var(--math)}
+.formula .frac{display:inline-block;vertical-align:middle;text-align:center;margin:0 4px}
+.formula .frac .top{display:block;border-bottom:1.4px solid var(--ink);padding:0 6px 2px}
+.formula .frac .bot{display:block;padding:2px 6px 0}
+sup,sub{font-size:11.5px}
+.math-sym{font-family:var(--math);font-style:italic}
+
+/* ===== Tables ===== */
+.tbl-wrap{overflow-x:auto;margin:16px 0;border-radius:12px;border:1px solid var(--line);box-shadow:var(--shadow)}
+table.tbl{width:100%;border-collapse:collapse;background:#fff;font-size:14px;min-width:560px;table-layout:fixed}
+table.tbl th{background:#f1f5fd;color:var(--ink);font-weight:700;text-align:left;padding:11px 14px;border-bottom:1px solid var(--line-2);white-space:nowrap}
+table.tbl td{padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+table.tbl tr:last-child td{border-bottom:none}
+table.tbl tr:hover td{background:#f8faff}
+table.tbl td b{color:var(--ink)}
+table.tbl .pos{color:var(--green);font-weight:600}
+table.tbl .neg{color:var(--red);font-weight:600}
+table.tbl .mid{color:var(--amber);font-weight:600}
+.tbl-cap{font-size:12.5px;color:var(--muted);margin:-8px 0 18px}
+
+/* ===== Chips / tags ===== */
+.chip{display:inline-block;background:var(--blue-bg);color:var(--blue);border-radius:999px;padding:2px 12px;font-size:12.5px;font-weight:600;margin:2px 4px 2px 0}
+.chip.green{background:var(--green-bg);color:var(--green)}
+.chip.red{background:var(--red-bg);color:var(--red)}
+.chip.amber{background:var(--amber-bg);color:var(--amber)}
+.chip.gray{background:#eef1f6;color:var(--muted)}
+
+/* ===== Flow (panorama) ===== */
+.flow{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch;margin:20px 0}
+.flow .node{flex:1 1 150px;background:#fff;border:1px solid var(--line);border-top:4px solid var(--blue);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow);position:relative}
+.flow .node .n-title{font-weight:700;font-size:14.5px;margin-bottom:4px;color:var(--blue-deep)}
+.flow .node .n-desc{font-size:12.5px;color:var(--muted);line-height:1.55}
+.flow .node .n-q{font-size:12px;color:var(--muted-2);font-style:normal;margin-top:6px;display:block}
+.flow .arrow{align-self:center;color:var(--blue);font-size:20px;font-weight:800;flex:none}
+@media(max-width:900px){.flow .arrow{transform:rotate(90deg)}}
+.flow-v{display:flex;flex-direction:column;gap:0;margin:18px 0}
+.flow-v .node{border-left:4px solid var(--blue)}
+.flow-v .arrow{text-align:center;color:var(--blue);font-size:18px;padding:2px 0}
+
+/* ===== Strategy matrix ===== */
+.matrix{display:grid;grid-template-columns:104px repeat(2,1fr);gap:10px;margin:18px 0}
+.matrix .m-head{background:var(--blue);color:#fff;font-weight:700;border-radius:10px;display:flex;align-items:center;justify-content:center;padding:10px;font-size:13.5px;text-align:center}
+.matrix .m-rowlab{background:#eef2fb;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13.5px;color:var(--blue-deep);text-align:center;padding:8px}
+.matrix .m-cell{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 14px;box-shadow:var(--shadow)}
+.matrix .m-cell .s-name{font-weight:700;font-size:14px;color:var(--ink)}
+.matrix .m-cell .s-meta{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.5}
+@media(max-width:760px){.matrix{grid-template-columns:76px repeat(2,1fr)}}
+
+/* ===== Tooltip ===== */
+.tip{color:var(--blue);border-bottom:1px dashed var(--blue);cursor:help;position:relative;white-space:nowrap}
+.tip::after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);background:#13213f;color:#fff;font-size:12.5px;line-height:1.5;padding:9px 12px;border-radius:9px;width:max-content;max-width:280px;white-space:normal;opacity:0;pointer-events:none;transition:opacity .15s;z-index:30;font-family:var(--font)}
+.tip::before{content:"";position:absolute;left:50%;bottom:calc(100% + 2px);transform:translateX(-50%);border:6px solid transparent;border-top-color:#13213f;opacity:0;transition:opacity .15s;z-index:30}
+.tip:hover::after,.tip:hover::before{opacity:1}
+
+/* ===== Accordion (glossary) ===== */
+details.acc{background:#fff;border:1px solid var(--line);border-radius:12px;margin:10px 0;box-shadow:var(--shadow);overflow:hidden}
+details.acc summary{cursor:pointer;padding:14px 18px;font-weight:700;font-size:14.5px;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px}
+details.acc summary::-webkit-details-marker{display:none}
+details.acc summary::after{content:"＋";color:var(--blue);font-size:16px;transition:transform .15s}
+details.acc[open] summary::after{transform:rotate(45deg)}
+details.acc .acc-body{padding:0 18px 16px;font-size:14px;color:#33415c;border-top:1px dashed var(--line);padding-top:12px}
+details.acc .acc-body p{margin:6px 0}
+
+/* ===== Cheat sheet ===== */
+.cheat{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0}
+@media(max-width:1000px){.cheat{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.cheat{grid-template-columns:1fr}}
+.cheat .c{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;box-shadow:var(--shadow);position:relative}
+.cheat .c .c-n{position:absolute;top:-9px;left:12px;background:var(--blue);color:#fff;font-size:11px;font-weight:800;border-radius:999px;padding:1px 9px}
+.cheat .c .c-t{font-weight:700;font-size:13.5px;color:var(--blue-deep);margin-bottom:3px;padding-top:4px}
+.cheat .c .c-d{font-size:12px;color:var(--muted);line-height:1.55}
+
+/* ===== Charts ===== */
+.chart-box{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);margin:16px 0}
+.chart-box .cb-title{font-weight:700;font-size:14.5px;margin-bottom:2px}
+.chart-box .cb-note{font-size:12px;color:var(--muted);margin-bottom:10px}
+.chart-box svg{width:100%;height:auto;display:block}
+.chart-legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--muted);margin-top:8px}
+.chart-legend .lg{display:inline-flex;align-items:center;gap:6px}
+.chart-legend .sw{width:16px;height:4px;border-radius:2px;display:inline-block}
+.controls{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.controls button{background:#fff;border:1px solid var(--line-2);border-radius:9px;padding:7px 14px;font-size:13.5px;cursor:pointer;font-family:inherit;color:var(--ink);transition:all .12s}
+.controls button:hover{border-color:var(--blue);color:var(--blue)}
+.controls button.on{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:600}
+.controls label{font-size:13.5px;color:var(--muted);display:inline-flex;align-items:center;gap:8px}
+.controls input[type=range]{accent-color:var(--blue);width:180px}
+.stat-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.stat{background:#f4f8ff;border:1px solid #d5e3fb;border-radius:10px;padding:8px 14px;font-size:13px;color:#1e3f96}
+.stat b{font-size:15px;display:block;color:var(--blue-deep)}
+.stat.danger{background:var(--red-bg);border-color:#f2c9c9}
+.stat.danger b{color:var(--red)}
+.echart{width:100%;height:400px}
+.chart-fallback{display:none;font-size:13px;color:var(--muted);padding:12px;border:1px dashed var(--line-2);border-radius:10px}
+.slider-val{display:inline-block;min-width:52px;font-weight:700;color:var(--blue-deep);font-family:var(--math)}
+
+/* ===== References / footer ===== */
+.ref-list{list-style:none;counter-reset:ref}
+.ref-list li{counter-increment:ref;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 14px 10px 46px;position:relative;margin:8px 0;font-size:13px;color:#33415c;word-break:break-all}
+.ref-list li::before{content:"[" counter(ref) "]";position:absolute;left:14px;top:10px;color:var(--blue);font-weight:700;font-size:12.5px}
+.ref-list li .t{font-weight:600;color:var(--ink)}
+.ref-list li .d{color:var(--muted-2);font-size:12px}
+.ref-sup{font-size:11px;color:var(--blue);vertical-align:super;cursor:help;border-bottom:1px dotted var(--blue)}
+.footer{border-top:1px solid var(--line);margin-top:70px;padding:26px 4px;color:var(--muted);font-size:13px;text-align:center;line-height:1.9}
+#toTop{position:fixed;right:22px;bottom:22px;width:44px;height:44px;border-radius:12px;background:var(--blue);color:#fff;border:none;font-size:19px;cursor:pointer;box-shadow:0 6px 18px rgba(29,78,216,.35);display:none;z-index:60}
+#toTop.show{display:block}
+
+/* ===== Print / PDF 优化 ===== */
+@page{size:A4;margin:14mm 12mm}
+@media print{
+ .topbar,#toTop{display:none!important}
+aside.toc{display:none!important}
+ .layout{display:block;padding:0;max-width:none}
+main{max-width:none!important;margin:0!important}
+ .section>h2{scroll-margin-top:0}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== 移动端顶栏 ===== -->
+<div class="topbar">
+  <button id="menuBtn" onclick="document.getElementById('toc').classList.toggle('open')">目录</button>
+  <span class="tb-title">期权收益 ETF 101 · QQQI 与 JEPQ</span>
+</div>
+
+<div class="layout">
+<aside class="toc" id="toc">
+  <div class="toc-inner">
+    <div class="toc-title">目 录</div>
+    <a href="#tldr">01 五分钟理解<small>TL;DR：六句话带走</small></a>
+    <a href="#panorama">02 全景图<small>它们凭什么每月分红</small></a>
+    <a href="#covered-call">03 前置知识<small>备兑看涨与它的变体</small></a>
+    <a href="#jepq">04 JEPQ 拆解<small>股票组合 + ELN 期权层</small></a>
+    <a href="#eln">05 ELN 机制<small>把卖期权打包成票据</small></a>
+    <a href="#qqqi">06 QQQI 拆解<small>call spread + 税务优化</small></a>
+    <a href="#compare">07 同与异<small>JEPQ vs QQQI 对比表</small></a>
+    <a href="#math">08 收益机制<small>三种市况的数学</small></a>
+    <a href="#risks">09 风险清单<small>股息率背后的代价</small></a>
+    <a href="#glossary">10 术语表<small>点击展开</small></a>
+    <a href="#cheat">11 速查表<small>记住 20 个概念</small></a>
+    <a href="#references">12 数据来源与说明</a>
+  </div>
+</aside>
+
+<main>
+
+<!-- ===== Cover ===== -->
+<header class="cover">
+  <span class="kicker">科普技术报告 · 期权收益 ETF</span>
+  <h1>期权收益 ETF 101<br>QQQI 与 JEPQ 的运转逻辑</h1>
+  <p class="lead">为什么这两只基金能每月"躺收"10%+ 的分红？因为它们在做一件事：拿着纳指 100 的股票，同时给整个市场"卖保险"。这份报告从一张 $100 的股票、一张一个月期的期权、一张到期盈亏图讲起，把这两只最火的期权收益 ETF 从内到外拆开，讲清楚每一块钱分红的来路、每一种风险的形状。</p>
+  <div class="meta">
+    <span>读者定位：<b>AI / 量化推理工程师</b></span>
+    <span>数据截至：<b>2026-09-17</b></span>
+    <span>配套图表：<b>3 张交互图表 + 2 张结构图</b></span>
+    <span>性质：<b>科普 · 非投资建议</b></span>
+  </div>
+  <div class="cta">
+    <a href="#tldr">先看 TL;DR</a>
+    <a class="ghost" href="#compare">直接看对比表</a>
+    <a class="ghost" href="#math">看三种市况的数学</a>
+  </div>
+</header>
+
+<!-- ===== 01 TL;DR ===== -->
+<section class="section" id="tldr">
+  <h2><span class="num">01</span>五分钟理解：TL;DR<span class="sub">如果你只想带走六句话</span></h2>
+  <p class="lede">以下每一句都会在后面的章节展开。先记住结论，再去看机制。</p>
+  <div class="card" style="margin-bottom:16px">
+    <h4><span class="dot"></span>① 期权收益 ETF = 持有纳指 100 股票 + 每月卖看涨期权</h4>
+    <p>底层是一篮子接近纳指 100 的股票（JEPQ 是主动选股、QQQI 是直接复制指数），上面再叠一层"卖期权"：每月卖出一批一个月期的看涨期权，收一笔权利金（premium）。权利金 + 股票股息，就是每月分红的来源。</p>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <h4><span class="dot"></span>② 分红不是白来的：你卖掉了"涨过头"的尾巴</h4>
+    <p>卖出看涨期权 = 承诺"指数涨到行权价以上，超出部分归买方"。你收下这笔"保险费"，代价是放弃指数在行权价之上的涨幅。所以牛市里它们一定跑输指数——这不是 bug，是设计。</p>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <h4><span class="dot"></span>③ JEPQ（摩根大通）的期权层藏在 ELN 里</h4>
+    <p>JEPQ 用最多 20% 的资产买银行发行的 <span class="tip" data-tip="Equity-Linked Note，股票挂钩票据：把'持有指数 + 卖出看涨'打包成一张银行票据的结构化产品">ELN</span>（股票挂钩票据），票据内嵌"卖出纳指 100 看涨期权"的空头。不是直接去期权市场卖，而是让银行把卖期权的经济效果"包"给基金。</p>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <h4><span class="dot"></span>④ QQQI（NEOS）直接卖 NDX 期权，还"买回"一部分上行</h4>
+    <p>QQQI 直接交易 NDX 指数期权：卖出贴近现价的行权价（收权利金），再用部分权利金买一个更高行权价的看涨期权（call spread，净权利金收入）。这比"纯备兑"多留了一段上涨参与能力，牛市里能多跟一段。</p>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <h4><span class="dot"></span>⑤ 高股息率 ≠ 高回报：它们赚的是"波动率溢价"</h4>
+    <p>分红的本质是把"未来的不确定性"提前变现。震荡市里它们靠权利金跑赢指数；单边大涨里跑输（上行封顶）；大跌里只能缓冲、不能避险。衡量它们要用总回报，不是股息率。</p>
+  </div>
+  <div class="card">
+    <h4><span class="dot"></span>⑥ 买之前看清三件事：费率、税务、ROC</h4>
+    <p>费率：JEPQ 0.35% vs QQQI 0.68%；税务：JEPQ 的 ELN 收入按普通收入课税，QQQI 的 NDX 期权是 <span class="tip" data-tip="美国税法条款：符合条件的指数期权按 60% 长期 + 40% 短期资本利得计税">Section 1256</span> 合约、享受 60/40 税率；<span class="tip" data-tip="Return of Capital，本金返还：分红里不属于盈利的部分">ROC</span>：部分分红可能来自本金返还，股息率会被"虚高"。</p>
+  </div>
+</section>
+
+<!-- ===== 02 全景图 ===== -->
+<section class="section" id="panorama">
+  <h2><span class="num">02</span>全景图<span class="sub">它们是什么，凭什么每月分红</span></h2>
+  <p class="lede">把"期权收益 ETF 在干什么"压缩成一条流水线。后面每一章，都是这条流水线上某一环的放大。</p>
+  <div class="flow">
+    <div class="node">
+      <div class="n-title">① 持有股票篮子</div>
+      <div class="n-desc">接近纳指 100 的股票组合。承担指数涨跌，收到股票股息。</div>
+      <span class="n-q">JEPQ：主动选股；QQQI：指数复制</span>
+    </div>
+    <div class="arrow">→</div>
+    <div class="node">
+      <div class="n-title">② 每月卖看涨期权</div>
+      <div class="n-desc">卖出一个月期、行权价略高于现价的看涨期权。期权费通常约为名义本金的 1%–3%。</div>
+      <span class="n-q">JEPQ 走 ELN；QQQI 直接交易 NDX</span>
+    </div>
+    <div class="arrow">→</div>
+    <div class="node">
+      <div class="n-title">③ 收到权利金</div>
+      <div class="n-desc">权利金是"现金红包"，当月落袋。期权到期时，没涨过行权价就全部收下。</div>
+      <span class="n-q">权利金 = 分红的绝对主力</span>
+    </div>
+    <div class="arrow">→</div>
+    <div class="node">
+      <div class="n-title">④ 权利金 + 股息 → 月度分红</div>
+      <div class="n-desc">每月把期权费与股息汇总，按份额分配给持有人。目标是"相对稳定"的现金流出。</div>
+      <span class="n-q">JEPQ 与 QQQI 都是月度分红</span>
+    </div>
+    <div class="arrow">→</div>
+    <div class="node">
+      <div class="n-title">⑤ 剩余敞口继续担涨跌</div>
+      <div class="n-desc">行权价之下的跌幅、行权价之内的涨幅，基金依然全额承担。分红不是免费午餐。</div>
+      <span class="n-q">牛市跑输 / 熊市缓冲 / 震荡市占优</span>
+    </div>
+  </div>
+
+  <h3 class="block">为什么会有这类产品？——一条需求链</h3>
+  <p>持有纳指 100 能涨，但有两个"痛点"：波动大（一年上下 30% 很正常）、分红少（成分股股息率常年不到 1%）。很多投资者想要"科技股敞口 + 每月现金流入"的组合。于是出现了三个递进的产品形态：</p>
+  <div class="flow">
+    <div class="node" style="border-top-color:var(--muted-2)">
+      <div class="n-title">第一代：100% 备兑（如 QYLD）</div>
+      <div class="n-desc">被动持有指数成分股 + 卖出 100% 名义本金的看涨期权。分红高，但牛市完全放弃上涨。</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="node" style="border-top-color:var(--blue-2)">
+      <div class="n-title">第二代：主动股票 + 期权叠加（JEPI / JEPQ）</div>
+      <div class="n-desc">底层是主动管理的股票组合，期权层只卖"适度"的看涨（如 JEPQ 的 ELN 不超过 20% 资产）。</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="node" style="border-top-color:var(--green)">
+      <div class="n-title">第三代：数据驱动 call spread（QQQI）</div>
+      <div class="n-desc">卖出看涨的同时"买回"一个更贵的看涨，把被砍掉的上行买回来一部分，兼顾分红与参与。</div>
+    </div>
+  </div>
+
+  <div class="callout ok"><b>一句话概括：</b>期权收益 ETF ≈ 股票敞口（Beta）＋ 卖出波动率（做空 Vega 收权利金）＋ 月度现金分配。它们不是"预测涨跌的机器"，而是一台"把未来波动变成现金"的机器。</div>
+</section>
+
+<!-- ===== 03 前置知识：备兑看涨 ===== -->
+<section class="section" id="covered-call">
+  <h2><span class="num">03</span>前置知识：备兑看涨与它的变体<span class="sub">用一只 $100 的股票讲透</span></h2>
+  <p class="lede">两只基金的策略核心都是"备兑看涨"（covered call / buy-write）。先用一只 $100 的股票建立四个问题：这是买还是卖？赌涨还是赌跌？行权价在哪？还剩多久到期？</p>
+
+  <div class="grid2">
+    <div class="card">
+      <h4><span class="dot"></span>Call（看涨期权）</h4>
+      <p><b>买方</b>付权利金，获得"以行权价买入"的权利：赌到期时价格涨过行权价。买 Call = 把"上涨收益"买下来，最大损失 = 权利金。</p>
+    </div>
+    <div class="card">
+      <h4><span class="dot"></span>卖 Call（卖出看涨期权）</h4>
+      <p><b>卖方</b>收权利金，承担"涨过行权价要按行权价交货"的义务。卖 Call = 卖保险：收固定保费，赌价格不会涨过行权价。</p>
+    </div>
+  </div>
+
+  <div class="callout info"><b>关键身份转换：</b>持有股票再卖出看涨期权，就是"备兑看涨"。你手里有股票，期权被行权时把股票交出去即可——所以是"有备兑"（covered）的，不像裸卖 Call 那样可能无限亏损。期权收益 ETF 就是这么干的。</div>
+
+  <h3 class="block">到期盈亏：三个位置，一张图</h3>
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <colgroup><col style="width:26%"><col style="width:37%"><col style="width:37%"></colgroup>
+      <tr><th>到期情景（指数收益 r）</th><th>纯持股 QQQ</th><th>备兑看涨（持有 + 卖 Call）</th></tr>
+      <tr><td>下跌 r &lt; 0</td><td>亏损 r</td><td>亏损 r − 权利金率（权利金垫底，亏得少一些）</td></tr>
+      <tr><td>温和上涨 0 ≤ r ≤ 行权价幅度</td><td>盈利 r</td><td>盈利 r + 权利金率（期权作废，两头都吃）</td></tr>
+      <tr><td>大涨 r &gt; 行权价幅度</td><td>盈利 r（无上限）</td><td>盈利 = 行权价幅度 + 权利金率（<b class="neg">上行被截断</b>）</td></tr>
+    </table>
+  </div>
+
+  <div class="formula">到期盈亏<sub>备兑</sub> = (S<sub>T</sub> − S<sub>0</sub>) − max(S<sub>T</sub> − K, 0) + Premium<br>
+  <span class="f-note">S<sub>0</sub> = 期初股价（$100），S<sub>T</sub> = 到期股价，K = 行权价（例：$101.5），Premium = 权利金（例：$2）。最大收益 = (K − S<sub>0</sub>) + Premium，之后涨多少都与你无关。</span></div>
+
+  <h3 class="block">QQQI 的变体：call spread（牛市价差）</h3>
+  <p>纯备兑的问题很直白：指数涨 10%，你只拿到"行权价幅度 + 权利金"。QQQI 的做法是在卖出行权价 K₁ 的看涨之后，再用<b>部分权利金</b>买一个更高行权价 K₂ 的看涨期权。K₁ 到 K₂ 之间继续全额参与，K₂ 以上才封顶——净权利金仍然为正（net credit），但上行参与大幅改善。</p>
+
+  <div class="formula">到期盈亏<sub>call spread</sub> = (S<sub>T</sub> − S<sub>0</sub>) − max(S<sub>T</sub> − K₁, 0) + max(S<sub>T</sub> − K₂, 0) + 净权利金<br>
+  <span class="f-note">卖出 K₁=101.5 收权利金，买入 K₂=104 付权利金，净权利金 = 卖出收入 − 买入成本（仍为正）。指数涨过 K₁ 后不再被立即截断，直到 K₂ 才封顶。</span></div>
+
+  <div class="chart-box" id="payoff-box">
+    <div class="cb-title">图 1 · 期末组合收益曲线：纯持股 vs 备兑 vs call spread（交互）</div>
+    <div class="cb-note">示意模型：行权价 K₁ = 指数 +1.5%，K₂ = 指数 +4%。拖动滑块改变每月权利金率，观察两条曲线的"封顶位置"与"垫底厚度"如何变化。</div>
+    <div class="controls">
+      <label>每月权利金率
+        <input type="range" id="premRange" min="1.0" max="3.0" step="0.1" value="2.0" oninput="updatePayoff()">
+        <span class="slider-val" id="premVal">2.0%</span>
+      </label>
+    </div>
+    <div id="chart-payoff" class="echart"></div>
+    <div class="chart-fallback" id="fallback-payoff">图表未能加载（需要网络加载 ECharts）。结论先行：三条曲线中，纯持股收益无限；备兑在行权价处被"折弯封顶"；call spread 在 K₁ 与 K₂ 之间斜率保持 1:1，K₂ 之后才封顶——权利金越高，曲线整体越往上抬。</div>
+  </div>
+
+  <div class="callout warn"><b>注意：</b>上述曲线是"期末"（到期瞬间）的盈亏形状。现实中基金会在到期前主动滚动（roll）期权，且期权价格还受波动率影响——但"上行封顶、下跌垫底、震荡占优"这三个形状特征，是理解 JEPQ / QQQI 一切行为的地基。</div>
+</section>
+
+<!-- ===== 04 JEPQ 拆解 ===== -->
+<section class="section" id="jepq">
+  <h2><span class="num">04</span>JEPQ 拆解：两块积木<span class="sub">JPMorgan Nasdaq Equity Premium Income ETF</span></h2>
+  <p class="lede">JEPQ 2022 年 5 月成立，截至 2026 年 9 月规模约 <b>$42B</b>，是纳斯达克 100 上最大的期权收益 ETF。它的设计哲学是"两块积木"：一块负责 Beta，一块负责现金流。</p>
+
+  <div class="flow-v">
+    <div class="node">
+      <div class="n-title">积木一 · 主动管理的股票组合（承担 Beta 与股息）</div>
+      <div class="n-desc">用数据科学方法构建的美国大盘成长股组合，成分与纳指 100 高度重叠但可以偏离：把 JPM 四十多年的自有研究、公司基本面与另类数据（供应链、新闻流、社交媒体等）放进模型，预测每股收益前景，构建"预期财务表现最大化、同时控制风险"的组合。80% 政策要求组合中至少 80% 资产投入股票类资产（含 ELN）。</div>
+    </div>
+    <div class="arrow">＋</div>
+    <div class="node">
+      <div class="n-title">积木二 · 期权叠加层（生成现金流）</div>
+      <div class="n-desc">卖出一个月期、轻度虚值（slightly OTM）的纳指 100 看涨期权，最多投入 20% 净资产的 <b>ELN</b>。期限上做"滚动摊薄"：把一个月期的期权拆成多个每周到期的桶（weekly buckets），分散到期日与行权价，避免集中在一周结算。</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="node">
+      <div class="n-title">输出 · 月度分红</div>
+      <div class="n-desc">期权费（主要）+ 股票股息（次要）汇总后，按月分配。目标是在正常情况下提供<b>相对稳定</b>的月度分红水平，而非跟随市场大幅波动。</div>
+    </div>
+  </div>
+
+  <h3 class="block">关键参数一览（2026-09 口径）</h3>
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <colgroup><col style="width:30%"><col style="width:70%"></colgroup>
+      <tr><th>维度</th><th>JEPQ</th></tr>
+      <tr><td>发行方 / 代码</td><td>J.P. Morgan Asset Management / <b>JEPQ</b>（NASDAQ）</td></tr>
+      <tr><td>成立日期</td><td>2022 年 5 月</td></tr>
+      <tr><td>规模（AUM）</td><td>≈ $42.5B（2026-09）</td></tr>
+      <tr><td>费率（净）</td><td><b>0.35%</b></td></tr>
+      <tr><td>分红频率 / 口径</td><td>月度；TTM 股息率 ≈ 10.8%–11.4%，30 日 SEC 收益率 ≈ 15.1%（2026-07）</td></tr>
+      <tr><td>底层组合</td><td>主动管理、数据科学驱动，显著贴近纳指 100</td></tr>
+      <tr><td>期权层实现</td><td>通过 ELN（≤20% 净资产）内嵌"卖一个月期 OTM 纳指 100 Call"</td></tr>
+      <tr><td>投资目标</td><td>捕获纳指 100 的大部分收益 + 更低波动 + 增量收入</td></tr>
+    </table>
+  </div>
+
+  <div class="callout ok"><b>为什么是"主动股票 + 部分期权"而不是"100% 备兑"？</b>100% 备兑（如 QYLD）把整个组合的上行都卖掉了，牛市彻底踏空。JEPQ 的期权层只覆盖一部分名义本金，且行权价留出 OTM 空间——组合仍然保留大部分上涨参与能力，只是"减震 + 加现金流"。</div>
+
+  <div class="callout info"><b>为什么每月分红能"相对稳定"？</b>期权费是一次性预收的，到期前每天都在"摊销"；ELN 还会定期重置（reset）以匹配当前市场条件。加上每周滚动到期、多行权价摊薄，单月分红就不会被某一周的极端行情完全带走。</div>
+</section>
+
+<!-- ===== 05 ELN 机制 ===== -->
+<section class="section" id="eln">
+  <h2><span class="num">05</span>ELN：把"卖期权"打包成一张票据<span class="sub">JEPQ 为什么不直接去期权市场卖</span></h2>
+  <p class="lede">ELN（Equity-Linked Note，股票挂钩票据）是理解 JEPQ 的关键。它本质是一张银行发行的结构化票据，内嵌了"纳指 100 多头 + 卖出看涨期权空头"的经济效果。JEPQ 不自己逐笔卖期权，而是向银行"批发"这个策略。</p>
+
+  <h3 class="block">现金与风险的流向</h3>
+  <div class="flow">
+    <div class="node">
+      <div class="n-title">JEPQ 基金</div>
+      <div class="n-desc">支付现金买入 ELN，获得票据约定的"备兑策略"回报流。</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="node">
+      <div class="n-title">对手方银行（ELN 发行方）</div>
+      <div class="n-desc">摩根大通、高盛、花旗、加拿大皇家银行等（据半年报披露）。银行在市场上对冲：持有纳指 100 多头 + 卖出看涨期权，把策略的经济效果打包成票据卖给基金。</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="node">
+      <div class="n-title">期权市场</div>
+      <div class="n-desc">银行在交易所卖出纳指 100 / QQQ 的看涨期权，收到权利金，承担行权义务。</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="node">
+      <div class="n-title">权利金回流</div>
+      <div class="n-desc">票据按月向基金支付"权利金流 + 挂钩收益"，基金再用于月度分红。</div>
+    </div>
+  </div>
+
+  <div class="grid2" style="margin-top:18px">
+    <div class="card">
+      <h4><span class="dot"></span>为什么用 ELN 而不是直接卖期权？</h4>
+      <p>① <b>税务与结算简化</b>：票据结算的现金流处理相对直接，避免逐周期权组合的复杂税务与保证金管理；② <b>操作效率</b>：把"每周滚动、多行权价"的期权运营外包给银行的对冲团队，基金只收结果；③ <b>容量与执行</b>：指数期权单笔容量有限，银行柜台（OTC）票据可以按基金规模定制。</p>
+    </div>
+    <div class="card">
+      <h4><span class="dot"></span>代价与风险</h4>
+      <p>① <b>对手方信用风险</b>：ELN 是银行的债务，银行违约则票据可能归零；② <b>更贵</b>：招股书明确提示 ELN 可能比直接投资底层工具更贵（银行的利润嵌入票据定价）；③ <b>流动性差</b>：ELN 不在交易所交易，难估值、难卖出；④ <b>税务</b>：ELN 收入按普通收入课税，无法享受资本利得的优惠税率。</p>
+    </div>
+  </div>
+
+  <div class="callout risk"><b>对手方风险是 ELN 独有的"隐形雷"：</b>你买 JEPQ 的份额，表面上是一篮子股票 + 期权策略，但其中最多 20% 的资产实际是数家银行的"欠条"。银行若出问题，这 20% 的回收率取决于银行的偿付能力——这是直接卖期权的基金（如 QQQI）没有的风险维度。</div>
+
+  <div class="callout warn"><b>税务差异是两只基金最大的"表外区别"之一：</b>JEPQ 的 ELN 收入大体按<b>普通收入</b>课税（对高收入者可能接近 37% + 州税）；QQQI 的 NDX 指数期权符合 Section 1256，按 60% 长期 / 40% 短期资本利得计税（长期税率通常更低）。同为"卖期权收钱"，到手的税后现金可能差好几个百分点。</div>
+</section>
+
+<!-- ===== 06 QQQI 拆解 ===== -->
+<section class="section" id="qqqi">
+  <h2><span class="num">06</span>QQQI 拆解：数据驱动 + 税务优化<span class="sub">NEOS Nasdaq-100 High Income ETF</span></h2>
+  <p class="lede">QQQI 2024 年 1 月成立，截至 2026 年 9 月规模约 <b>$14.5B</b>，分红率约 <b>14.4%</b>。它和 JEPQ 最根本的区别是：期权层<b>直接交易 NDX 指数期权</b>（不用 ELN），并且用"买入更贵的看涨"把被砍掉的上行买回来一部分。</p>
+
+  <h3 class="block">两层策略：底层复制指数，上层做 call spread</h3>
+  <div class="flow-v">
+    <div class="node">
+      <div class="n-title">底层 · 复制纳指 100 成分股</div>
+      <div class="n-desc">按接近指数的权重直接持有纳指 100 的成分股（replication，必要时抽样）。80% 政策保证大部分资产落在指数成分内。作用：拿到完整的 Beta 与成分股股息。</div>
+    </div>
+    <div class="arrow">＋</div>
+    <div class="node">
+      <div class="n-title">期权层 · 卖出 Call + 买入更贵的 Call（net credit）</div>
+      <div class="n-desc">① 卖出 NDX 看涨期权，名义本金最多可达股票市值的 100%，行权价贴近当前指数（近价）；② 用部分权利金买入更高行权价的 NDX 看涨期权（虚值），形成 call spread，净权利金为正（卖出收入 &gt; 买入成本）。规则化系统模型管理期权头寸，到期前主动滚动以锁定收益、控制损失。</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="node">
+      <div class="n-title">输出 · 月度分红（含税务优化）</div>
+      <div class="n-desc">权利金 + 股息按月分配；NDX 指数期权属于 Section 1256 合约，享受 60/40 税率；管理人还会做税收损失收割（TLH）抵税。部分分红可能被归类为 ROC（本金返还）。</div>
+    </div>
+  </div>
+
+  <h3 class="block">关键参数一览（2026-09 口径）</h3>
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <colgroup><col style="width:30%"><col style="width:70%"></colgroup>
+      <tr><th>维度</th><th>QQQI</th></tr>
+      <tr><td>发行方 / 代码</td><td>NEOS Investments / <b>QQQI</b>（NASDAQ）</td></tr>
+      <tr><td>成立日期</td><td>2024 年 1 月</td></tr>
+      <tr><td>规模（AUM）</td><td>≈ $14.5B（2026-09）</td></tr>
+      <tr><td>费率</td><td><b>0.68%</b></td></tr>
+      <tr><td>分红频率 / 口径</td><td>月度；分红率 ≈ 14.4%（2026-08-31），TTM 股息率 ≈ 13.5%</td></tr>
+      <tr><td>底层组合</td><td>直接复制纳指 100 成分股</td></tr>
+      <tr><td>期权层实现</td><td>直接交易 NDX 指数期权：卖近价 Call + 买更高价 Call（call spread，净权利金）</td></tr>
+      <tr><td>税务处理</td><td>Section 1256（60/40）+ 税收损失收割</td></tr>
+      <tr><td>投资目标</td><td>高月度收入（税务高效）+ 潜在资本增值</td></tr>
+    </table>
+  </div>
+
+  <div class="callout ok"><b>"净权利金"为什么是 QQQI 的灵魂？</b>卖出近价 Call 收到的权利金 &gt; 买入高价 Call 花的权利金，组合整体是"收钱"的——这是分红的来源。但多花的这笔钱不是白花：它把纯备兑在 K₁ 处被截断的收益曲线，向后推到了 K₂。效果就是 04 章图 1 里那条"更晚封顶"的绿线。</div>
+
+  <div class="callout info"><b>1256 与 TLH：为什么说 QQQI 是"为税务设计的"？</b>① NDX 指数期权被美国税法归为 Section 1256 合约：即使持有不满一年，年末未平仓也视同按市价平仓，盈亏按 60% 长期 / 40% 短期计税——长期税率明显更低；② 管理人主动做税收损失收割：用期权/股票上的亏损去抵消已实现盈利，降低应税分配。两者叠加，是 QQQI 相对 JEPQ 最清晰的差异化卖点。</div>
+</section>
+
+<!-- ===== 07 对比表 ===== -->
+<section class="section" id="compare">
+  <h2><span class="num">07</span>同与异：JEPQ vs QQQI<span class="sub">同吃"卖波动率"这碗饭，做法不同</span></h2>
+  <p class="lede">两只基金底层都是纳指 100、都是月度分红、都在做备兑看涨。区别集中在四个地方：期权怎么卖（ELN vs 直接交易）、卖多少（≤20% ELN vs 最多 100% 名义）、税务怎么算（普通收入 vs 60/40）、以及上行参与度。</p>
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <colgroup><col style="width:16%"><col style="width:42%"><col style="width:42%"></colgroup>
+      <tr><th>维度</th><th>JEPQ（摩根大通）</th><th>QQQI（NEOS）</th></tr>
+      <tr><td>成立 / 规模</td><td>2022-05 · ≈ $42.5B</td><td>2024-01 · ≈ $14.5B</td></tr>
+      <tr><td>费率</td><td><span class="pos">0.35%</span></td><td><span class="mid">0.68%</span></td></tr>
+      <tr><td>底层组合</td><td>主动管理（数据科学选股），显著贴近纳指 100</td><td>直接复制纳指 100 成分</td></tr>
+      <tr><td>期权执行</td><td>通过 <b>ELN</b> 内嵌"卖一个月 OTM Call"（≤20% 净资产）</td><td><b>直接交易 NDX</b>：卖近价 Call + 买高价 Call</td></tr>
+      <tr><td>期权覆盖</td><td>名义敞口被 ELN 额度限制，留出较多上行空间</td><td>卖出 Call 名义最多达股票市值 100%，但买入 Call 把上行买回一段</td></tr>
+      <tr><td>滚动方式</td><td>一个月期期权拆成多个每周桶，分散到期与行权价</td><td>规则化系统模型管理，到期前主动滚动</td></tr>
+      <tr><td>税务</td><td>ELN 收入按<b>普通收入</b>课税</td><td>Section 1256 → 60/40 + TLH 税收损失收割</td></tr>
+      <tr><td>分红口径</td><td>TTM 股息率 ≈ 10.8%–11.4%</td><td>分红率 ≈ 14.4%，TTM ≈ 13.5%</td></tr>
+      <tr><td>独有风险</td><td><b class="neg">ELN 对手方信用风险</b>、票据流动性差</td><td>直接期权操作更频繁，依赖期权市场流动性；高费率</td></tr>
+      <tr><td>定位语</td><td>"大部分纳指收益 + 更低波动 + 增量收入"</td><td>"高月度收入 + 上行参与 + 税务效率"</td></tr>
+    </table>
+  </div>
+  <div class="tbl-cap">口径说明：规模、费率、分红数据来自各基金官网与 Morningstar / MarketBeat / TradingView（2026-08 ~ 09 口径，详见第 12 章）。"分红率"与"TTM 股息率""SEC 收益率"是三种不同算法，横向比较时不能混用。</div>
+
+  <div class="callout warn"><b>一句话记忆：</b>JEPQ 是"银行包工头"模式——期权活外包给银行，省心但多一层信用风险、税务吃亏；QQQI 是"自己下场"模式——直接交易指数期权，税务占优、上行参与更强，但费率更高、操作更重。</div>
+</section>
+
+<!-- ===== 08 收益机制 ===== -->
+<section class="section" id="math">
+  <h2><span class="num">08</span>收益机制：三种市况的数学<span class="sub">分红从哪来，牛市为什么跑输</span></h2>
+  <p class="lede">用一套统一的教学模型，把两只基金抽象成三条收益曲线。所有数字均为<b>示意参数</b>（每月权利金率 2%、卖出行权价 +1.5%、QQQI 买入行权价 +4%、月股息率 0.08%），用于讲机制，不代表任何基金的真实收益。</p>
+
+  <div class="formula">月度组合收益<sub>备兑</sub> ≈ r − max(r − OTM₁, 0) + 权利金率 + 股息率/12<br>
+  月度组合收益<sub>call spread</sub> ≈ r − max(r − OTM₁, 0) + max(r − OTM₂, 0) + 净权利金率 + 股息率/12<br>
+  <span class="f-note">r = 指数当月收益；OTM₁ = 卖出 Call 的虚值幅度（+1.5%）；OTM₂ = 买入 Call 的虚值幅度（+4%）；净权利金率 = 卖出权利金 − 买入成本。max(x,0) 是"期权到期内在价值"项——涨过行权价才出现。</span></div>
+
+  <div class="grid3">
+    <div class="card">
+      <h4><span class="dot"></span>震荡市（r ≈ 0）</h4>
+      <p>期权全部作废，权利金全额落袋。<b>备兑与 call spread 都跑赢纯持股</b>——多赚的权利金就是它们的超额来源。这是这类基金的"主场"。</p>
+    </div>
+    <div class="card">
+      <h4><span class="dot"></span>温和上涨（0 &lt; r ≤ OTM₁）</h4>
+      <p>指数涨但没到卖出行权价，股票赚、期权也作废。<b>两者都赢纯持股</b>：股票收益 + 权利金。最优区间。</p>
+    </div>
+    <div class="card">
+      <h4><span class="dot"></span>大涨（r &gt; OTM₁）</h4>
+      <p>卖出 Call 开始赔付。纯备兑封顶在 OTM₁ + 权利金；call spread 因为买入了 K₂ 的 Call，<b>还能继续跟涨到 OTM₂</b> 才封顶。<b>两只基金都跑输指数</b>——牛市是它们的"代价期"。</p>
+    </div>
+  </div>
+
+  <div class="chart-box">
+    <div class="cb-title">图 2 · 月度情景对比：三种市况 × 三种策略（示意模型）</div>
+    <div class="cb-note">柱状高度 = 当月组合收益（%）。参数与公式同本章开头：权利金率 2%、行权价 +1.5% / +4%、股息月化 0.08%。</div>
+    <div id="chart-scenario" class="echart"></div>
+    <div class="chart-fallback" id="fallback-scenario">图表未能加载。结论：震荡市与温和上涨中备兑与 call spread 均跑赢纯持股；大跌中权利金只提供约 2% 的月度缓冲，无法对冲系统性下跌；大涨中纯持股完胜，备兑封顶最矮，call spread 居中。</div>
+  </div>
+
+  <div class="chart-box">
+    <div class="cb-title">图 3 · 分红的一美元从哪里来？（示意分解）</div>
+    <div class="cb-note">示意比例，非精确统计：两只基金的月度分红大体由"卖出期权收到的权利金"主导，"股票股息"次之，特定月份可能包含资本利得或本金返还（ROC）。比例随隐含波动率与市场行情大幅波动。</div>
+    <div id="chart-source" class="echart" style="height:340px"></div>
+    <div class="chart-fallback" id="fallback-source">图表未能加载。结论：期权权利金是分红主力（示意约 60%–90%），股息次之，其余来自资本利得或本金返还——所以"分红率"高低高度依赖市场隐含波动率的高低。</div>
+  </div>
+
+  <div class="callout risk"><b>把模型翻译成现实：</b>2026 年的两段行情刚好是正反教材——纳指震荡/缓涨时，JEPQ 与 QQQI 凭借每月 1.5%–2% 级别的权利金显著跑赢指数；一旦出现单月 +6% 以上的大涨（比如 AI 行情急拉），两只基金的分红再高也补不回"被卖掉的涨幅"。看这类基金，永远要看<b>总回报</b>（价格 + 分红再投资），而不是盯着股息率。</div>
+</section>
+
+<!-- ===== 09 风险清单 ===== -->
+<section class="section" id="risks">
+  <h2><span class="num">09</span>风险清单<span class="sub">股息率背后的八笔账</span></h2>
+  <p class="lede">买期权收益 ETF 之前，请把下面八条逐一看完。每一条都是"高股息率"的另一面。</p>
+
+  <div class="callout warn"><b>① 上行机会成本（牛市的代价）：</b>指数单边上涨时，卖出 Call 的赔付会吃掉大部分涨幅。历史反复证明：在科技股大牛市里，JEPQ / QQQI 的总回报显著落后于直接持有 QQQ。你买它们，等于主动放弃了"牛市跑赢"的可能性。</div>
+  <div class="callout warn"><b>② 分红 ≠ 收益：NAV 会被"磨"掉：</b>期权费虽然每月落袋，但"权利金 + 股息 − 已实现损失"才是组合的真实增值。若市场横盘阴跌，你会看到分红照发、NAV 却一路走低——拿着 14% 的分红率，本金却在缩水。衡量业绩必须用总回报。</div>
+  <div class="callout risk"><b>③ ELN 对手方信用风险（JEPQ 独有）：</b>最多 20% 的资产是银行票据。对手方违约、降级或流动性枯竭，这部分资产可能打折甚至归零。这是"自己下场"的 QQQI 没有的风险维度。</div>
+  <div class="callout risk"><b>④ 税务差异可能吃掉税后收益：</b>JEPQ 的 ELN 收入按普通收入课税，对高税率投资者，税后实际到手可能比表面股息率低好几个百分点；QQQI 的 60/40 结构在应税账户里更友好。请按自己的税档算"税后分红率"。</div>
+  <div class="callout info"><b>⑤ 分红可能含本金返还（ROC）：</b>19a-1 公告会披露每月分红的构成：期权费、股息、资本利得与"本金返还"。ROC 部分不是盈利，是把你自己的钱发回来——它推高股息率、却不增加总回报。</div>
+  <div class="callout info"><b>⑥ 费率是刚性磨损：</b>QQQI 0.68%、JEPQ 0.35%。在年化收益 10% 上下的资产里，0.68% 意味着约 5%–7% 的收益被费率吃掉，长期复利下差距可观。</div>
+  <div class="callout warn"><b>⑦ 收益依赖隐含波动率（IV）：</b>权利金 = 波动率的定价。VIX 高企时分红厚、VIX 低迷时权利金稀薄。把历史分红率线性外推，是这类基金最常见的认知陷阱——分红率会随 IV 大起大落。</div>
+  <div class="callout warn"><b>⑧ 未必是好的"买入并持有"标的：</b>Morningstar 等研究机构反复提示：备兑类基金更适合作为"收益增强/降低波动"的配置工具，长期总回报往往不及直接持有指数——它们的价值在于现金流形态（每月落袋、波动更小），而非长期增值。</div>
+</section>
+
+<!-- ===== 10 术语表 ===== -->
+<section class="section" id="glossary">
+  <h2><span class="num">10</span>术语表 Glossary<span class="sub">点击展开，每条都带"为什么重要"</span></h2>
+  <p class="lede">报告中出现的黑话，按理解优先级排列。</p>
+
+  <details class="acc">
+    <summary>备兑看涨（Covered Call / Buy-Write）</summary>
+    <div class="acc-body"><p>持有股票的同时卖出该股票的看涨期权。上涨收益被行权价封顶，换来看跌时的权利金缓冲。JEPQ / QQQI 的整个策略都是它的变体。</p></div>
+  </details>
+  <details class="acc">
+    <summary>权利金（Premium）</summary>
+    <div class="acc-body"><p>期权买方付给卖方的价格。基金每月分红的主体就是卖出看涨期权收到的权利金。权利金 ≈ 时间价值 + 内在价值，主要由剩余时间、行权价距离与隐含波动率决定。</p></div>
+  </details>
+  <details class="acc">
+    <summary>行权价（Strike Price, K）</summary>
+    <div class="acc-body"><p>期权约定买入/卖出的价格。卖出 Call 的行权价越高（越虚值），权利金越少、留给上涨的空间越大。JEPQ 卖"轻度虚值"Call，QQQI 卖出"贴近现价"的 Call。</p></div>
+  </details>
+  <details class="acc">
+    <summary>OTM / ATM / ITM</summary>
+    <div class="acc-body"><p>虚值 / 平值 / 实值：行权价高于现价（OTM，卖它最稳）、等于现价（ATM）、低于现价（ITM）。OTM 幅度越大，权利金越少、被行权概率越低。</p></div>
+  </details>
+  <details class="acc">
+    <summary>Call Spread（牛市价差）</summary>
+    <div class="acc-body"><p>卖出近价 Call + 买入更高价 Call。净权利金为正，同时把上行封顶从 K₁ 推迟到 K₂。QQQI 的核心结构。</p></div>
+  </details>
+  <details class="acc">
+    <summary>ELN（Equity-Linked Note）</summary>
+    <div class="acc-body"><p>股票挂钩票据：银行发行的结构化票据，内嵌"持有指数 + 卖出看涨"的经济效果。JEPQ 的期权层通过它实现。优点：运营省心、容量大；缺点：对手方信用风险、更贵、流动性差。</p></div>
+  </details>
+  <details class="acc">
+    <summary>Section 1256 合约</summary>
+    <div class="acc-body"><p>美国税法对合格指数期权/期货的优惠处理：年末视同按市价平仓，盈亏按 60% 长期 / 40% 短期资本利得计税，与持有期无关。NDX 指数期权属于此类——QQQI 税务优势的来源。</p></div>
+  </details>
+  <details class="acc">
+    <summary>ROC（Return of Capital）</summary>
+    <div class="acc-body"><p>本金返还：分红中不属于当期盈利的部分。它不增加总回报，但会提高"表面股息率"，并推迟纳税。看到高分红率先查 19a-1 公告里的 ROC 占比。</p></div>
+  </details>
+  <details class="acc">
+    <summary>股息率 vs 分红率 vs SEC Yield</summary>
+    <div class="acc-body"><p>三种口径：TTM 股息率 = 过去 12 个月分红 / 价格；分红率 = 最近一期年化分红 / 价格；30 日 SEC Yield 是美国 SEC 规定的标准化收益率算法。三者不可直接横向比较。</p></div>
+  </details>
+  <details class="acc">
+    <summary>滚动（Roll）</summary>
+    <div class="acc-body"><p>期权到期前平掉旧仓、开新仓。基金通过滚动把一个月期的 Call 错开到期（JEPQ 拆成每周桶），并据市况调整行权价，追求分红稳定。</p></div>
+  </details>
+  <details class="acc">
+    <summary>隐含波动率（IV）与 VXN</summary>
+    <div class="acc-body"><p>从期权价格反推出的"市场对未来波动的定价"。IV 越高、权利金越厚。VXN 是纳斯达克 100 的波动率指数（相当于科技版 VIX），直接决定 JEPQ / QQQI 下个月能"卖"到多少钱。</p></div>
+  </details>
+  <details class="acc">
+    <summary>Theta / Vega / Delta</summary>
+    <div class="acc-body"><p>期权四大希腊字母里的三个：Delta 测方向敏感度、Theta 测时间衰减（期权越临近到期贬值得越快，对卖方有利）、Vega 测波动率敏感度（IV 涨，卖 Call 方账面亏损）。基金本质是"正 Theta、负 Vega"的组合。</p></div>
+  </details>
+  <details class="acc">
+    <summary>TLH（Tax-Loss Harvesting）</summary>
+    <div class="acc-body"><p>税收损失收割：卖出亏损头寸以抵销已实现盈利，降低应税分配。QQQI 明确把 TLH 写进策略。</p></div>
+  </details>
+  <details class="acc">
+    <summary>NAV / 溢价折价</summary>
+    <div class="acc-body"><p>NAV 是每份份额的净资产价值；市价与 NAV 的差叫溢价/折价。期权收益 ETF 现金流特殊，溢价折价可能长期存在，申赎时留意。</p></div>
+  </details>
+</section>
+
+<!-- ===== 11 速查表 ===== -->
+<section class="section" id="cheat">
+  <h2><span class="num">11</span>速查表 Cheat Sheet<span class="sub">如果只记住 20 个概念</span></h2>
+  <div class="cheat">
+    <div class="c"><span class="c-n">1</span><div class="c-t">备兑看涨</div><div class="c-d">持有股票 + 卖 Call，上行封顶、下跌垫底</div></div>
+    <div class="c"><span class="c-n">2</span><div class="c-t">权利金</div><div class="c-d">卖期权的收入，分红的绝对主力</div></div>
+    <div class="c"><span class="c-n">3</span><div class="c-t">行权价 K</div><div class="c-d">上涨在 K 处被截断的位置</div></div>
+    <div class="c"><span class="c-n">4</span><div class="c-t">OTM 幅度</div><div class="c-d">虚值距离越大，权利金越少、越安全</div></div>
+    <div class="c"><span class="c-n">5</span><div class="c-t">Call Spread</div><div class="c-d">卖 K₁ + 买 K₂，封顶推迟到 K₂（QQQI）</div></div>
+    <div class="c"><span class="c-n">6</span><div class="c-t">ELN</div><div class="c-d">银行票据包住"备兑策略"，有对手方风险（JEPQ）</div></div>
+    <div class="c"><span class="c-n">7</span><div class="c-t">Section 1256</div><div class="c-d">指数期权 60/40 税率，QQQI 的税务卖点</div></div>
+    <div class="c"><span class="c-n">8</span><div class="c-t">ROC</div><div class="c-d">本金返还，虚高股息率的分红成分</div></div>
+    <div class="c"><span class="c-n">9</span><div class="c-t">IV / VXN</div><div class="c-d">波动率定价，决定权利金厚薄</div></div>
+    <div class="c"><span class="c-n">10</span><div class="c-t">Theta</div><div class="c-d">时间衰减，卖方（基金）的收益来源</div></div>
+    <div class="c"><span class="c-n">11</span><div class="c-t">Vega</div><div class="c-d">波动率敏感度，IV 飙升时卖 Call 方账面受损</div></div>
+    <div class="c"><span class="c-n">12</span><div class="c-t">滚动 Roll</div><div class="c-d">到期前换新仓，JEPQ 拆周桶分散到期</div></div>
+    <div class="c"><span class="c-n">13</span><div class="c-t">净权利金</div><div class="c-d">卖出收入 − 买入成本，QQQI 要求为正</div></div>
+    <div class="c"><span class="c-n">14</span><div class="c-t">总回报</div><div class="c-d">价格涨跌 + 分红再投资，唯一靠谱的衡量</div></div>
+    <div class="c"><span class="c-n">15</span><div class="c-t">上行参与率</div><div class="c-d">牛市能跟住指数的比例，QQQI 优于纯备兑</div></div>
+    <div class="c"><span class="c-n">16</span><div class="c-t">对手方风险</div><div class="c-d">ELN 是银行的债，银行出事票据受损</div></div>
+    <div class="c"><span class="c-n">17</span><div class="c-t">SEC Yield</div><div class="c-d">SEC 标准收益率口径，与股息率算法不同</div></div>
+    <div class="c"><span class="c-n">18</span><div class="c-t">TLH</div><div class="c-d">用亏损抵盈利，降低应税分配</div></div>
+    <div class="c"><span class="c-n">19</span><div class="c-t">波动损耗</div><div class="c-d">不是这类基金的问题；但它们同样怕"单边大涨"</div></div>
+    <div class="c"><span class="c-n">20</span><div class="c-t">总收益 = 分红 − 机会成本</div><div class="c-d">你拿到的是现金，放弃的是"涨过头"的尾巴</div></div>
+  </div>
+</section>
+
+<!-- ===== 12 数据来源 ===== -->
+<section class="section" id="references">
+  <h2><span class="num">12</span>数据来源与说明</h2>
+  <p class="lede">所有公开数据均为 2026 年 8–9 月口径；策略描述来自基金官方文件；图 1–3 为教学示意模型，非真实业绩。</p>
+
+  <h3 class="block">官方文件与产品页面</h3>
+  <ul class="ref-list">
+    <li><span class="t">J.P. Morgan Asset Management — JEPQ 产品页与基金故事（STO-JEPQ）</span><div class="d">规模、费率、30 日 SEC 收益率、两块积木策略描述</div></li>
+    <li><span class="t">JEPQ Summary Prospectus（SEC EDGAR，2022-05-02）</span><div class="d">投资目标、80% 政策、ELN ≤20% 净资产、数据科学投资流程、各类风险</div></li>
+    <li><span class="t">NEOS Investments — QQQI 产品页 / 招股书 PDF</span><div class="d">成立日、费率 0.68%、分红率 14.39%、规模 $14.5B、call spread 策略、Section 1256、TLH</div></li>
+    <li><span class="t">NASDAQtrader — QQQI Info Circular</span><div class="d">上市公告（2024-01-30）、call spread net credit 描述</div></li>
+  </ul>
+
+  <h3 class="block">第三方研究与媒体</h3>
+  <ul class="ref-list">
+    <li><span class="t">Morningstar — JEPQ Analysis / Quote</span><div class="d">期权管理方式（周桶滚动、ELN）、TTM 股息率、换手率、衍生收益分类</div></li>
+    <li><span class="t">etf.com — What Is a Covered Call ETF?</span><div class="d">ELN 结构与税务处理（普通收入 vs 资本利得）</div></li>
+    <li><span class="t">Nasdaq.com — Seeking Income as The Outcome</span><div class="d">QQQI 策略背景与指数期权写法</div></li>
+    <li><span class="t">MarketBeat / TipRanks / TradingView / etfbff — JEPQ、QQQI 行情页</span><div class="d">AUM、52 周区间、TTM 股息率等行情口径</div></li>
+    <li><span class="t">24/7 Wall St. — JEPQ ELN Counterparty Risk</span><div class="d">ELN 对手方名单（摩根大通、高盛、花旗、RBC）</div></li>
+    <li><span class="t">Covered Call ETF HQ — JEPQ Review</span><div class="d">分红来源分解（期权费 vs 股息的量级参考）</div></li>
+    <li><span class="t">新浪财经 — 低利率环境下海外明星产品借鉴（JPMorgan Equity Premium Income ETF）</span><div class="d">备兑开仓与 ELN 的中文机制讲解</div></li>
+    <li><span class="t">雪球 — JEPQ 期权机制讨论</span><div class="d">备兑盈亏的直观案例（仅作理解参考）</div></li>
+  </ul>
+
+  <h3 class="block">口径与免责说明</h3>
+  <div class="callout info"><b>数据口径：</b>① "分红率""TTM 股息率""30 日 SEC 收益率"是三种算法，正文已分别标注；② 图 1–3 中的权利金率、行权价幅度、股息率为教学假设，用于演示机制，不代表基金真实参数；③ 部分规模/价格数据来自第三方行情站，可能与官网存在小幅时点差异。</div>
+  <div class="callout risk"><b>免责声明：</b>本报告为科普性质，不构成投资建议、也不构成对任何基金产品的推荐。期权策略涉及杠杆、对手方与税务风险，投资前请阅读基金招股书并咨询专业人士。</div>
+</section>
+
+</main>
+</div>
+
+<footer class="footer" style="max-width:1320px;margin:0 auto;padding:26px 24px">
+  <p>期权收益 ETF 101 · QQQI 与 JEPQ 的运转逻辑 · 科普技术报告</p>
+  <p>本报告仅供学习交流，不构成任何投资建议。市场有风险，决策需独立判断。</p>
+</footer>
+
+<button id="toTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="回到顶部">↑</button>
+
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+<script>
+(function(){
+  var root = this;
+  /* ---------- TOC scrollspy ---------- */
+  var tocLinks = document.querySelectorAll('.toc a');
+  var sections = [];
+  for (var i = 0; i < tocLinks.length; i++) {
+    var href = tocLinks[i].getAttribute('href');
+    if (href && href.charAt(0) === '#') sections.push({link: tocLinks[i], id: href.slice(1)});
+  }
+  function onScroll() {
+    var y = window.scrollY || document.documentElement.scrollTop;
+    var cur = sections[0] ? sections[0].id : '';
+    for (var i = 0; i < sections.length; i++) {
+      var el = document.getElementById(sections[i].id);
+      if (el && el.getBoundingClientRect().top - 120 <= 0) cur = sections[i].id;
+    }
+    for (var j = 0; j < sections.length; j++) {
+      if (sections[j].id === cur) sections[j].link.className = 'active';
+      else sections[j].link.className = '';
+    }
+    var topBtn = document.getElementById('toTop');
+    if (topBtn) { if (y > 600) topBtn.className = 'show'; else topBtn.className = ''; }
+  }
+  window.addEventListener('scroll', onScroll, {passive: true});
+  window.addEventListener('resize', onScroll);
+  onScroll();
+  /* close mobile toc on link click */
+  var tocAside = document.getElementById('toc');
+  for (var k = 0; k < tocLinks.length; k++) {
+    tocLinks[k].addEventListener('click', function(){ tocAside.classList.remove('open'); });
+  }
+
+  /* ---------- Charts ---------- */
+  if (typeof root.echarts === 'undefined') {
+    var boxes = document.querySelectorAll('.chart-box');
+    for (var b = 0; b < boxes.length; b++) {
+      var fb = boxes[b].querySelector('.chart-fallback');
+      if (fb) fb.style.display = 'block';
+    }
+    return;
+  }
+  var C_QQQ = '#8a97ad', C_JEPQ = '#1d4ed8', C_QQQI = '#0e9f6e', C_AMBER = '#d97706';
+  var DIV = 0.08; /* 月化股息率（示意） */
+  var K1 = 1.5, K2 = 4; /* 行权价虚值幅度（示意） */
+
+  /* ---- 图 1：到期收益曲线（交互） ---- */
+  var payoffChart = root.echarts.init(document.getElementById('chart-payoff'));
+  function payoffOption(prem) {
+    var xs = [], sQQQ = [], sCC = [], sCS = [];
+    for (var x = -6; x <= 8.001; x += 0.5) {
+      xs.push(+x.toFixed(1));
+      var r = x;
+      sQQQ.push(+(r + DIV).toFixed(2));
+      sCC.push(+(r - Math.max(r - K1, 0) + prem + DIV).toFixed(2));
+      sCS.push(+(r - Math.max(r - K1, 0) + Math.max(r - K2, 0) + prem * 0.75 + DIV).toFixed(2));
+    }
+    return {
+      backgroundColor: 'transparent',
+      tooltip: { trigger: 'axis', triggerOn: 'click', renderMode: 'richText', confine: true, valueFormatter: function(v){ return v + '%'; } },
+      legend: { data: ['纯持股 QQQ', '备兑看涨（JEPQ 式）', 'Call Spread（QQQI 式）'], top: 0, textStyle: { fontSize: 12, color: '#5b6b84' } },
+      grid: { left: 8, right: 16, top: 36, bottom: 8, containLabel: true },
+      xAxis: { type: 'value', name: '指数到期收益 %', nameGap: 18, min: -6, max: 8, axisLabel: { formatter: function(v){ return v + '%'; } }, splitLine: { lineStyle: { color: '#eef1f6' } } },
+      yAxis: { type: 'value', name: '组合收益 %', min: -6, max: 8, axisLabel: { formatter: function(v){ return v + '%'; } }, splitLine: { lineStyle: { color: '#eef1f6' } } },
+      series: [
+        { name: '纯持股 QQQ', type: 'line', data: sQQQ, smooth: true, symbol: 'none', lineStyle: { width: 2.5, color: C_QQQ, type: 'dashed' }, itemStyle: { color: C_QQQ } },
+        { name: '备兑看涨（JEPQ 式）', type: 'line', data: sCC, smooth: true, symbol: 'none', lineStyle: { width: 3, color: C_JEPQ }, itemStyle: { color: C_JEPQ },
+          markLine: { silent: true, symbol: 'none', label: { formatter: 'K₁ +' + K1 + '%', fontSize: 11, color: '#5b6b84', position: 'insideEndTop' }, lineStyle: { type: 'dotted', color: '#9db3e8' }, data: [{ xAxis: K1 }] } },
+        { name: 'Call Spread（QQQI 式）', type: 'line', data: sCS, smooth: true, symbol: 'none', lineStyle: { width: 3, color: C_QQQI }, itemStyle: { color: C_QQQI },
+          markLine: { silent: true, symbol: 'none', label: { formatter: 'K₂ +' + K2 + '%', fontSize: 11, color: '#5b6b84', position: 'insideEndTop' }, lineStyle: { type: 'dotted', color: '#7fcbb0' }, data: [{ xAxis: K2 }] } }
+      ]
+    };
+  }
+  payoffChart.setOption(payoffOption(2.0));
+  root.updatePayoff = function(){
+    var rng = document.getElementById('premRange');
+    var val = parseFloat(rng.value);
+    document.getElementById('premVal').textContent = val.toFixed(1) + '%';
+    payoffChart.setOption(payoffOption(val));
+  };
+  window.addEventListener('resize', function(){ payoffChart.resize(); });
+
+  /* ---- 图 2：月度情景对比 ---- */
+  var scChart = root.echarts.init(document.getElementById('chart-scenario'));
+  var scCats = ['大跌（指数 -4%）', '震荡（指数 0%）', '温和上涨（指数 +1.5%）', '大涨（指数 +5%）'];
+  var scQQQ = [-3.92, 0.08, 1.58, 5.08];
+  var scCC = [-1.92, 2.08, 3.58, 3.58];
+  var scCS = [-2.42, 1.58, 3.08, 4.08];
+  scChart.setOption({
+    backgroundColor: 'transparent',
+    tooltip: { trigger: 'axis', triggerOn: 'click', renderMode: 'richText', confine: true, valueFormatter: function(v){ return v + '%'; } },
+    legend: { data: ['纯持股 QQQ', '备兑看涨（JEPQ 式）', 'Call Spread（QQQI 式）'], top: 0, textStyle: { fontSize: 12, color: '#5b6b84' } },
+    grid: { left: 8, right: 12, top: 36, bottom: 8, containLabel: true },
+    xAxis: { type: 'category', data: scCats, axisLabel: { fontSize: 12 } },
+    yAxis: { type: 'value', name: '当月组合收益 %', axisLabel: { formatter: function(v){ return v + '%'; } }, splitLine: { lineStyle: { color: '#eef1f6' } } },
+    series: [
+      { name: '纯持股 QQQ', type: 'bar', data: scQQQ, barGap: '20%', itemStyle: { color: C_QQQ }, label: { show: true, position: 'top', formatter: function(p){ return p.value + '%'; }, fontSize: 11, color: '#5b6b84' } },
+      { name: '备兑看涨（JEPQ 式）', type: 'bar', data: scCC, itemStyle: { color: C_JEPQ }, label: { show: true, position: 'top', formatter: function(p){ return p.value + '%'; }, fontSize: 11, color: '#5b6b84' } },
+      { name: 'Call Spread（QQQI 式）', type: 'bar', data: scCS, itemStyle: { color: C_QQQI }, label: { show: true, position: 'top', formatter: function(p){ return p.value + '%'; }, fontSize: 11, color: '#5b6b84' } }
+    ]
+  });
+  window.addEventListener('resize', function(){ scChart.resize(); });
+
+  /* ---- 图 3：分红来源示意 ---- */
+  var srcChart = root.echarts.init(document.getElementById('chart-source'));
+  srcChart.setOption({
+    backgroundColor: 'transparent',
+    tooltip: { trigger: 'item', triggerOn: 'click', renderMode: 'richText', confine: true, formatter: '{b}：{c}%（示意）' },
+    legend: { bottom: 0, textStyle: { fontSize: 12, color: '#5b6b84' } },
+    series: [{
+      name: '分红来源', type: 'pie', radius: ['42%', '68%'], center: ['50%', '45%'],
+      itemStyle: { borderColor: '#fff', borderWidth: 2, borderRadius: 6 },
+      label: { formatter: '{b}\n{c}%', fontSize: 12, color: '#33415c' },
+      data: [
+        { value: 75, name: '期权权利金', itemStyle: { color: C_JEPQ } },
+        { value: 15, name: '股票股息', itemStyle: { color: C_QQQI } },
+        { value: 10, name: '资本利得 / 本金返还', itemStyle: { color: C_AMBER } }
+      ]
+    }]
+  });
+  window.addEventListener('resize', function(){ srcChart.resize(); });
+})();
+</script>
+</body>
+</html>
